@@ -1,0 +1,77 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { comparePasswords, generateToken } from '@/lib/auth';
+import redis from '@/lib/redis';
+
+// Admin login endpoint
+export async function POST(request: NextRequest) {
+  try {
+    const { email, password } = await request.json();
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, error: 'Email and password are required' },
+        { status: 400 }
+      );
+    }
+
+    // Get admin user from Redis
+    const userKey = `admin:${email}`;
+    const userJson = await redis.get(userKey);
+
+    // User not found
+    if (!userJson) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
+
+    const user = JSON.parse(userJson);
+
+    // Compare passwords
+    const isPasswordValid = await comparePasswords(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid credentials' },
+        { status: 401 }
+      );
+    }
+
+    // Generate JWT token
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    // Create HTTP-only cookie with JWT token
+    const response = NextResponse.json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+
+    // Set cookie with token
+    response.cookies.set({
+      name: 'authToken',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24, // 1 day
+      path: '/',
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Login error:', error);
+    return NextResponse.json(
+      { success: false, error: 'An error occurred during login' },
+      { status: 500 }
+    );
+  }
+}

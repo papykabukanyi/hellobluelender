@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #1F2041;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-primary;
+  }
+  
+  a {
+    @apply text-primary hover:text-primary-light transition-colors;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white py-2 px-4 rounded hover:bg-primary-light transition-colors;
+  }
+  
+  .btn-outline {
+    @apply border border-primary text-primary py-2 px-4 rounded hover:bg-primary hover:text-white transition-colors;
+  }
+  
+  .card {
+    @apply bg-white p-6 rounded-lg shadow-md;
+  }
+
+  .form-input {
+    @apply w-full rounded border-gray-300 focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50;
+  }
+
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}

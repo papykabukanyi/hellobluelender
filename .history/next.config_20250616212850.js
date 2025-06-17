@@ -13,8 +13,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'standalone',
-  experimental: {}, // Keep empty experimental to avoid warnings
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/@esbuild/darwin-x64',
+        'node_modules/webpack',
+      ],
+    },
+  }
 };
 
 module.exports = nextConfig;

@@ -6,9 +6,12 @@
     "dev": "next dev",
     "prebuild": "node -e \"const fs=require('fs');const path=require('path');const dir='.next';if(fs.existsSync(dir)){console.log('Cleaning .next directory');fs.rmSync(dir, { recursive: true, force: true });}\"",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "start": "next start",
     "lint": "next lint --fix",
-    "prettier": "prettier --write ."
+    "deploy": "next build && next start",
+    "prettier": "prettier --write .",
+    "railway:start": "next start",
+    "railway:build": "npm run prebuild && next build"
   },
   "engines": {
     "node": ">=16.0.0",

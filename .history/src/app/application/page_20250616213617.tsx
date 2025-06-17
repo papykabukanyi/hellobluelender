@@ -7,20 +7,21 @@ export const metadata: Metadata = {
   description: 'Apply online for business financing or equipment loans with Blue Lender. Our simple application process makes it easy to get the funding your business needs.',
 };
 
-export default function Application({
+export default async function Application({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   // Get loan type from URL query params
+  // In Next.js app router, we need to use async function to properly handle searchParams
   const typeParam = searchParams.type;
   const type = Array.isArray(typeParam) ? typeParam[0] : typeParam;
   
   // Determine the loan type based on query parameter
   const loanType: LoanType = 
     typeof type === 'string' && 
-    ['business', 'equipment'].includes(type.toLowerCase()) 
-      ? (type.toLowerCase() === 'business' ? 'Business' : 'Equipment') 
+    ['business', 'equipment'].includes(type) 
+      ? (type === 'business' ? 'Business' : 'Equipment') 
       : 'Business';
 
   return (

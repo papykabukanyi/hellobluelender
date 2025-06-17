@@ -8,7 +8,6 @@
     "build": "next build",
     "start": "node server.js",
     "start:next": "node .next/standalone/server.js",
-    "healthcheck": "node healthcheck.js",
     "lint": "next lint --fix",
     "prettier": "prettier --write .",
     "railway:build": "npm run build",

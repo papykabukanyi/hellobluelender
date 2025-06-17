@@ -9,8 +9,7 @@
     "start": "node .next/standalone/server.js",
     "lint": "next lint --fix",
     "prettier": "prettier --write .",
-    "railway:build": "npm run build",
-    "cleanup": "node cleanup.js"
+    "railway:build": "npm run build"
   },
   "engines": {
     "node": ">=16.0.0",

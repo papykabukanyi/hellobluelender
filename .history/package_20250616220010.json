@@ -10,7 +10,7 @@
     "lint": "next lint --fix",
     "prettier": "prettier --write .",
     "railway:build": "npm run build",
-    "cleanup": "node cleanup.js"
+    "cleanup": "node scripts/cleanup.js"
   },
   "engines": {
     "node": ">=16.0.0",

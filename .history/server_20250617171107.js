@@ -1,4 +1,6 @@
 // server.js - Production server with built-in health check endpoint
+const http = require('http');
+const { execSync } = require('child_process');
 const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');

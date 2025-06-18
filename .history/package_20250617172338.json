@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node cleanup.js",
+    "prebuild": "node -e \"try { const fs=require('fs'); const dir='.next'; if(fs.existsSync(dir)) { console.log('Attempting to clean .next directory'); try { fs.rmSync(dir, { recursive: true, force: true }); console.log('.next directory cleaned successfully'); } catch (err) { console.warn('Warning: Could not completely clean .next directory: ' + err.message); console.log('Attempting to clean individual directories except cache...'); try { const items = fs.readdirSync(dir); items.forEach(item => { const itemPath = dir + '/' + item; if (item !== 'cache' && fs.statSync(itemPath).isDirectory()) { try { fs.rmSync(itemPath, { recursive: true, force: true }); console.log('Removed: ' + itemPath); } catch (e) { console.warn('Could not remove: ' + itemPath); } } }); } catch (e) { console.warn('Failed to clean subdirectories: ' + e.message); } } } } catch (err) { console.warn('Warning: Error in prebuild script: ' + err.message); }\"",
     "build": "next build",
     "start": "node server.js",
     "start:next": "node .next/standalone/server.js",

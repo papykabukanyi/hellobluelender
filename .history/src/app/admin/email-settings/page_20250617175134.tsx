@@ -101,8 +101,10 @@ export default function EmailSettings() {
           <h3 className="font-medium text-blue-700">Important:</h3>
           <p className="text-blue-600">
             To specify an admin recipient (who will receive applications first), include the word "admin" in either
-            the name or email address of the recipient.          </p>
+            the name or email address of the recipient.
+          </p>
         </div>
+        </p>
       </div>
       
       {/* Notification message */}

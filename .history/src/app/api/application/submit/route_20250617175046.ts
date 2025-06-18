@@ -165,18 +165,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       id: applicationId 
-    });  } catch (error) {
+    });
+  } catch (error) {
     console.error('Error submitting application:', error);
     
-    // Provide more detailed error message for debugging
-    let errorMessage = 'Failed to submit application';
-    if (error instanceof Error) {
-      errorMessage = `${errorMessage}: ${error.message}`;
-      console.error('Error stack:', error.stack);
-    }
-    
     return NextResponse.json(
-      { success: false, error: errorMessage },
+      { success: false, error: 'Failed to submit application' },
       { status: 500 }
     );
   }

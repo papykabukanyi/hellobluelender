@@ -94,15 +94,17 @@ export default function EmailSettings() {
     }
   };  return (
     <AdminLayout>      <div className="mb-8">
-        <h2 className="text-2xl font-bold">Email Recipients</h2>        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold">Email Recipients</h2>
+        <p className="text-gray-600">
           Manage email recipients who will receive application notifications and PDF copies
         </p>
         <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-md">
           <h3 className="font-medium text-blue-700">Important:</h3>
           <p className="text-blue-600">
             To specify an admin recipient (who will receive applications first), include the word "admin" in either
-            the name or email address of the recipient.          </p>
-        </div>
+            the name or email address of the recipient.
+          </p>
+        </p>
       </div>
       
       {/* Notification message */}

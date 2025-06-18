@@ -44,33 +44,9 @@ export async function POST(request: NextRequest) {
     // Get email recipients from Redis
     const recipientsJson = await redis.get('email:recipients');    const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];
     
-    // Only use real recipients from the database, no defaults    // Filter active recipients and prioritize admin recipient
-    const allRecipients = recipients.filter((r: any) => r.active);
-    
-    // Find the admin recipient (assume it's marked in name or email)
-    const adminRecipient = allRecipients.find(
-      (r: any) => 
-        r.email.toLowerCase().includes('admin') || 
-        r.name.toLowerCase().includes('admin')
-    );
-    
-    // Prepare recipient list with admin first, if available
-    let emailRecipients: string[] = [];
-    
-    // If admin recipient is found, add it first
-    if (adminRecipient) {
-      emailRecipients.push(adminRecipient.email);
-    }
-    
-    // Then add all other active recipients
-    emailRecipients = [
-      ...emailRecipients,
-      ...allRecipients
-        .filter((r: any) => r.email !== adminRecipient?.email)
-        .map((r: any) => r.email)
-    ];
-    
-    // Get application details for email
+    // Only use real recipients from the database, no defaults
+    const emailRecipients = recipients.filter((r: any) => r.active).map((r: any) => r.email);
+      // Send email with PDF attachment to internal recipients
     const businessName = completeApplication.businessInfo?.businessName || 'Unknown Business';
     const loanType = completeApplication.loanInfo?.loanType || 'Unknown';
     const loanAmount = completeApplication.loanInfo?.loanAmount 
@@ -82,11 +58,8 @@ export async function POST(request: NextRequest) {
     const coApplicantName = hasCoApplicant 
       ? `${completeApplication.coApplicantInfo?.firstName} ${completeApplication.coApplicantInfo?.lastName}`
       : '';
-      
-    // Send to admin recipients only if there are any configured
+      // Send to admin recipients only if there are any configured
     if (emailRecipients.length > 0) {
-      console.log(`Sending application notification to ${emailRecipients.length} recipients (admin prioritized)`);
-      
       await sendEmail({
         to: emailRecipients,
         subject: `New ${loanType} Loan Application - ${businessName}`,
@@ -165,18 +138,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       id: applicationId 
-    });  } catch (error) {
+    });
+  } catch (error) {
     console.error('Error submitting application:', error);
     
-    // Provide more detailed error message for debugging
-    let errorMessage = 'Failed to submit application';
-    if (error instanceof Error) {
-      errorMessage = `${errorMessage}: ${error.message}`;
-      console.error('Error stack:', error.stack);
-    }
-    
     return NextResponse.json(
-      { success: false, error: errorMessage },
+      { success: false, error: 'Failed to submit application' },
       { status: 500 }
     );
   }

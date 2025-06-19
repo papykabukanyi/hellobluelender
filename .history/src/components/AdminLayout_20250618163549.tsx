@@ -59,22 +59,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       setIsLoading(false);
     }
   };
-    // Determine the required permission based on pathname
-  const getRequiredPermission = () => {
-    if (pathname.startsWith('/admin/manage-admins')) {
-      return 'manageAdmins' as const;
-    } else if (pathname.startsWith('/admin/smtp-config')) {
-      return 'manageSmtp' as const;
-    } else if (pathname.startsWith('/admin/email-settings')) {
-      return 'manageRecipients' as const;
-    } else if (pathname.startsWith('/admin/dashboard') || pathname.startsWith('/admin/applications')) {
-      return 'viewApplications' as const;
-    }
-    return undefined;
-  };
   
   return (
-    <AuthCheck requiredPermission={getRequiredPermission()}>
+    <AuthCheck>
       <div className="min-h-screen bg-gray-100">
         <div className="bg-primary text-white">
           <div className="container mx-auto px-4 py-3">

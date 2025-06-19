@@ -58,11 +58,12 @@ export async function POST(request: NextRequest) {
       emailRecipients.push(mainAdminRecipient.email);
       console.log('Main admin recipient found:', mainAdminRecipient.email);
     }
-      // Then add all other active recipients
+    
+    // Then add all other active recipients
     emailRecipients = [
       ...emailRecipients,
       ...allRecipients
-        .filter((r: any) => r.email !== mainAdminRecipient?.email)
+        .filter((r: any) => r.email !== adminRecipient?.email)
         .map((r: any) => r.email)
     ];
     

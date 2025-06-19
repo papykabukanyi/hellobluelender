@@ -101,7 +101,6 @@ export interface EmailRecipient {
   name: string;
   email: string;
   active: boolean;
-  isMainAdmin?: boolean; // Flag to mark the primary admin (SMTP owner)
   createdAt: string;
   updatedAt: string;
 }

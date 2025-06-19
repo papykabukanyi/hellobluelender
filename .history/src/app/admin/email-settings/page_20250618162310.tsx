@@ -195,21 +195,11 @@ export default function EmailSettings() {
                   <th className="text-left py-3 px-4 font-semibold text-sm">Actions</th>
                 </tr>
               </thead>
-              <tbody>                {recipients.map((recipient) => (
+              <tbody>
+                {recipients.map((recipient) => (
                   <tr key={recipient.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4">{recipient.name}</td>
                     <td className="py-3 px-4">{recipient.email}</td>
-                    <td className="py-3 px-4">
-                      {recipient.isMainAdmin ? (
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                          Main Admin
-                        </span>
-                      ) : (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">
-                          Standard
-                        </span>
-                      )}
-                    </td>
                     <td className="py-3 px-4">
                       {new Date(recipient.createdAt).toLocaleDateString()}
                     </td>
@@ -217,10 +207,8 @@ export default function EmailSettings() {
                       <button 
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleDeleteRecipient(recipient.id)}
-                        disabled={recipient.isMainAdmin}
-                        title={recipient.isMainAdmin ? "Cannot delete the main admin recipient" : ""}
                       >
-                        {recipient.isMainAdmin ? "Required" : "Delete"}
+                        Delete
                       </button>
                     </td>
                   </tr>

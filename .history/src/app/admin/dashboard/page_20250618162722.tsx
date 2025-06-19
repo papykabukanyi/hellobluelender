@@ -156,8 +156,9 @@ export default function AdminDashboard() {
             </table>
           </div>
         )}
-          <div className="p-4 text-right">
-          <Link href="/admin/applications" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark">
+        
+        <div className="p-4 text-right">
+          <Link href="/admin/applications" className="text-primary text-sm hover:underline">
             View All Applications
           </Link>
         </div>

@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import redis from '@/lib/redis';
-import { requirePermission } from '@/lib/permissions';
 
 // Get all loan applications or a single application by ID
 export async function GET(request: NextRequest) {
   try {
-    // Verify current admin has permission to view applications
-    const currentAdmin = await requirePermission(request, 'viewApplications');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
@@ -77,14 +68,6 @@ export async function GET(request: NextRequest) {
 // Get a single application
 export async function POST(request: NextRequest) {
   try {
-    // Verify current admin has permission to view applications
-    const currentAdmin = await requirePermission(request, 'viewApplications');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { id } = await request.json();
     
     if (!id) {

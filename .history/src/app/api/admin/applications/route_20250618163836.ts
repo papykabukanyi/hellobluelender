@@ -77,14 +77,6 @@ export async function GET(request: NextRequest) {
 // Get a single application
 export async function POST(request: NextRequest) {
   try {
-    // Verify current admin has permission to view applications
-    const currentAdmin = await requirePermission(request, 'viewApplications');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { id } = await request.json();
     
     if (!id) {

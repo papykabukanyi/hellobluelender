@@ -108,14 +108,6 @@ export async function POST(request: NextRequest) {
 // Update an email recipient
 export async function PUT(request: NextRequest) {
   try {
-    // Verify current admin has permission to manage recipients
-    const currentAdmin = await requirePermission(request, 'manageRecipients');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { id, name, email, active } = await request.json();
     
     if (!id) {
@@ -167,14 +159,6 @@ export async function PUT(request: NextRequest) {
 // Delete an email recipient
 export async function DELETE(request: NextRequest) {
   try {
-    // Verify current admin has permission to manage recipients
-    const currentAdmin = await requirePermission(request, 'manageRecipients');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     

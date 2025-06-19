@@ -45,14 +45,6 @@ export async function POST(request: NextRequest) {
 // Test SMTP connection
 export async function PUT(request: NextRequest) {
   try {
-    // Verify current admin has permission to manage SMTP
-    const currentAdmin = await requirePermission(request, 'manageSmtp');
-    
-    // If requirePermission returns a NextResponse, it means unauthorized
-    if ('status' in currentAdmin && currentAdmin.status === 403) {
-      return currentAdmin;
-    }
-    
     const { testEmail } = await request.json();
     
     if (!testEmail) {

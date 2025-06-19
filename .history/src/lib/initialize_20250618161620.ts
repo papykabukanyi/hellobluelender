@@ -8,9 +8,9 @@ export async function initializeAdminData() {
     // Check if admin user already exists
     const adminExists = await redis.exists('admin:admin@bluelender.com');
     
-    if (!adminExists) {      // Create default admin user
-      const hashedPassword = await hashPassword('admin123'); // Default password, should be changed
-      const adminUser: AdminUser = {
+    if (!adminExists) {
+      // Create default admin user
+      const hashedPassword = await hashPassword('admin123'); // Default password, should be changed      const adminUser: AdminUser = {
         id: uuidv4(),
         username: 'admin',
         email: 'admin@bluelender.com',
@@ -35,13 +35,13 @@ export async function initializeAdminData() {
     // Check if email recipients exist
     const recipientsExist = await redis.exists('email:recipients');
     
-    if (!recipientsExist) {      // Create default email recipient
+    if (!recipientsExist) {
+      // Create default email recipient
       const defaultRecipient: EmailRecipient = {
         id: uuidv4(),
         name: 'Admin User',
         email: 'admin@bluelender.com',
         active: true,
-        isMainAdmin: true, // Mark this as the main admin (SMTP owner)
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

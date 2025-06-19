@@ -1,50 +1,41 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { LoanApplication } from '@/types';
 import Link from 'next/link';
 
-export default function AdminDashboard() {
+export default function AdminApplications() {
   const [applications, setApplications] = useState<LoanApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-  });
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Fetch applications on component mount
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await fetch('/api/admin/applications');
-        const data = await response.json();
-        
-        if (data.success) {
-          const apps = data.applications || [];
-          setApplications(apps);
-          
-          // Calculate stats
-          setStats({
-            total: apps.length,
-            pending: apps.filter((app: LoanApplication) => app.status === 'in-review' || app.status === 'submitted').length,
-            approved: apps.filter((app: LoanApplication) => app.status === 'approved').length,
-          });
-        } else {
-          setError('Failed to load applications');
-        }
-      } catch (err) {
-        console.error('Error fetching applications:', err);
-        setError('An error occurred while fetching applications');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
     fetchApplications();
   }, []);
+
+  // Fetch all applications
+  const fetchApplications = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/applications');
+      const data = await response.json();
+      
+      if (data.success) {
+        setApplications(data.applications || []);
+      } else {
+        setError('Failed to load applications');
+      }
+    } catch (err) {
+      console.error('Error fetching applications:', err);
+      setError('An error occurred while fetching applications');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Format date string
   const formatDate = (dateString?: string) => {
@@ -65,40 +56,68 @@ export default function AdminDashboard() {
     }).format(amount);
   };
 
+  // Filter applications
+  const filteredApplications = applications
+    .filter(app => 
+      filterStatus === 'all' || app.status === filterStatus
+    )
+    .filter(app => {
+      if (!searchTerm) return true;
+      
+      const searchLower = searchTerm.toLowerCase();
+      const businessName = app.businessInfo?.businessName?.toLowerCase() || '';
+      const applicantName = (app.personalInfo?.firstName + ' ' + app.personalInfo?.lastName).toLowerCase();
+      const appId = app.id?.toLowerCase() || '';
+      
+      return (
+        businessName.includes(searchLower) || 
+        applicantName.includes(searchLower) || 
+        appId.includes(searchLower)
+      );
+    });
+
   return (
     <AdminLayout>
-      <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">All Applications</h2>
+      </div>
       
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Applications</h3>
-            <span className="text-2xl font-bold text-primary">{stats.total}</span>
-          </div>
-          <p className="text-sm text-gray-600">Total applications</p>
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-col md:flex-row gap-4">
+        <div className="w-full md:w-1/2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Search
+          </label>
+          <input
+            type="text"
+            placeholder="Search by name, business or ID..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Pending Review</h3>
-            <span className="text-2xl font-bold text-yellow-500">{stats.pending}</span>
-          </div>
-          <p className="text-sm text-gray-600">Awaiting document verification</p>
-        </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Approved</h3>
-            <span className="text-2xl font-bold text-green-500">{stats.approved}</span>
-          </div>
-          <p className="text-sm text-gray-600">Ready for processing</p>
+        <div className="w-full md:w-1/2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Filter by Status
+          </label>
+          <select
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Applications</option>
+            <option value="submitted">New</option>
+            <option value="in-review">In Review</option>
+            <option value="approved">Approved</option>
+            <option value="denied">Denied</option>
+          </select>
         </div>
       </div>
       
-      {/* Recent Applications */}
+      {/* Applications Table */}
       <div className="bg-white rounded-lg shadow-sm">
-        <h3 className="text-lg font-semibold p-4 border-b">Recent Applications</h3>
+        <h3 className="text-lg font-semibold p-4 border-b">Applications</h3>
         
         {loading ? (
           <div className="p-8 text-center">
@@ -107,9 +126,9 @@ export default function AdminDashboard() {
           </div>
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
-        ) : applications.length === 0 ? (
+        ) : filteredApplications.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            No applications found. Applications will appear here when they are submitted.
+            No matching applications found.
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -118,6 +137,7 @@ export default function AdminDashboard() {
                 <tr className="bg-gray-50">
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">ID</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">Applicant</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">Business</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">Loan Type</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">Amount</th>
                   <th className="text-left py-3 px-4 font-semibold text-sm text-gray-600">Status</th>
@@ -126,12 +146,13 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {applications.slice(0, 5).map((app) => (
+                {filteredApplications.map((app) => (
                   <tr key={app.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4 text-sm">{app.id?.substring(0, 8)}</td>
                     <td className="py-3 px-4">
                       {app.personalInfo?.firstName} {app.personalInfo?.lastName}
                     </td>
+                    <td className="py-3 px-4">{app.businessInfo?.businessName}</td>
                     <td className="py-3 px-4">{app.loanInfo?.loanType}</td>
                     <td className="py-3 px-4">{formatCurrency(app.loanInfo?.loanAmount)}</td>
                     <td className="py-3 px-4">
@@ -140,12 +161,14 @@ export default function AdminDashboard() {
                         app.status === 'denied' ? 'bg-red-100 text-red-800' : 
                         app.status === 'in-review' ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-blue-100 text-blue-800'
-                      }`}>                        {app.status === 'in-review' ? 'In Review' : 
+                      }`}>
+                        {app.status === 'in-review' ? 'In Review' : 
                          app.status === 'submitted' ? 'New' :
                          app.status ? (app.status.charAt(0).toUpperCase() + app.status.slice(1)) : 'Unknown'}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm">{formatDate(app.createdAt)}</td>                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 text-sm">{formatDate(app.createdAt)}</td>
+                    <td className="py-3 px-4">
                       <Link href={`/admin/applications/${app.id}`} className="text-primary hover:underline text-sm">
                         View Details
                       </Link>
@@ -156,11 +179,7 @@ export default function AdminDashboard() {
             </table>
           </div>
         )}
-          <div className="p-4 text-right">
-          <Link href="/admin/applications" className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark">
-            View All Applications
-          </Link>
-        </div>
       </div>
-    </AdminLayout>  );
+    </AdminLayout>
+  );
 }

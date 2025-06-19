@@ -35,13 +35,13 @@ export async function initializeAdminData() {
     // Check if email recipients exist
     const recipientsExist = await redis.exists('email:recipients');
     
-    if (!recipientsExist) {      // Create default email recipient
+    if (!recipientsExist) {
+      // Create default email recipient
       const defaultRecipient: EmailRecipient = {
         id: uuidv4(),
         name: 'Admin User',
         email: 'admin@bluelender.com',
         active: true,
-        isMainAdmin: true, // Mark this as the main admin (SMTP owner)
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

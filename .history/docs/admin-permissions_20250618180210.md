@@ -53,8 +53,6 @@ The system has four main permission types:
 
 ## Testing
 
-### Test Permissions System
-
 You can test the permission system with:
 
 ```bash
@@ -62,21 +60,6 @@ npm run test:permissions
 ```
 
 This will create a test sub-admin user with limited permissions for testing the system.
-
-### Verify Super Admin Configuration
-
-You can verify that the super admin is properly configured with:
-
-```bash
-npm run verify:super-admin
-```
-
-This will check:
-
-1. The super admin exists with the correct SMTP email
-2. The super admin has the password set to `admin123`
-3. The super admin has all required permissions enabled
-4. The super admin is included in the email recipients list
 
 ## Recommendations
 

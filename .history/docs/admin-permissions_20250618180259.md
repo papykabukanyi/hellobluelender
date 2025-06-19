@@ -72,7 +72,6 @@ npm run verify:super-admin
 ```
 
 This will check:
-
 1. The super admin exists with the correct SMTP email
 2. The super admin has the password set to `admin123`
 3. The super admin has all required permissions enabled

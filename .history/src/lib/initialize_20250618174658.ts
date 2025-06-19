@@ -31,69 +31,42 @@ export async function initializeAdminData() {
 
 // Helper function to initialize super admin
 async function initializeSuperAdmin(smtpEmail: string) {
-  // Create or update the super admin user with SMTP email
-  const hashedPassword = await hashPassword('admin123'); 
-  
-  // Check if super admin exists already
+  // Check if super admin user already exists
   const adminExists = await redis.exists(`admin:${smtpEmail}`);
   
-  const adminUser: AdminUser = {
-    id: adminExists ? JSON.parse(await redis.get(`admin:${smtpEmail}`)).id : uuidv4(),
-    username: 'Super Admin',
-    email: smtpEmail,
-    password: hashedPassword,
-    role: 'admin',
-    permissions: {
-      viewApplications: true,
-      manageAdmins: true,
-      manageSmtp: true,
-      manageRecipients: true
-    },
-    createdAt: adminExists ? 
-      JSON.parse(await redis.get(`admin:${smtpEmail}`)).createdAt :
-      new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  
-  // Store in Redis - always update to ensure correct permissions and password
-  await redis.set(`admin:${smtpEmail}`, JSON.stringify(adminUser));
-  
-  console.log(`Super admin user created/updated with email: ${smtpEmail}`);
+  if (!adminExists) {
+    // Create super admin user with password 'admin123'
+    const hashedPassword = await hashPassword('admin123'); 
+    const adminUser: AdminUser = {
+      id: uuidv4(),
+      username: 'Super Admin',
+      email: smtpEmail,
+      password: hashedPassword,
+      role: 'admin',
+      permissions: {
+        viewApplications: true,
+        manageAdmins: true,
+        manageSmtp: true,
+        manageRecipients: true
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    // Store in Redis
+    await redis.set(`admin:${smtpEmail}`, JSON.stringify(adminUser));
+    
+    console.log(`Super admin user created with email: ${smtpEmail}`);
+  }
 }
 
 // Helper function to clean up any legacy admin accounts
 async function cleanupLegacyAdmins(smtpEmail: string) {
-  // Get all admin keys
-  const adminKeys = await redis.keys('admin:*');
-  
-  // Go through each admin account
-  for (const adminKey of adminKeys) {
-    const adminEmail = adminKey.replace('admin:', '');
-    
-    // Skip the current super admin account
-    if (adminEmail === smtpEmail) continue;
-    
-    // Get the admin user
-    const adminJson = await redis.get(adminKey);
-    if (adminJson) {
-      const admin = JSON.parse(adminJson);
-      
-      // Check if this is a previous super admin that needs to be demoted or removed
-      if (admin.role === 'admin' && admin.permissions?.manageAdmins && 
-          admin.permissions?.manageSmtp && admin.permissions?.manageRecipients) {
-        // We'll delete any previous super admin to avoid confusion
-        await redis.del(adminKey);
-        console.log(`Legacy super admin account removed: ${adminEmail}`);
-      }
-    }
-  }
-  
-  // Always check for the default admin and remove it if it's not the current SMTP email
   if (smtpEmail !== 'admin@bluelender.com') {
     const legacyAdminExists = await redis.exists('admin:admin@bluelender.com');
     if (legacyAdminExists) {
       await redis.del('admin:admin@bluelender.com');
-      console.log('Default legacy admin account removed');
+      console.log('Legacy admin account removed');
     }
   }
 }

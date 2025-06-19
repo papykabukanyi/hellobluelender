@@ -16,19 +16,17 @@ The system has four main permission types:
 ### Super Admin
 
 - The super admin is automatically synced with the SMTP email configuration (`SMTP_USER` env variable)
-- Always has the fixed password `admin123` (should be changed after first login for security)
-- Has full access to all parts of the system (all permissions enabled)
-- Cannot be deleted or have permissions revoked through the admin UI or API
-- Always receives all application submissions automatically as the first recipient
-- If the SMTP configuration changes, the super admin account is automatically updated
-- Previous super admin accounts are removed when the SMTP email changes to prevent confusion
+- Has the default password `admin123` (should be changed after first login)
+- Has full access to all parts of the system
+- Cannot be deleted or have permissions revoked
+- Always receives all application submissions automatically
 
 ### Sub-Admins
 
-- Created by the super admin or admins with `manageAdmins` permission
-- Can be given customized permissions based on their role
+- Created by the main admin or admins with `manageAdmins` permission
+- Can be given customized permissions
 - By default, only have `viewApplications` permission
-- Cannot delete the super admin or modify their own permissions
+- Cannot delete the main admin or modify their own permissions
 
 ## Implementation Details
 
@@ -53,8 +51,6 @@ The system has four main permission types:
 
 ## Testing
 
-### Test Permissions System
-
 You can test the permission system with:
 
 ```bash
@@ -62,21 +58,6 @@ npm run test:permissions
 ```
 
 This will create a test sub-admin user with limited permissions for testing the system.
-
-### Verify Super Admin Configuration
-
-You can verify that the super admin is properly configured with:
-
-```bash
-npm run verify:super-admin
-```
-
-This will check:
-
-1. The super admin exists with the correct SMTP email
-2. The super admin has the password set to `admin123`
-3. The super admin has all required permissions enabled
-4. The super admin is included in the email recipients list
 
 ## Recommendations
 

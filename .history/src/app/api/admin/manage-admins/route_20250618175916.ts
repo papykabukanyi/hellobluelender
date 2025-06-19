@@ -201,11 +201,11 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Don't allow deleting the super admin (SMTP User)
-    const smtpEmail = process.env.SMTP_USER || 'admin@bluelender.com';
-    if (email === smtpEmail) {
+    
+    // Don't allow deleting the main admin
+    if (email === 'admin@bluelender.com') {
       return NextResponse.json(
-        { success: false, error: 'Cannot delete the super admin' },
+        { success: false, error: 'Cannot delete the main admin' },
         { status: 400 }
       );
     }

@@ -72,14 +72,16 @@ export async function POST(request: NextRequest) {
         name: user.name || user.username,
         role: user.role,
       },
-    });    // Set cookie with token
+    });
+
+    // Set cookie with token
     response.cookies.set({
       name: 'authToken',
       value: token,
       httpOnly: true,
       secure: false, // Set to false for development
       sameSite: 'lax', // Changed to lax for better compatibility
-      maxAge: 60 * 60, // 1 hour
+      maxAge: 60 * 60 * 24, // 1 day
       path: '/',
     });
     

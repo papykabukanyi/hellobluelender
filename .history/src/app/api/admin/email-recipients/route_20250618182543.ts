@@ -52,7 +52,8 @@ export async function POST(request: NextRequest) {
     // Get existing recipients
     const recipientsJson = await redis.get('email:recipients');
     const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];
-      // Check if email already exists
+    
+    // Check if email already exists
     const emailExists = recipients.some((r: EmailRecipient) => r.email === email);
     if (emailExists) {
       return NextResponse.json(
@@ -60,14 +61,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+      // Check if we should set this recipient as main admin (SMTP owner)
+    // This is determined by checking if this email matches the SMTP_USER from environment
+    const smtpUser = process.env.SMTP_USER || '';
+    const isMainAdmin = email === smtpUser;
     
-    // Check if this is the SMTP super admin email - should be added automatically by the system
-    const smtpUser = process.env.SMTP_USER || 'admin@bluelender.com';
-    if (email === smtpUser) {
-      return NextResponse.json(
-        { success: false, error: 'The SMTP email is automatically included in the recipients list' },
-        { status: 400 }
-      );
+    // If this will be marked as main admin, we need to remove that flag from any existing recipient
+    if (isMainAdmin) {
+      // Find any existing main admin and remove the flag
+      const mainAdminIndex = recipients.findIndex((r: EmailRecipient) => r.isMainAdmin === true);
+      if (mainAdminIndex !== -1) {
+        recipients[mainAdminIndex].isMainAdmin = false;
+      }
     }
     
     // Create new recipient
@@ -76,6 +81,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       active: true,
+      isMainAdmin, // Set this based on whether the email matches SMTP_USER
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -181,7 +187,8 @@ export async function DELETE(request: NextRequest) {
     
     // Get current recipients
     const recipientsJson = await redis.get('email:recipients');
-    const recipients: EmailRecipient[] = recipientsJson ? JSON.parse(recipientsJson) : [];    // Find the recipient to delete
+    const recipients: EmailRecipient[] = recipientsJson ? JSON.parse(recipientsJson) : [];
+      // Find the recipient to delete
     const recipientToDelete = recipients.find(recipient => recipient.id === id);
     
     if (!recipientToDelete) {
@@ -202,13 +209,6 @@ export async function DELETE(request: NextRequest) {
     
     // Filter out the recipient to delete
     const updatedRecipients = recipients.filter(recipient => recipient.id !== id);
-    
-    // Check if any recipient was removed
-    if (updatedRecipients.length === recipients.length) {
-      return NextResponse.json(
-        { success: false, error: 'Recipient not found' },
-        { status: 404 }
-      );
     }
     
     // Save updated list

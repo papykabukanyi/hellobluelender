@@ -80,20 +80,6 @@ This will check:
 3. The super admin has all required permissions enabled
 4. The super admin is included in the email recipients list
 
-You can also check for potential duplicate entries with:
-
-```bash
-npm run verify:super-admin-email
-```
-
-This script will verify:
-
-1. The super admin exists with the SMTP email from environment variables
-2. The super admin has all required permissions enabled
-3. There are no duplicate admin accounts using the super admin email
-4. The super admin is included in the email recipients list
-5. There are no duplicate entries of the super admin email in the recipients list
-
 ## Recommendations
 
 1. Always log in as a sub-admin to test permission restrictions

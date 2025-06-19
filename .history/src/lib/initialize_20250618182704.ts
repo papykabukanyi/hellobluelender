@@ -78,19 +78,12 @@ async function cleanupLegacyAdmins(smtpEmail: string) {
     if (adminJson) {
       const admin = JSON.parse(adminJson);
       
-      // Check if this is a previous super admin that needs to be removed
+      // Check if this is a previous super admin that needs to be demoted or removed
       if (admin.role === 'admin' && admin.permissions?.manageAdmins && 
           admin.permissions?.manageSmtp && admin.permissions?.manageRecipients) {
         // We'll delete any previous super admin to avoid confusion
         await redis.del(adminKey);
         console.log(`Legacy super admin account removed: ${adminEmail}`);
-      }
-      
-      // If this is a sub-admin account that happens to use the same email as the super admin,
-      // remove it to prevent confusion and ensure the super admin is always the only account with that email
-      if (admin.email === smtpEmail && adminKey !== `admin:${smtpEmail}`) {
-        await redis.del(adminKey);
-        console.log(`Removed duplicate admin account with super admin email: ${adminKey}`);
       }
     }
   }

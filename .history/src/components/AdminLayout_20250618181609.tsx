@@ -173,9 +173,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <main className="flex-1 md:ml-6">
             <div className="bg-white shadow rounded-lg p-6">{children}</div>
           </main>
-        </div>      </div>    </div>
-      {/* Add session timeout manager */}
-      <SessionManager user={userData} />
+        </div>      </div>
+    </div>
     </AuthCheck>
   );
 }

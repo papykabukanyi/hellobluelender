@@ -102,24 +102,16 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get application from database
-    const application = await prisma.application.findUnique({
-      where: { id },
-      include: {
-        personalInfo: true,
-        businessInfo: true,
-        loanInfo: true,
-        coApplicantInfo: true,
-        documents: true,
-      },
-    });
-    
-    if (!application) {
+    // Get application from Redis
+    const applicationJson = await redis.get(`application:${id}`);
+    if (!applicationJson) {
       return NextResponse.json(
         { success: false, error: 'Application not found' },
         { status: 404 }
       );
     }
+    
+    const application = JSON.parse(applicationJson);
     
     return NextResponse.json({
       success: true,
@@ -154,33 +146,27 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Check if application exists
-    const existingApplication = await prisma.application.findUnique({
-      where: { id },
-    });
     
-    if (!existingApplication) {
+    // Get application from Redis
+    const applicationJson = await redis.get(`application:${id}`);
+    if (!applicationJson) {
       return NextResponse.json(
         { success: false, error: 'Application not found' },
         { status: 404 }
       );
     }
     
-    // Update application in database
-    const application = await prisma.application.update({
-      where: { id },
-      data: {
-        status,
-        notes: notes || undefined,
-      },
-      include: {
-        personalInfo: true,
-        businessInfo: true,
-        loanInfo: true,
-        coApplicantInfo: true,
-        documents: true,
-      },
-    });
+    const application = JSON.parse(applicationJson);
+    
+    // Update application status
+    application.status = status;
+    if (notes) {
+      application.notes = notes;
+    }
+    application.updatedAt = new Date().toISOString();
+    
+    // Save back to Redis
+    await redis.set(`application:${id}`, JSON.stringify(application));
     
     return NextResponse.json({
       success: true,

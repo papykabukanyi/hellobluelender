@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Applications
+model Application {
+  id            String        @id // 6-digit application number
+  personalInfo  PersonalInfo? @relation(fields: [personalInfoId], references: [id])
+  personalInfoId String?      @unique
+  businessInfo  BusinessInfo? @relation(fields: [businessInfoId], references: [id])
+  businessInfoId String?      @unique
+  loanInfo      LoanInfo?     @relation(fields: [loanInfoId], references: [id])
+  loanInfoId    String?       @unique
+  coApplicantInfo CoApplicantInfo? @relation(fields: [coApplicantInfoId], references: [id])
+  coApplicantInfoId String?   @unique
+  documents     Document[]
+  signature     String?       // Base64 encoded signature
+  coApplicantSignature String? // Base64 encoded co-applicant signature
+  status        String        @default("draft") // draft, submitted, in-review, approved, denied
+  notes         String?       // Admin notes
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+// Personal Information
+model PersonalInfo {
+  id            String      @id @default(uuid())
+  firstName     String
+  lastName      String
+  email         String
+  phone         String
+  address       String
+  city          String
+  state         String
+  zipCode       String
+  dateOfBirth   String
+  ssn           String
+  creditScore   Int?
+  application   Application?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// Co-Applicant Information
+model CoApplicantInfo {
+  id                   String      @id @default(uuid())
+  firstName            String
+  lastName             String
+  email                String
+  phone                String
+  address              String
+  city                 String
+  state                String
+  zipCode              String
+  dateOfBirth          String
+  ssn                  String
+  creditScore          Int?
+  relationshipToBusiness String
+  application          Application?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+}
+
+// Business Information
+model BusinessInfo {
+  id             String      @id @default(uuid())
+  businessName   String
+  businessType   String
+  businessAddress String
+  businessCity   String
+  businessState  String
+  businessZipCode String
+  yearsInBusiness Int
+  annualRevenue  Float
+  taxId          String      // EIN or SSN
+  businessPhone  String
+  businessEmail  String
+  application    Application?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// Loan Information
+model LoanInfo {
+  id             String      @id @default(uuid())
+  loanType       String      // Business or Equipment
+  loanAmount     Float
+  loanTerm       Int?        // in months
+  loanPurpose    String
+  
+  // For equipment loans
+  equipmentType  String?
+  equipmentCost  Float?
+  equipmentVendor String?
+  downPayment    Float?
+  
+  // For business loans
+  monthlyRevenue Float?
+  timeInBusiness Int?
+  useOfFunds     String?
+  
+  application    Application?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// Document uploads
+model Document {
+  id             String      @id @default(uuid())
+  fileName       String
+  filePath       String
+  documentType   String
+  fileSize       Int
+  mimeType       String
+  application    Application @relation(fields: [applicationId], references: [id])
+  applicationId  String
+  uploadedAt     DateTime    @default(now())
+}
+
+// Admin Users
+model AdminUser {
+  id             String      @id @default(uuid())
+  username       String?     // Optional field
+  email          String      @unique
+  password       String      // Hashed
+  role           String      // admin, sub-admin  
+  viewApplications Boolean   @default(false)
+  manageAdmins   Boolean     @default(false)
+  manageSmtp     Boolean     @default(false)
+  manageRecipients Boolean   @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  addedBy        String?     // ID of admin who added this admin
+  sessions       AdminSession[]
+}
+
+// Admin Sessions (for session timeout)
+model AdminSession {
+  id             String      @id @default(uuid())
+  adminUser      AdminUser   @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  adminUserId    String
+  lastActivity   DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  expiresAt      DateTime
+}
+
+// Email Recipients
+model EmailRecipient {
+  id             String      @id @default(uuid())
+  name           String
+  email          String      @unique
+  active         Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+// SMTP Configuration
+model SMTPConfig {
+  id             String      @id @default(uuid())
+  host           String
+  port           Int
+  username       String
+  password       String
+  fromEmail      String
+  fromName       String
+  secure         Boolean
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}

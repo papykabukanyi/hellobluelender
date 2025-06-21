@@ -15,26 +15,18 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-      // If an ID is provided, get a single application
+    
+    // If an ID is provided, get a single application
     if (id) {
-      const application = await prisma.application.findUnique({
-        where: { id },
-        include: {
-          personalInfo: true,
-          businessInfo: true,
-          loanInfo: true,
-          coApplicantInfo: true,
-          documents: true,
-        },
-      });
-      
-      if (!application) {
+      const applicationJson = await redis.get(`application:${id}`);
+      if (!applicationJson) {
         return NextResponse.json(
           { success: false, error: 'Application not found' },
           { status: 404 }
         );
       }
       
+      const application = JSON.parse(applicationJson);
       return NextResponse.json({
         success: true,
         application,
@@ -43,34 +35,34 @@ export async function GET(request: NextRequest) {
     
     // Otherwise, get all applications
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '20', 10);
+    const limit = parseInt(searchParams.get('limit') || '100', 10); // Increased to show all apps
     
-    // Count total applications
-    const totalApplications = await prisma.application.count();
+    // Get all application IDs
+    const applicationIds = await redis.smembers('applications');
     
-    // Get paginated applications with all related data
-    const applications = await prisma.application.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      include: {
-        personalInfo: true,
-        businessInfo: true,
-        loanInfo: true,
-        coApplicantInfo: true,
-        documents: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    // Calculate pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedIds = applicationIds.slice(startIndex, endIndex);
+    
+    // Get application data for paginated IDs
+    const applicationPromises = paginatedIds.map(async (id) => {
+      const applicationJson = await redis.get(`application:${id}`);
+      return applicationJson ? JSON.parse(applicationJson) : null;
     });
-      return NextResponse.json({
+    
+    const applications = (await Promise.all(applicationPromises))
+      .filter(app => app !== null)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    return NextResponse.json({
       success: true,
       applications,
       pagination: {
-        total: totalApplications,
+        total: applicationIds.length,
         page,
         limit,
-        totalPages: Math.ceil(totalApplications / limit),
+        totalPages: Math.ceil(applicationIds.length / limit),
       },
     });
   } catch (error) {
@@ -102,24 +94,16 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get application from database
-    const application = await prisma.application.findUnique({
-      where: { id },
-      include: {
-        personalInfo: true,
-        businessInfo: true,
-        loanInfo: true,
-        coApplicantInfo: true,
-        documents: true,
-      },
-    });
-    
-    if (!application) {
+    // Get application from Redis
+    const applicationJson = await redis.get(`application:${id}`);
+    if (!applicationJson) {
       return NextResponse.json(
         { success: false, error: 'Application not found' },
         { status: 404 }
       );
     }
+    
+    const application = JSON.parse(applicationJson);
     
     return NextResponse.json({
       success: true,
@@ -154,33 +138,27 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Check if application exists
-    const existingApplication = await prisma.application.findUnique({
-      where: { id },
-    });
     
-    if (!existingApplication) {
+    // Get application from Redis
+    const applicationJson = await redis.get(`application:${id}`);
+    if (!applicationJson) {
       return NextResponse.json(
         { success: false, error: 'Application not found' },
         { status: 404 }
       );
     }
     
-    // Update application in database
-    const application = await prisma.application.update({
-      where: { id },
-      data: {
-        status,
-        notes: notes || undefined,
-      },
-      include: {
-        personalInfo: true,
-        businessInfo: true,
-        loanInfo: true,
-        coApplicantInfo: true,
-        documents: true,
-      },
-    });
+    const application = JSON.parse(applicationJson);
+    
+    // Update application status
+    application.status = status;
+    if (notes) {
+      application.notes = notes;
+    }
+    application.updatedAt = new Date().toISOString();
+    
+    // Save back to Redis
+    await redis.set(`application:${id}`, JSON.stringify(application));
     
     return NextResponse.json({
       success: true,

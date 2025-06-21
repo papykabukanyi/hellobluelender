@@ -9,8 +9,9 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const applicationData = await request.json();
-      // Generate a unique 6-digit application ID
-    const applicationId = await getUniqueApplicationId();
+    
+    // Generate a unique ID for this application
+    const applicationId = uuidv4();
     
     // Add metadata
     const completeApplication = {
@@ -20,95 +21,11 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
     };
     
-    // Create application in database with relational structure
-    // First, create the personal info record
-    const personalInfo = await prisma.personalInfo.create({
-      data: {
-        firstName: applicationData.personalInfo.firstName,
-        lastName: applicationData.personalInfo.lastName,
-        email: applicationData.personalInfo.email,
-        phone: applicationData.personalInfo.phone,
-        address: applicationData.personalInfo.address,
-        city: applicationData.personalInfo.city,
-        state: applicationData.personalInfo.state,
-        zipCode: applicationData.personalInfo.zipCode,
-        dateOfBirth: applicationData.personalInfo.dateOfBirth,
-        ssn: applicationData.personalInfo.ssn,
-        creditScore: applicationData.personalInfo.creditScore || undefined,
-      }
-    });
+    // Store application in Redis
+    await redis.set(`application:${applicationId}`, JSON.stringify(completeApplication));
     
-    // Create business info
-    const businessInfo = await prisma.businessInfo.create({
-      data: {
-        businessName: applicationData.businessInfo.businessName,
-        businessType: applicationData.businessInfo.businessType,
-        businessAddress: applicationData.businessInfo.businessAddress,
-        businessCity: applicationData.businessInfo.businessCity,
-        businessState: applicationData.businessInfo.businessState,
-        businessZipCode: applicationData.businessInfo.businessZipCode,
-        yearsInBusiness: applicationData.businessInfo.yearsInBusiness,
-        annualRevenue: applicationData.businessInfo.annualRevenue,
-        taxId: applicationData.businessInfo.taxId,
-        businessPhone: applicationData.businessInfo.businessPhone,
-        businessEmail: applicationData.businessInfo.businessEmail,
-      }
-    });
-    
-    // Create loan info with proper type checking
-    const loanInfo = await prisma.loanInfo.create({
-      data: {
-        loanType: applicationData.loanInfo.loanType,
-        loanAmount: applicationData.loanInfo.loanAmount,
-        loanTerm: applicationData.loanInfo.loanTerm,
-        loanPurpose: applicationData.loanInfo.loanPurpose,
-        // For equipment loans
-        equipmentType: applicationData.loanInfo.equipmentType,
-        equipmentCost: applicationData.loanInfo.equipmentCost,
-        equipmentVendor: applicationData.loanInfo.equipmentVendor,
-        downPayment: applicationData.loanInfo.downPayment,
-        // For business loans
-        monthlyRevenue: applicationData.loanInfo.monthlyRevenue,
-        timeInBusiness: applicationData.loanInfo.timeInBusiness,
-        useOfFunds: applicationData.loanInfo.useOfFunds,
-      }
-    });
-    
-    // Create co-applicant info if exists
-    let coApplicantInfoId = null;
-    if (applicationData.coApplicantInfo) {
-      const coApplicantInfo = await prisma.coApplicantInfo.create({
-        data: {
-          firstName: applicationData.coApplicantInfo.firstName,
-          lastName: applicationData.coApplicantInfo.lastName,
-          email: applicationData.coApplicantInfo.email,
-          phone: applicationData.coApplicantInfo.phone,
-          address: applicationData.coApplicantInfo.address,
-          city: applicationData.coApplicantInfo.city,
-          state: applicationData.coApplicantInfo.state,
-          zipCode: applicationData.coApplicantInfo.zipCode,
-          dateOfBirth: applicationData.coApplicantInfo.dateOfBirth,
-          ssn: applicationData.coApplicantInfo.ssn,
-          creditScore: applicationData.coApplicantInfo.creditScore,
-          relationshipToBusiness: applicationData.coApplicantInfo.relationshipToBusiness,
-        }
-      });
-      coApplicantInfoId = coApplicantInfo.id;
-    }
-    
-    // Create the main application with relations
-    await prisma.application.create({
-      data: {
-        id: applicationId,
-        personalInfoId: personalInfo.id,
-        businessInfoId: businessInfo.id,
-        loanInfoId: loanInfo.id,
-        coApplicantInfoId: coApplicantInfoId,
-        signature: applicationData.signature,
-        coApplicantSignature: applicationData.coApplicantSignature,
-        status: 'submitted',
-      }
-    });
+    // Add to applications list
+    await redis.sadd('applications', applicationId);
       // Generate PDF
     const pdfBlob = await generatePDF(
       completeApplication, 

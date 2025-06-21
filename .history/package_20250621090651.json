@@ -22,7 +22,6 @@
     "prisma:studio": "prisma studio",
     "db:migrate": "node --experimental-json-modules scripts/migrate-to-postgres.js",
     "db:init": "node scripts/init-database.js",
-    "test:application-id": "node scripts/test-application-id.js",
     "postinstall": "prisma generate"
   },
   "engines": {

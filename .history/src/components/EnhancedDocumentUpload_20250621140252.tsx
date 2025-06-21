@@ -254,9 +254,10 @@ export default function EnhancedDocumentUpload({
           {errorMessage}
         </div>
       )}
-        {isProcessing && (
+      
+      {isProcessing && (
         <div className="mt-4">
-          <p className="text-sm font-medium text-gray-700 mb-1">Analyzing document... (will upload normally if analysis fails)</p>
+          <p className="text-sm font-medium text-gray-700 mb-1">Analyzing document...</p>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <motion.div 
               className="bg-green-600 h-2.5 rounded-full"
@@ -265,13 +266,6 @@ export default function EnhancedDocumentUpload({
               transition={{ duration: 0.5 }}
             />
           </div>
-        </div>
-      )}
-      
-      {errorMessage && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-          <p className="text-sm text-yellow-700">{errorMessage}</p>
-          <p className="text-xs text-yellow-600 mt-1">Your document has been uploaded and will be processed manually.</p>
         </div>
       )}
       

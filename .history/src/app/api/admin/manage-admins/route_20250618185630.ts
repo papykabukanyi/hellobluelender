@@ -79,11 +79,11 @@ export async function POST(request: NextRequest) {
     
     // Hash password
     const hashedPassword = await hashPassword(password);
-      // Create new admin (using email as display name if username is not provided)
+    
+    // Create new admin
     const newAdmin: AdminUser = {
       id: uuidv4(),
-      // Only include username if provided, otherwise omit the field
-      ...(username ? { username } : {}),
+      username,
       email,
       password: hashedPassword,
       role: 'sub-admin',
@@ -155,11 +155,11 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Update admin
+    
+    // Update admin
     const updatedAdmin: AdminUser = {
       ...admin,
-      // Update username only if provided
-      ...(username !== undefined ? { username } : {}),
+      username: username || admin.username,
       permissions: {
         viewApplications: permissions?.viewApplications ?? admin.permissions.viewApplications,
         manageAdmins: permissions?.manageAdmins ?? admin.permissions.manageAdmins,

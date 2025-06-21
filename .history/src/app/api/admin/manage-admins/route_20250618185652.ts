@@ -155,11 +155,11 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Update admin
+    
+    // Update admin
     const updatedAdmin: AdminUser = {
       ...admin,
-      // Update username only if provided
-      ...(username !== undefined ? { username } : {}),
+      username: username || admin.username,
       permissions: {
         viewApplications: permissions?.viewApplications ?? admin.permissions.viewApplications,
         manageAdmins: permissions?.manageAdmins ?? admin.permissions.manageAdmins,

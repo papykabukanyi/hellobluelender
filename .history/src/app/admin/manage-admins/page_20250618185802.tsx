@@ -364,8 +364,9 @@ export default function ManageAdmins() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {admins.map((admin) => (
-                  <tr key={admin.id}>                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{admin.username || admin.email}</div>
+                  <tr key={admin.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{admin.username}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{admin.email}</div>

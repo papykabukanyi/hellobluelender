@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "node cleanup.js",
-    "build": "next build",
+    "build": "node build.js",
+    "build:next": "NEXT_TELEMETRY_DISABLED=1 NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "node server.js",
     "start:next": "node .next/standalone/server.js",
     "healthcheck": "node healthcheck.js",

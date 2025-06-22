@@ -30,7 +30,9 @@ Ensure all required environment variables are properly set in the deployment env
    node setup-railway.js
    ```
 
-2. **Deploy to Railway**:
+2. **Deploy to Railway using Docker** (recommended):
+
+   Railway will automatically use the custom Dockerfile defined in the project. You can trigger a deployment with:
 
    ```bash
    railway up
@@ -45,6 +47,7 @@ Ensure all required environment variables are properly set in the deployment env
    - If emails are failing, verify SMTP configuration
    - If chatbot is not working, check Gemini API key
    - If map is not loading, check browser console for errors
+   - If Docker build fails, check the logs for memory issues or dependency errors
 
 ## Post-Deployment Verification
 

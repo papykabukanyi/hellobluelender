@@ -2,6 +2,8 @@
 
 This guide provides instructions for deploying the Hempire Enterprise application on Railway, with special focus on environment variables and email configuration.
 
+> **Note**: We now use a Docker-based deployment approach for improved reliability. See [Docker Deployment](./docker-deployment.md) for details.
+
 ## Environment Variables Configuration
 
 To ensure the application works correctly on Railway, all required environment variables must be properly configured. The error logs indicate that the SMTP configuration is missing when the application is deployed.

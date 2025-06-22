@@ -95,9 +95,16 @@ async function main() {
       process.exit(1);
     }
   }
-  
-  // Load variables from .env.local
+    // Load variables from .env.local
   const envVars = loadEnvFile();
+  
+  // Check if DATABASE_URL exists, if not add it
+  if (!envVars.DATABASE_URL) {
+    console.log("\n⚠️ No DATABASE_URL found in .env.local");
+    console.log("A DATABASE_URL is required for Prisma to work");
+    additionalVars.DATABASE_URL = 'postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}';
+    console.log("Added DATABASE_URL template that will use Railway's PostgreSQL service");
+  }
   
   // Combine with additional variables
   const allVars = {...envVars, ...additionalVars};

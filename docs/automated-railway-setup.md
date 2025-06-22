@@ -77,6 +77,50 @@ The project uses React 19, but some dependencies like `react-leaflet-cluster` re
 
 4. All Railway deployment configurations have been updated to use the Dockerfile-based deployment method to ensure consistent builds.
 
+## Database Configuration
+
+The application uses Prisma with PostgreSQL. When deploying to Railway:
+
+1. Railway automatically provisions a PostgreSQL database when it detects Prisma in your project.
+
+2. The setup script will automatically configure the `DATABASE_URL` environment variable using Railway's PostgreSQL service variables:
+   ```bash
+   DATABASE_URL=postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
+   ```
+
+3. Railway will automatically substitute these variables with actual values for your PostgreSQL instance.
+
+4. If you need to manually set up the database URL, you can do so with:
+   ```bash
+   railway variables set DATABASE_URL="postgresql://username:password@hostname:port/database"
+   ```
+
+5. The Dockerfile has been configured to:
+   - Copy the Prisma schema before running npm install
+   - Skip automatic Prisma generation during npm install (--ignore-scripts)
+   - Run Prisma generate explicitly after installation
+
+## Resolving Node.js Version Conflicts
+
+Some dependencies like `file-type@21.0.0` require Node.js v20+, but we're using Node.js 18 for compatibility reasons. You may see warnings like:
+
+```
+npm warn EBADENGINE Unsupported engine {
+  package: 'file-type@21.0.0',
+  required: { node: '>=20' },
+  current: { node: 'v18.20.8', npm: '10.8.2' }
+}
+```
+
+These warnings can be safely ignored for now. If you want to eliminate them, you could:
+
+1. Update the Dockerfile to use Node.js 20:
+   ```dockerfile
+   FROM node:20-alpine
+   ```
+
+2. Test thoroughly as this may introduce other compatibility issues.
+
 ## Checking Deployment Status
 
 1. After deploying, verify your application's health:

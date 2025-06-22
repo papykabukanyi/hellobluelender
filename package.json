@@ -24,8 +24,7 @@
     "db:init": "node scripts/init-database.js",
     "test:application-id": "node scripts/test-application-id.js",
     "test": "node scripts/test-app.js",
-    "test:demo": "node scripts/test-app.js --demo",
-    "postinstall": "prisma generate"
+    "test:demo": "node scripts/test-app.js --demo"
   },
   "engines": {
     "node": ">=16.0.0",

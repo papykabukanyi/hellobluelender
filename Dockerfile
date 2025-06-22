@@ -3,10 +3,15 @@ FROM node:18-alpine
 # Create app directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json, package-lock.json, and prisma schema first
 COPY package.json package-lock.json* ./
-# Use legacy-peer-deps to handle React version conflicts
-RUN npm ci --legacy-peer-deps
+COPY prisma ./prisma/
+
+# Skip Prisma generate during installation since we'll run it separately
+RUN npm ci --legacy-peer-deps --ignore-scripts
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Copy application code
 COPY . .

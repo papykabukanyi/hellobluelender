@@ -48,13 +48,8 @@ async function main() {
     } catch (error) {
       console.error(`❌ Could not read .env.local: ${error.message}`);
       process.exit(1);
-    }
-    
-    // Add DATABASE_URL if not present
-    if (!envVars.DATABASE_URL) {
-      envVars.DATABASE_URL = 'postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}';
-      console.log('✅ Added DATABASE_URL for PostgreSQL service');
-    }
+    }    
+    // We're only using Redis, not PostgreSQL
     
     // Set NODE_ENV to production if not set
     if (!envVars.NODE_ENV) {

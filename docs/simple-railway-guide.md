@@ -29,8 +29,7 @@ node setup-railway.js
 This script will:
 - Read all variables from `.env.local`
 - Add required variables with defaults if missing
-- Set the `DATABASE_URL` for Railway PostgreSQL integration
-- Set all variables in your Railway project
+- Set all variables in your Railway project automatically
 
 ### Step 2: Deploy the Application
 
@@ -48,13 +47,9 @@ railway up
    - Uses `--legacy-peer-deps` to handle React version conflicts
    - Skips optional dependencies that might cause issues
 
-3. **Prisma Setup**: Prisma schema is now properly handled:
-   - Dockerfile copies all files at once
-   - Prisma client is generated explicitly
-
-4. **Environment Variables**: All required variables are:
+3. **Environment Variables**: All required variables are:
    - Added to the Railway project automatically
-   - Properly formatted for Railway's PostgreSQL integration
+   - Copied directly from your local environment
 
 ## Required Environment Variables
 
@@ -69,7 +64,6 @@ All these variables will be automatically copied from your `.env.local` file:
 - `SMTP_FROM` - From email address
 - `SMTP_FROM_NAME` - From name for emails
 - `GEMINI_API_KEY` - API key for the chatbot
-- `DATABASE_URL` - Added automatically for Railway PostgreSQL
 - `NODE_ENV` - Set to "production" automatically
 
 ## Troubleshooting

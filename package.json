@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "node cleanup.js",
-    "build": "next build --legacy-peer-deps",
+    "build": "next build",
     "start": "node server.js",
     "healthcheck": "node healthcheck.js",
     "lint": "next lint --fix",

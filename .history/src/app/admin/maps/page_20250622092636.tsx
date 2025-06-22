@@ -98,11 +98,10 @@ export default function ApplicationsMap() {
     
     checkAdmin();
   }, []);
+
   // Fetch applications when component loads
   useEffect(() => {
-    console.log('Fetch applications effect running, isSuperAdmin:', isSuperAdmin);
-    // Allow fetching even if not yet confirmed as super admin
-    // We'll still have access checks in the API
+    if (!isSuperAdmin) return;
     
     const fetchApplications = async () => {
       setLoading(true);

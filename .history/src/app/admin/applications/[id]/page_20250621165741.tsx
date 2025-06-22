@@ -435,7 +435,14 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 }}
               >
                 Mark as In Review
-              </button>
+              </button><a 
+                href={`/api/admin/applications/${application.id}/download`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 inline-block text-center"
+              >
+                Download PDF
+              </a>
               
               {/* Delete button (super admin only) */}
               {isSuperAdmin && (

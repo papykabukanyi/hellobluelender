@@ -1,10 +1,10 @@
-# Blue Lender Super Admin and Email Configuration
+# Hempire Enterprise Email Configuration and Troubleshooting
 
-This document explains the super admin role and how email notifications work in the Blue Lender application.
+This document explains email functionality in the Hempire Enterprise application, including SMTP configuration, super admin role, and troubleshooting common email issues.
 
 ## Super Admin
 
-The Blue Lender application has a super admin role that is automatically assigned to the account that matches the SMTP configuration email address (`SMTP_USER` environment variable). This super admin:
+The Hempire Enterprise application has a super admin role that is automatically assigned to the account that matches the SMTP configuration email address (`SMTP_USER` environment variable). This super admin:
 
 1. Has full access to all system functions
 2. Can add/remove other admin users
@@ -54,3 +54,70 @@ Only recipients marked as "Active" will receive application notifications.
 - The SMTP owner always receives notifications, ensuring no applications are missed
 - Email recipients can be easily added/removed by admins with appropriate permissions
 - Application details (including signatures) are included in the PDF for comprehensive review
+
+## Troubleshooting Email Issues
+
+### Common Errors
+
+#### "Missing SMTP configuration. Check environment variables."
+
+This error occurs when the application cannot find the required SMTP environment variables. Ensure all variables listed in the SMTP Configuration section are properly set.
+
+### Solutions
+
+#### 1. Verify Environment Variables
+
+Make sure all required SMTP variables are set in your environment:
+
+**For local development**:
+- Check your `.env.local` file contains all required variables
+- Verify the values are correct (no typos, extra spaces, etc.)
+
+**For Railway deployment**:
+- Go to your project in Railway dashboard
+- Check the "Variables" tab
+- Verify all SMTP variables are present and have correct values
+
+#### 2. Create App Password for Gmail
+
+If using Gmail, you need to create an "App Password" instead of using your regular password:
+
+1. Visit your Google Account security page: https://myaccount.google.com/security
+2. Enable 2-Step Verification if not already enabled
+3. Under "Signing in to Google," find "App passwords"
+4. Select "Mail" as the app and "Other" as the device
+5. Enter a name for the app password (e.g., "Hempire Enterprise")
+6. Click "Generate"
+7. Use the generated 16-character password as your `SMTP_PASS`
+
+#### 3. Test SMTP Configuration
+
+Use the built-in test endpoint to verify your SMTP configuration:
+
+```
+GET /api/test-email
+```
+
+This endpoint will test the connection and send a test email to verify configuration.
+
+#### 4. Check Email Service Provider Restrictions
+
+Some email providers have restrictions on sending emails from applications:
+
+**Gmail**:
+- Limited to 500 emails per day
+- May block automated emails if they look like spam
+- Requires App Passwords for applications
+
+**Microsoft 365/Outlook**:
+- May require specific authentication settings
+- Often blocks emails from unknown applications
+
+#### 5. Railway-specific Configuration
+
+When deploying to Railway, make sure to:
+
+1. Set all environment variables in the Railway dashboard
+2. Use the included setup-railway.js script to automate this process
+3. Verify variables are properly set after deployment
+4. Check Railway logs for any SMTP-related errors

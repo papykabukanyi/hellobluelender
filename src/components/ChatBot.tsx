@@ -40,9 +40,43 @@ const ChatBot = () => {
       loanInfo: {},
       bankInfo: {},
     }
-  });
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  });  const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  
+  // Generate or retrieve a session ID for this conversation
+  const [sessionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const existingId = localStorage.getItem('chatSessionId');
+      if (existingId) return existingId;
+      const newId = Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('chatSessionId', newId);
+      return newId;
+    }
+    return Math.random().toString(36).substring(2, 15);
+  });
+  
+  // Save conversation to Redis for lead capture
+  const saveConversation = async (conversation: Message[]) => {
+    try {
+      if (conversation.length < 2) return; // Don't save very short conversations
+      
+      const messageData = conversation.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+      
+      await fetch('/api/chat/save-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          sessionId,
+          messages: messageData
+        })
+      });
+    } catch (error) {
+      console.error('Error saving chat conversation:', error);
+    }
+  };
 
   // Initial greeting message
   useEffect(() => {
@@ -51,7 +85,7 @@ const ChatBot = () => {
         {
           id: '1',
           role: 'assistant',
-          content: 'Hello! I\'m the Hempire Enterprise assistant. I can help you with questions about our financing options or assist you in starting a new application. How can I help you today?',
+          content: 'Hello! I\'m the Hempire Enterprise assistant. I can help you with questions about our financing options or assist you in starting a new application. To better assist you, could you please share your name and email address?',
           timestamp: new Date()
         }
       ]);
@@ -61,6 +95,13 @@ const ChatBot = () => {
   // Auto-scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Save conversation any time messages update, to improve lead capture
+  useEffect(() => {
+    if (messages.length > 2) { // Only save once we have meaningful conversation
+      saveConversation(messages);
+    }
   }, [messages]);
 
   // FAQ questions and answers

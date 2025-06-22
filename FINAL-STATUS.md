@@ -97,7 +97,43 @@ The Hempire Enterprise application (formerly Blue Lender) has been successfully 
 - ✅ Added proper fallback mechanisms for document upload failures
 - ✅ Improved mobile responsiveness for signature capture
 
-## Recent Critical Bug Fixes (June 21, 2025)
+## Recent Critical Bug Fixes (June 22, 2025)
+
+- ✅ Fixed Gemini API key implementation for secure chatbot functionality
+- ✅ Resolved admin map display issues for super admin users
+- ✅ Implemented new "Leads" tab for incomplete applications and chat-based leads
+- ✅ Enhanced chatbot to focus on collecting lead information
+- ✅ Fixed Next.js build errors related to parallel routes
+- ✅ Added comprehensive lead prioritization system (high, medium, low)
+- ✅ Implemented lead management features for super admins
+- ✅ Enhanced security for all admin-only routes
+
+### Gemini API Key Fix
+
+- Fixed configuration of the Gemini API key in `.env.local`
+- Added proper error handling for API key failures
+- Secured API routes with appropriate validation
+
+### Admin Map Fix
+
+- Fixed map rendering issues with proper icon loading using CDN URLs
+- Implemented client-side only rendering to avoid SSR conflicts
+- Added proper permission checks for super admin access
+
+### Leads System Implementation
+
+- Created dedicated leads page with filtering and prioritization
+- Added API endpoints for fetching and managing leads
+- Enhanced chatbot to intelligently capture lead information
+- Implemented lead source tracking (chat vs. incomplete applications)
+- Added ability for super admins to mark leads as contacted
+
+### Chatbot Enhancements
+
+- Improved contact information detection with enhanced regex patterns
+- Added session tracking for chat conversations
+- Implemented automatic saving of conversations with potential lead information
+- Enhanced initial greeting to encourage contact information sharing
 
 ### Document Scanner Stability Improvements
 

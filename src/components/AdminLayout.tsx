@@ -174,19 +174,30 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       Manage Admins
                     </Link>
                   </li>
-                )}
-                  {/* Maps - Only for super admin */}
+                )}                {/* Maps - Only for super admin */}
                 {isSuperAdmin && (
-                  <li>
-                    <Link
-                      href="/admin/maps"
-                      className={`block px-4 py-3 hover:bg-gray-50 ${
-                        pathname === '/admin/maps' ? 'bg-blue-50 text-primary border-l-4 border-primary' : ''
-                      }`}
-                    >
-                      Maps
-                    </Link>
-                  </li>
+                  <>
+                    <li>
+                      <Link
+                        href="/admin/maps"
+                        className={`block px-4 py-3 hover:bg-gray-50 ${
+                          pathname === '/admin/maps' ? 'bg-blue-50 text-primary border-l-4 border-primary' : ''
+                        }`}
+                      >
+                        Maps
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        href="/admin/leads"
+                        className={`block px-4 py-3 hover:bg-gray-50 ${
+                          pathname === '/admin/leads' ? 'bg-blue-50 text-primary border-l-4 border-primary' : ''
+                        }`}
+                      >
+                        Leads
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </nav>

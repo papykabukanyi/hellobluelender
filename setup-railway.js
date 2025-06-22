@@ -1,28 +1,22 @@
 #!/usr/bin/env node
 
 /**
- * This script helps set up environment variables on Railway.
- * Run this script before deploying to ensure all required variables are set.
- * 
- * Usage: node setup-railway.js
+ * Simple Railway setup script
+ * This script automatically copies all environment variables from .env.local to Railway
  */
 
-import fs from 'fs';
-import path from 'path';
-import readline from 'readline';
-import { execSync } from 'child_process';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const fs = require('fs');
+const { execSync } = require('child_process');
+const readline = require('readline');
+const path = require('path');
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-async function askQuestion(question) {
+// Ask a question and get a response
+function ask(question) {
   return new Promise((resolve) => {
     rl.question(question, (answer) => {
       resolve(answer);
@@ -30,123 +24,125 @@ async function askQuestion(question) {
   });
 }
 
-async function main() {
-  console.log('\x1b[36m%s\x1b[0m', '🚂 Railway Environment Variable Setup');
-  console.log('This script will help you set up your environment variables on Railway.');
-  console.log('Make sure you have the Railway CLI installed and are logged in.');
-  
-  // Check if Railway CLI is installed
+// Load environment variables from .env.local
+function loadEnvFile() {
   try {
-    execSync('railway --version', { stdio: 'ignore' });
-  } catch (error) {
-    console.error('\x1b[31m%s\x1b[0m', '❌ Railway CLI not found. Please install it first:');
-    console.log('npm i -g @railway/cli');
-    process.exit(1);
-  }
-  
-  // Check if user is logged in
-  try {
-    execSync('railway whoami', { stdio: 'ignore' });
-  } catch (error) {
-    console.error('\x1b[31m%s\x1b[0m', '❌ Not logged in to Railway. Please login first:');
-    console.log('railway login');
-    process.exit(1);
-  }
-  
-  const projectId = await askQuestion('Enter your Railway project ID (or leave blank to use current project): ');
-  
-  // Define required environment variables
-  const requiredVars = [
-    { key: 'REDIS_URL', question: 'Redis URL: ' },
-    { key: 'JWT_SECRET_KEY', question: 'JWT Secret Key (leave blank to generate random): ' },
-    { key: 'SMTP_HOST', question: 'SMTP Host (e.g., smtp.gmail.com): ' },
-    { key: 'SMTP_PORT', question: 'SMTP Port (e.g., 587): ', default: '587' },
-    { key: 'SMTP_USER', question: 'SMTP Username/Email: ' },
-    { key: 'SMTP_PASS', question: 'SMTP Password (App Password recommended for Gmail): ' },
-    { key: 'SMTP_FROM', question: 'Email "From" address: ' },
-    { key: 'SMTP_FROM_NAME', question: 'Email "From" name: ', default: 'Hempire Enterprise' },
-    { key: 'GEMINI_API_KEY', question: 'Gemini API Key: ' }
-  ];
-  
-  // Load existing variables from .env files if they exist
-  const envValues = {};
-  
-  // Try to read from .env.local
-  try {
-    const envLocal = fs.readFileSync(path.join(__dirname, '.env.local'), 'utf8');
-    envLocal.split('\n').forEach(line => {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    const envVars = {};
+    
+    // Parse each line
+    envContent.split('\n').forEach(line => {
+      // Skip comments and empty lines
+      if (!line || line.trim().startsWith('#')) return;
+      
+      // Extract key-value pairs
       const match = line.match(/^([^=]+)=(.*)$/);
-      if (match && !line.startsWith('#')) {
+      if (match) {
         const key = match[1].trim();
-        const value = match[2].trim();
-        if (value) {
-          envValues[key] = value;
+        let value = match[2].trim();
+        
+        // Remove quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) || 
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
         }
+        
+        envVars[key] = value;
       }
     });
-    console.log('\x1b[32m%s\x1b[0m', '✅ Loaded values from .env.local');
+    
+    console.log("✅ Loaded variables from .env.local");
+    return envVars;
   } catch (error) {
-    console.log('No .env.local file found or could not be read');
+    console.warn("⚠️ Could not load .env.local:", error.message);
+    console.error("Please make sure .env.local exists and contains all required environment variables.");
+    process.exit(1);
+  }
+}
+
+// Additional required variables that might not be in .env.local
+const additionalVars = {
+  NODE_ENV: 'production'
+};
+
+async function main() {
+  console.log("=== Railway Environment Setup ===");
+  console.log("This script will automatically copy all variables from .env.local to Railway");
+    // Check for dry run flag
+  const isDryRun = process.argv.includes('--dry-run');
+  if (isDryRun) {
+    console.log("DRY RUN MODE: No variables will actually be set on Railway");
   }
   
-  // Collect values for each required variable
-  const finalValues = {};
-  
-  for (const variable of requiredVars) {
-    const existingValue = envValues[variable.key] || '';
-    let value;
-    
-    if (existingValue) {
-      const useExisting = await askQuestion(`Use existing ${variable.key}? (${existingValue}) [Y/n]: `);
-      if (useExisting.toLowerCase() !== 'n') {
-        value = existingValue;
-      }
-    }
-    
-    if (!value) {      if (variable.key === 'JWT_SECRET_KEY' && !envValues[variable.key]) {
-        // Generate random JWT secret if not provided
-        value = crypto.randomBytes(32).toString('hex');
-        console.log(`Generated random JWT secret: ${value.substring(0, 8)}...`);
-      } else {
-        value = await askQuestion(`${variable.question}${variable.default ? ` (default: ${variable.default})` : ''} `);
-        if (!value && variable.default) {
-          value = variable.default;
-        }
-      }
-    }
-    
-    if (!value) {
-      console.error('\x1b[31m%s\x1b[0m', `❌ ${variable.key} is required`);
+  // Check if Railway CLI is installed (skip in dry run mode)
+  if (!isDryRun) {
+    try {
+      execSync('railway --version', { stdio: 'ignore' });
+    } catch (err) {
+      console.error('Error: Railway CLI not found. Please install it with:');
+      console.error('npm i -g @railway/cli');
       process.exit(1);
     }
-    
-    finalValues[variable.key] = value;
   }
-  
-  // Set variables on Railway
-  console.log('\n\x1b[36m%s\x1b[0m', '🚀 Setting variables on Railway...');
-  
-  for (const [key, value] of Object.entries(finalValues)) {
+    // Check if user is logged in (skip in dry run mode)
+  if (!isDryRun) {
     try {
-      const command = projectId 
-        ? `railway variables set ${key}="${value}" --project=${projectId}`
-        : `railway variables set ${key}="${value}"`;
-      
-      execSync(command, { stdio: 'ignore' });
-      console.log(`\x1b[32m✅ ${key}\x1b[0m`);
-    } catch (error) {
-      console.error(`\x1b[31m❌ Failed to set ${key}: ${error.message}\x1b[0m`);
+      execSync('railway whoami', { stdio: 'ignore' });
+    } catch (err) {
+      console.error('Error: Not logged in to Railway. Please run:');
+      console.error('railway login');
+      process.exit(1);
     }
   }
   
-  console.log('\n\x1b[32m%s\x1b[0m', '✅ Environment variables set up successfully!');
-  console.log('\x1b[36m%s\x1b[0m', '🚂 You can now deploy your application on Railway.');
+  // Load variables from .env.local
+  const envVars = loadEnvFile();
+  
+  // Combine with additional variables
+  const allVars = {...envVars, ...additionalVars};
+  
+  console.log("\nThe following variables will be set in Railway:");  // Display all variables (mask sensitive values)
+  Object.entries(allVars).forEach(([key, value]) => {
+    const displayValue = key.includes('KEY') || key.includes('PASS') || key.includes('SECRET') 
+      ? '******' 
+      : value;
+    console.log(`• ${key}: ${displayValue}`);
+  });
+  
+  // Ask for confirmation
+  const proceed = await ask("\nProceed with setting these variables in Railway? (Y/n): ");
+  
+  if (proceed.toLowerCase() === 'n') {
+    console.log("Operation cancelled by user.");
+    process.exit(0);
+  }
+  
+  console.log("\nSetting environment variables on Railway...");
+    // Set all variables in Railway
+  for (const [name, value] of Object.entries(allVars)) {
+    if (value) {
+      try {
+        if (!isDryRun) {
+          // Set the variable in Railway
+          execSync(`railway variables set ${name}="${value}"`, { stdio: 'inherit' });
+          console.log(`✓ Set ${name}`);
+        } else {
+          console.log(`[DRY RUN] Would set ${name}`);
+        }
+      } catch (err) {
+        console.error(`× Failed to set ${name}: ${err.message}`);
+      }
+    } else {
+      console.warn(`× Skipped ${name} (no value provided)`);
+    }
+  }
+  
+  console.log("\n=== Setup Complete ===");
+  console.log("You can now deploy your application with:");
+  console.log("railway up");
   
   rl.close();
 }
 
-main().catch(error => {
-  console.error('\x1b[31m%s\x1b[0m', `❌ Error: ${error.message}`);
-  rl.close();
-  process.exit(1);
-});
+main().catch(error => console.error("Error:", error));

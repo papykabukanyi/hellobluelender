@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+
+/**
+ * Simple Railway setup script
+ * This script helps set up environment variables on Railway
+ */
+
+import fs from 'fs';
+import { execSync } from 'child_process';
+import readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Ask a question and get a response
+function ask(question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
+}
+
+async function main() {
+  console.log("=== Railway Environment Setup ===");
+  
+  // Check if Railway CLI is installed
+  try {
+    execSync('railway --version', { stdio: 'ignore' });
+  } catch (error) {
+    console.error('Error: Railway CLI not found. Please install it with:');
+    console.error('npm i -g @railway/cli');
+    process.exit(1);
+  }
+  
+  // Check if user is logged in
+  try {
+    execSync('railway whoami', { stdio: 'ignore' });
+  } catch (error) {
+    console.error('Error: Not logged in to Railway. Please run:');
+    console.error('railway login');
+    process.exit(1);
+  }
+  
+  // Required environment variables
+  const variables = [
+    { name: 'REDIS_URL', question: 'Redis URL: ' },
+    { name: 'JWT_SECRET_KEY', question: 'JWT Secret Key: ' },
+    { name: 'SMTP_HOST', question: 'SMTP Host (e.g. smtp.gmail.com): ', default: 'smtp.gmail.com' },
+    { name: 'SMTP_PORT', question: 'SMTP Port: ', default: '587' },
+    { name: 'SMTP_USER', question: 'SMTP Username/Email: ' },
+    { name: 'SMTP_PASS', question: 'SMTP Password: ' },
+    { name: 'SMTP_FROM', question: 'From Email: ' },
+    { name: 'SMTP_FROM_NAME', question: 'From Name: ', default: 'Hempire Enterprise' },
+    { name: 'GEMINI_API_KEY', question: 'Gemini API Key: ' },
+    { name: 'NODE_ENV', question: 'Node Environment: ', default: 'production' }
+  ];
+  
+  for (const variable of variables) {
+    let value = await ask(`${variable.question}${variable.default ? `(default: ${variable.default}) ` : ''}`);
+    
+    if (!value && variable.default) {
+      value = variable.default;
+    }
+    
+    if (value) {
+      try {
+        // Set the variable in Railway
+        execSync(`railway variables set ${variable.name}="${value}"`, { stdio: 'inherit' });
+        console.log(`✓ Set ${variable.name}`);
+      } catch (error) {
+        console.error(`× Failed to set ${variable.name}: ${error.message}`);
+      }
+    } else {
+      console.warn(`× Skipped ${variable.name} (no value provided)`);
+    }
+  }
+  
+  console.log("\n=== Setup Complete ===");
+  console.log("You can now deploy your application with:");
+  console.log("railway up");
+  
+  rl.close();
+}
+
+main().catch(console.error);

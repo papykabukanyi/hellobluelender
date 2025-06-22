@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     const smtpOwnerEmail = 'papykabukanyi@gmail.com';
     
     // Prepare recipient list with SMTP owner first
-    let emailRecipients: string[] = [smtpOwnerEmail];
+    const emailRecipients: string[] = [smtpOwnerEmail];
     
     // Add all other active recipients (avoiding duplicates)
     activeRecipients.forEach((recipient: any) => {
@@ -97,81 +97,126 @@ export async function POST(request: NextRequest) {
     const coApplicantName = hasCoApplicant 
       ? `${completeApplication.coApplicantInfo?.firstName} ${completeApplication.coApplicantInfo?.lastName}`
       : '';
-      
-    // Send to admin recipients only if there are any configured
+        // Send to admin recipients only if there are any configured
     if (emailRecipients.length > 0) {
       console.log(`Sending application notification to ${emailRecipients.length} recipients (admin prioritized)`);
       
-      await sendEmail({
-        to: emailRecipients,
-        subject: `New ${loanType} Loan Application - ${businessName}`,
-        html: `
-          <h1>New Loan Application Submission</h1>
-          <p>A new ${loanType} loan application has been submitted.</p>
-          <p><strong>Application ID:</strong> ${applicationId}</p>
-          <p><strong>Business Name:</strong> ${businessName}</p>
-          <p><strong>Applicant:</strong> ${completeApplication.personalInfo?.firstName} ${completeApplication.personalInfo?.lastName}</p>
-          ${hasCoApplicant ? `<p><strong>Co-Applicant:</strong> ${coApplicantName}</p>` : ''}
-          <p><strong>Amount Requested:</strong> ${loanAmount}</p>
-          <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
-          <p>Please see the attached PDF for full application details.</p>
-        `,
-        attachments: [
-          {
-            filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
-            content: adminPdfBase64,
-            encoding: 'base64',
-            contentType: 'application/pdf',
-          }
-        ]
-      });
+      try {
+        const adminEmailResult: {success: boolean, messageId?: string, error?: any} = await sendEmail({
+          to: emailRecipients,
+          subject: `New ${loanType} Loan Application - ${businessName}`,
+          html: `
+            <h1>New Loan Application Submission</h1>
+            <p>A new ${loanType} loan application has been submitted.</p>
+            <p><strong>Application ID:</strong> ${applicationId}</p>
+            <p><strong>Business Name:</strong> ${businessName}</p>
+            <p><strong>Applicant:</strong> ${completeApplication.personalInfo?.firstName} ${completeApplication.personalInfo?.lastName}</p>
+            ${hasCoApplicant ? `<p><strong>Co-Applicant:</strong> ${coApplicantName}</p>` : ''}
+            <p><strong>Amount Requested:</strong> ${loanAmount}</p>
+            <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
+            <p>Please see the attached PDF for full application details.</p>
+          `,
+          attachments: [
+            {
+              filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
+              content: adminPdfBase64,
+              encoding: 'base64',
+              contentType: 'application/pdf',
+            }
+          ]
+        });
+        
+        if (!adminEmailResult.success) {
+          console.error('Failed to send admin notification email:', adminEmailResult.error);
+          
+          // Store failed email for retry
+          const failedEmail = {
+            type: 'admin-notification',
+            applicationId,
+            recipients: emailRecipients,
+            subject: `New ${loanType} Loan Application - ${businessName}`,
+            timestamp: new Date().toISOString(),
+            retryCount: 0
+          };
+          
+          await redis.lpush('failed:emails', JSON.stringify(failedEmail));
+        } else {
+          console.log(`Admin notification email sent successfully: ${adminEmailResult.messageId}`);
+        }
+      } catch (emailError) {
+        console.error('Exception sending admin notification email:', emailError);
+      }
     } else {
       console.warn('No email recipients configured for loan applications. The admin notification email was not sent.');
     }
-    
-    // Send confirmation email to applicant
+      // Send confirmation email to applicant
     const applicantName = `${completeApplication.personalInfo?.firstName} ${completeApplication.personalInfo?.lastName}`;
     const applicantEmail = completeApplication.personalInfo?.email;
     
     if (applicantEmail) {
-      await sendEmail({
-        to: applicantEmail,        subject: `Your Hempire Enterprise Application - Confirmation #${applicationId}`,
-        html: `
-          <div style="font-family: 'Montserrat', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <h1 style="color: #1F7832; font-family: 'Impact', 'Montserrat', sans-serif; letter-spacing: 1px; font-size: 32px;">HEMPIRE ENTERPRISE</h1>
-              <p style="font-size: 18px; color: #333;">Application Confirmation</p>
+      try {
+        const applicantEmailResult: {success: boolean, messageId?: string, error?: any} = await sendEmail({
+          to: applicantEmail,
+          subject: `Your Hempire Enterprise Application - Confirmation #${applicationId}`,
+          html: `
+            <div style="font-family: 'Montserrat', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #1F7832; font-family: 'Impact', 'Montserrat', sans-serif; letter-spacing: 1px; font-size: 32px;">HEMPIRE ENTERPRISE</h1>
+                <p style="font-size: 18px; color: #333;">Application Confirmation</p>
+              </div>
+              
+              <div style="margin-bottom: 30px;">
+                <p>Dear ${applicantName},</p>
+                <p>Thank you for submitting your loan application to Hempire Enterprise. We have received your ${loanType} loan application for ${loanAmount}.</p>
+                <p><strong>Your Application Number:</strong> ${applicationId}</p>
+                <p>Our team will review your application and contact you shortly regarding the next steps. Please keep your application number for reference in all future communications.</p>
+              </div>
+              
+              <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <h3 style="margin-top: 0; color: #0056b3;">Application Summary</h3>
+                <p><strong>Business Name:</strong> ${businessName}</p>
+                <p><strong>Loan Type:</strong> ${loanType}</p>
+                <p><strong>Amount Requested:</strong> ${loanAmount}</p>
+                <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
+              </div>
+              
+              <div style="font-size: 14px; color: #666; margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
+                <p>If you have any questions or need further assistance, please contact our customer support team at papykabukanyi@gmail.com or call us at (123) 456-7890.</p>
+                <p>Thank you for choosing Hempire Enterprise for your financial needs.</p>
+              </div>
             </div>
-            
-            <div style="margin-bottom: 30px;">
-              <p>Dear ${applicantName},</p>
-              <p>Thank you for submitting your loan application to Hempire Enterprise. We have received your ${loanType} loan application for ${loanAmount}.</p>
-              <p><strong>Your Application Number:</strong> ${applicationId}</p>
-              <p>Our team will review your application and contact you shortly regarding the next steps. Please keep your application number for reference in all future communications.</p>
-            </div>
-            
-            <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-              <h3 style="margin-top: 0; color: #0056b3;">Application Summary</h3>
-              <p><strong>Business Name:</strong> ${businessName}</p>
-              <p><strong>Loan Type:</strong> ${loanType}</p>
-              <p><strong>Amount Requested:</strong> ${loanAmount}</p>
-              <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
-            </div>
-            
-            <div style="font-size: 14px; color: #666; margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px;">              <p>If you have any questions or need further assistance, please contact our customer support team at papykabukanyi@gmail.com or call us at (123) 456-7890.</p>
-              <p>Thank you for choosing Hempire Enterprise for your financial needs.</p>
-            </div>
-          </div>
-        `,
-        attachments: [
-          {
-            filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
-            content: borrowerPdfBase64,
-            encoding: 'base64',
-            contentType: 'application/pdf',
-          }
-        ]
-      });
+          `,
+          attachments: [
+            {
+              filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
+              content: borrowerPdfBase64,
+              encoding: 'base64',
+              contentType: 'application/pdf',
+            }
+          ]
+        });
+        
+        if (!applicantEmailResult.success) {
+          console.error('Failed to send applicant confirmation email:', applicantEmailResult.error);
+          
+          // Store failed email for retry
+          const failedEmail = {
+            type: 'applicant-confirmation',
+            applicationId,
+            recipients: [applicantEmail],
+            subject: `Your Hempire Enterprise Application - Confirmation #${applicationId}`,
+            timestamp: new Date().toISOString(),
+            retryCount: 0
+          };
+          
+          await redis.lpush('failed:emails', JSON.stringify(failedEmail));
+        } else {
+          console.log(`Applicant confirmation email sent successfully: ${applicantEmailResult.messageId}`);
+        }
+      } catch (emailError) {
+        console.error('Exception sending applicant confirmation email:', emailError);
+        // Don't fail the submission process due to email errors
+      }
     }
     
     // Return success response

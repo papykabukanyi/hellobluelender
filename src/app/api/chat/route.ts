@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize the Google Generative AI SDK with your API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyA1SSntDhuucrYrT7Xaj4ZSC4IKrFM6C-8');
+// Initialize the Google Generative AI SDK with API key from environment variables
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 // Knowledge base for the AI to use
 const FINANCING_KNOWLEDGE = {

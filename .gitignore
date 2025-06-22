@@ -43,11 +43,15 @@ yarn-error.log*
 next-env.d.ts
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (NEVER commit these)
 .env*
 
 # vercel
 .vercel
+
+# History files (may contain sensitive information)
+.history/
+.history
 
 # typescript
 *.tsbuildinfo

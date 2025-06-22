@@ -18,6 +18,8 @@ A full-featured business lending website built with Next.js, TypeScript, Tailwin
 - **Co-Applicant Support**: Optional co-applicant information and signature
 - **Interactive Loading**: Visual feedback during form submission and navigation
 - **Health Monitoring**: Built-in health check endpoints for deployment monitoring
+- **Secure API Integration**: Environment-based API key management for third-party services
+- **AI-Powered Chatbot**: Integrated chatbot using Google's Gemini AI
 
 ## Technology Stack
 
@@ -30,6 +32,10 @@ A full-featured business lending website built with Next.js, TypeScript, Tailwin
 - **PDF Generation**: jsPDF and html2canvas
 - **Signature Capture**: react-signature-canvas
 - **Deployment**: Optimized for Railway.app with health checks
+
+## Security
+
+Please see [API-KEY-SECURITY.md](./API-KEY-SECURITY.md) for important information about securing API keys used in this project.
 
 ## Getting Started
 
@@ -111,23 +117,31 @@ The application includes multiple health check endpoints:
 
 ### Environment Variables
 
-Create a `.env.local` file with the following variables:
+Create a `.env.local` file based on the `.env.local.example` template. Never commit the actual `.env.local` file to source control.
 
 ```env
+# Database connection
+DATABASE_URL="postgresql://username:password@localhost:5432/hellobluelender"
+
 # Redis Configuration
-REDIS_URL=redis://...
+REDIS_URL="redis://localhost:6379"
 
 # SMTP Configuration (for email notifications)
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASS=yourpassword
-SMTP_FROM_EMAIL=noreply@example.com
-SMTP_FROM_NAME=Hempire Enterprise
+SMTP_HOST="smtp.example.com"
+SMTP_PORT="587"
+SMTP_USER="your-email@example.com"
+SMTP_PASS="your-smtp-password"
+SMTP_FROM="noreply@example.com"
+SMTP_FROM_NAME="Your Company Name"
 
 # JWT Secret for admin authentication
-JWT_SECRET=your-secret-key
+JWT_SECRET_KEY="generate-a-secure-random-string-here"
+
+# API Keys for external services (NEVER commit actual keys)
+GEMINI_API_KEY="your-gemini-api-key-here"
 ```
+
+> ⚠️ **IMPORTANT**: See `API-KEY-SECURITY.md` for critical security information about API keys. If you've cloned this repository before June 22, 2025, you must rotate any API keys that may have been exposed.
 
 ## Troubleshooting
 

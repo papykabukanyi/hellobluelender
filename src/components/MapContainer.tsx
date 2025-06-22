@@ -5,7 +5,7 @@ import L from 'leaflet';
 import { MapContainer as LeafletMapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
-import 'react-leaflet-cluster/lib/cluster.css';
+import '../styles/cluster-stub.css'; // Using local stub CSS instead of react-leaflet-cluster CSS
 
 // Define the props for the map component
 interface MapProps {

@@ -2,9 +2,13 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
+buildCommand = ""  # Let Dockerfile handle the build
 
 [deploy]
 healthcheckPath = "/healthcheck"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+numReplicas = 1
+startCommand = "node server.js"
+sleepApplication = false

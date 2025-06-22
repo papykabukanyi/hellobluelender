@@ -11,10 +11,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
-  },  output: 'standalone',
-  experimental: {}, // Keep empty experimental to avoid warnings
-  swcMinify: true
+    ignoreBuildErrors: true,  },
+  output: 'standalone',
+  experimental: {} // Keep empty experimental to avoid warnings
 };
 
 module.exports = nextConfig;

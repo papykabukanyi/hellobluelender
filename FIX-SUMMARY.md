@@ -28,6 +28,38 @@ Applied the Permanent Marker font for all occurrences of "Hempire Enterprise" th
    
 3. Connected the font to the HTML document:
    - Added the font variable to the HTML element class
+
+## API Key Security Enhancement
+
+Fixed security vulnerabilities related to exposed API keys:
+
+1. **Removed hardcoded API keys** from the codebase:
+   - Ensured all API keys are loaded from environment variables only
+   - Updated all instances to use `process.env.GEMINI_API_KEY` instead of hardcoded values
+
+2. **Enhanced documentation**:
+   - Added comprehensive API key security guide in `API-KEY-SECURITY.md`
+   - Updated `.env.local.example` with secure placeholder values
+   - Added clear instructions for key rotation in `API-KEY-SECURITY-ENHANCEMENT.md`
+
+3. **Improved security practices**:
+   - Updated `.gitignore` to explicitly exclude all environment files and history
+   - Created cleanup script to redact exposed keys in version history
+
+## Next.js Build Error Fixes
+
+Fixed critical build errors:
+
+1. **Resolved parallel routes conflict**:
+   - Fixed error: "You cannot have two parallel pages that resolve to the same path"
+   - Removed redundant `/health` page component while keeping the API route
+   - Added comprehensive health check documentation
+
+2. **Configuration updates**:
+   - Removed deprecated `swcMinify` option from `next.config.js`
+   - Improved formatting and structure of configuration files
+
+See [NEXTJS-FIXES.md](./NEXTJS-FIXES.md) and [API-KEY-SECURITY-ENHANCEMENT.md](./API-KEY-SECURITY-ENHANCEMENT.md) for details.
    - Added preconnect links for faster Google Font loading
    - Updated the Tailwind config to make the font available through all components
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the changes made to ensure compatibility with Next.js 15.3+ and fix critical build errors related to the `useSearchParams()` hook.
+This document outlines the changes made to ensure compatibility with Next.js 15.3+ and fix critical build errors related to the `useSearchParams()` hook and parallel routes.
 
 ## Key Changes
 
@@ -18,6 +18,22 @@ In Next.js 15.3+, any component that uses `useSearchParams()` must be wrapped in
 
 - Removed the `searchParams` prop from server components
 - Ensured all URL parameter handling happens in client components
+
+### 3. Fixed Parallel Routes Conflict
+
+- **Problem**: Build error due to conflicting routes at the `/health` path
+    ```plaintext
+  You cannot have two parallel pages that resolve to the same path. Please check /health/page and /health/route.
+  ```
+- **Solution**:
+  - Removed the redundant `/src/app/health/page.tsx` file
+  - Kept the API route handler `/src/app/health/route.ts`
+  - Added documentation about health check endpoints in `docs/health-check-endpoints.md`
+
+### 4. Updated Next.js Configuration
+
+- Removed deprecated `swcMinify` option from `next.config.js`
+- Cleaned up formatting in the Next.js configuration file
 - Updated component structure to follow Next.js 15.3+ best practices
 
 ### 3. Client Component Structure

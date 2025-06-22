@@ -1,20 +1,17 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Create app directory
 WORKDIR /app
 
-# Copy package.json, package-lock.json, and prisma schema first
-COPY package.json package-lock.json* ./
-COPY prisma ./prisma/
-
-# Skip Prisma generate during installation since we'll run it separately
-RUN npm ci --legacy-peer-deps --ignore-scripts
-
-# Generate Prisma client
-RUN npx prisma generate
-
-# Copy application code
+# Copy everything at once (simpler approach)
 COPY . .
+
+# Install dependencies with legacy-peer-deps to handle React conflicts
+# We're using --no-optional to skip optional dependencies that might cause issues
+RUN npm install --legacy-peer-deps --no-optional
+
+# Generate Prisma client explicitly
+RUN npx prisma generate
 
 # Set environment variables
 ENV NEXT_TELEMETRY_DISABLED=1

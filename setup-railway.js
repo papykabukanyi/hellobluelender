@@ -1,155 +1,123 @@
 #!/usr/bin/env node
 
-/**
- * Simple Railway setup script
- * This script automatically copies all environment variables from .env.local to Railway
- */
-
+// Super simple Railway setup script
 const fs = require('fs');
 const { execSync } = require('child_process');
 const readline = require('readline');
-const path = require('path');
 
+// Create readline interface
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-// Ask a question and get a response
-function ask(question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
+// Simple prompt function
+function prompt(question) {
+  return new Promise(resolve => {
+    rl.question(question, answer => {
       resolve(answer);
     });
   });
 }
 
-// Load environment variables from .env.local
-function loadEnvFile() {
-  try {
-    const envPath = path.join(process.cwd(), '.env.local');
-    const envContent = fs.readFileSync(envPath, 'utf-8');
-    const envVars = {};
-    
-    // Parse each line
-    envContent.split('\n').forEach(line => {
-      // Skip comments and empty lines
-      if (!line || line.trim().startsWith('#')) return;
-      
-      // Extract key-value pairs
-      const match = line.match(/^([^=]+)=(.*)$/);
-      if (match) {
-        const key = match[1].trim();
-        let value = match[2].trim();
-        
-        // Remove quotes if present
-        if ((value.startsWith('"') && value.endsWith('"')) || 
-            (value.startsWith("'") && value.endsWith("'"))) {
-          value = value.slice(1, -1);
-        }
-        
-        envVars[key] = value;
-      }
-    });
-    
-    console.log("✅ Loaded variables from .env.local");
-    return envVars;
-  } catch (error) {
-    console.warn("⚠️ Could not load .env.local:", error.message);
-    console.error("Please make sure .env.local exists and contains all required environment variables.");
-    process.exit(1);
-  }
-}
-
-// Additional required variables that might not be in .env.local
-const additionalVars = {
-  NODE_ENV: 'production'
-};
-
+// Main function
 async function main() {
-  console.log("=== Railway Environment Setup ===");
-  console.log("This script will automatically copy all variables from .env.local to Railway");
-    // Check for dry run flag
-  const isDryRun = process.argv.includes('--dry-run');
-  if (isDryRun) {
-    console.log("DRY RUN MODE: No variables will actually be set on Railway");
-  }
-  
-  // Check if Railway CLI is installed (skip in dry run mode)
-  if (!isDryRun) {
+  try {
+    console.log('=== Railway Setup Script ===');
+    
+    // Check for dry run mode
+    const isDryRun = process.argv.includes('--dry-run');
+    if (isDryRun) {
+      console.log('DRY RUN MODE: No variables will actually be set');
+    }
+    
+    // Read .env.local file
+    let envVars = {};
     try {
-      execSync('railway --version', { stdio: 'ignore' });
-    } catch (err) {
-      console.error('Error: Railway CLI not found. Please install it with:');
-      console.error('npm i -g @railway/cli');
+      const envContent = fs.readFileSync('.env.local', 'utf8');
+      envContent.split('\n').forEach(line => {
+        // Skip comments and empty lines
+        if (!line || line.trim().startsWith('#')) return;
+        
+        const match = line.match(/^([^=]+)=(.*)$/);
+        if (match) {
+          envVars[match[1].trim()] = match[2].trim();
+        }
+      });
+      console.log('✅ Loaded variables from .env.local');
+    } catch (error) {
+      console.error(`❌ Could not read .env.local: ${error.message}`);
       process.exit(1);
     }
-  }
-    // Check if user is logged in (skip in dry run mode)
-  if (!isDryRun) {
-    try {
-      execSync('railway whoami', { stdio: 'ignore' });
-    } catch (err) {
-      console.error('Error: Not logged in to Railway. Please run:');
-      console.error('railway login');
-      process.exit(1);
+    
+    // Add DATABASE_URL if not present
+    if (!envVars.DATABASE_URL) {
+      envVars.DATABASE_URL = 'postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}';
+      console.log('✅ Added DATABASE_URL for PostgreSQL service');
     }
-  }
-    // Load variables from .env.local
-  const envVars = loadEnvFile();
-  
-  // Check if DATABASE_URL exists, if not add it
-  if (!envVars.DATABASE_URL) {
-    console.log("\n⚠️ No DATABASE_URL found in .env.local");
-    console.log("A DATABASE_URL is required for Prisma to work");
-    additionalVars.DATABASE_URL = 'postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}';
-    console.log("Added DATABASE_URL template that will use Railway's PostgreSQL service");
-  }
-  
-  // Combine with additional variables
-  const allVars = {...envVars, ...additionalVars};
-  
-  console.log("\nThe following variables will be set in Railway:");  // Display all variables (mask sensitive values)
-  Object.entries(allVars).forEach(([key, value]) => {
-    const displayValue = key.includes('KEY') || key.includes('PASS') || key.includes('SECRET') 
-      ? '******' 
-      : value;
-    console.log(`• ${key}: ${displayValue}`);
-  });
-  
-  // Ask for confirmation
-  const proceed = await ask("\nProceed with setting these variables in Railway? (Y/n): ");
-  
-  if (proceed.toLowerCase() === 'n') {
-    console.log("Operation cancelled by user.");
-    process.exit(0);
-  }
-  
-  console.log("\nSetting environment variables on Railway...");
-    // Set all variables in Railway
-  for (const [name, value] of Object.entries(allVars)) {
-    if (value) {
+    
+    // Set NODE_ENV to production if not set
+    if (!envVars.NODE_ENV) {
+      envVars.NODE_ENV = 'production';
+      console.log('✅ Added NODE_ENV=production');
+    }
+    
+    // Show variables (mask sensitive ones)
+    console.log('\nVariables to set on Railway:');
+    for (const [key, value] of Object.entries(envVars)) {
+      const isSensitive = key.includes('KEY') || key.includes('SECRET') || key.includes('PASS') || key.includes('TOKEN');
+      const displayValue = isSensitive ? '******' : value;
+      console.log(`• ${key}: ${displayValue}`);
+    }
+    
+    // Get confirmation
+    const confirm = await prompt('\nSet these variables on Railway? (Y/n): ');
+    if (confirm.toLowerCase() === 'n') {
+      console.log('Operation canceled');
+      process.exit(0);
+    }
+    
+    // Check for Railway CLI and login status (skip in dry run)
+    if (!isDryRun) {
+      try {
+        execSync('railway version', { stdio: 'ignore' });
+      } catch (error) {
+        console.error('❌ Railway CLI not found. Install with: npm install -g @railway/cli');
+        process.exit(1);
+      }
+      
+      try {
+        execSync('railway whoami', { stdio: 'ignore' });
+      } catch (error) {
+        console.error('❌ Not logged into Railway. Please run: railway login');
+        process.exit(1);
+      }
+    }
+    
+    // Set variables on Railway
+    console.log('\nSetting environment variables:');
+    for (const [key, value] of Object.entries(envVars)) {
       try {
         if (!isDryRun) {
-          // Set the variable in Railway
-          execSync(`railway variables set ${name}="${value}"`, { stdio: 'inherit' });
-          console.log(`✓ Set ${name}`);
+          execSync(`railway variables set ${key}="${value}"`, { stdio: 'inherit' });
+          console.log(`✅ Set ${key}`);
         } else {
-          console.log(`[DRY RUN] Would set ${name}`);
+          console.log(`[DRY RUN] Would set ${key}`);
         }
-      } catch (err) {
-        console.error(`× Failed to set ${name}: ${err.message}`);
+      } catch (error) {
+        console.error(`❌ Failed to set ${key}: ${error.message}`);
       }
-    } else {
-      console.warn(`× Skipped ${name} (no value provided)`);
     }
+    
+    console.log('\n✅ Setup complete! You can now run:');
+    console.log('railway up');
+    
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+  } finally {
+    rl.close();
   }
-  
-  console.log("\n=== Setup Complete ===");
-  console.log("You can now deploy your application with:");
-  console.log("railway up");
-  
-  rl.close();
 }
 
-main().catch(error => console.error("Error:", error));
+// Run the script
+main();

@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Simple Railway setup script
- * This script helps set up environment variables on Railway
+ * Simplified Railway Setup Script
+ * This script automatically copies all required environment variables to Railway
  */
 
-import fs from 'fs';
-import { execSync } from 'child_process';
-import readline from 'readline';
+const fs = require('fs');
+const { execSync } = require('child_process');
+const readline = require('readline');
+const path = require('path');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -23,58 +24,123 @@ function ask(question) {
   });
 }
 
+// Simple function to read .env.local file
+function getEnvVars() {
+  try {
+    const envPath = path.join(process.cwd(), '.env.local');
+    const content = fs.readFileSync(envPath, 'utf-8');
+    const vars = {};
+
+    content.split('\n').forEach(line => {
+      // Skip comments and empty lines
+      if (!line || line.trim().startsWith('#')) return;
+      
+      const match = line.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        const value = match[2].trim();
+        vars[key] = value;
+      }
+    });
+    
+    console.log("✅ Successfully loaded variables from .env.local");
+    return vars;
+  } catch (error) {
+    console.error("❌ Failed to read .env.local:", error.message);
+    console.error("Make sure .env.local exists in the current directory.");
+    process.exit(1);
+  }
+}
+
+// Required variables with defaults
+const requiredVars = {
+  // Define required variables with default values (if .env.local doesn't have them)
+  REDIS_URL: null,
+  JWT_SECRET_KEY: null,
+  SMTP_HOST: 'smtp.gmail.com',
+  SMTP_PORT: '587',
+  SMTP_USER: null,
+  SMTP_PASS: null,
+  SMTP_FROM: null,
+  SMTP_FROM_NAME: null,
+  GEMINI_API_KEY: null,
+  NODE_ENV: 'production',
+  // Special handling for DATABASE_URL - use Railway's PostgreSQL variables
+  DATABASE_URL: 'postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}'
+};
+
 async function main() {
   console.log("=== Railway Environment Setup ===");
   
-  // Check if Railway CLI is installed
-  try {
-    execSync('railway --version', { stdio: 'ignore' });
-  } catch (error) {
-    console.error('Error: Railway CLI not found. Please install it with:');
-    console.error('npm i -g @railway/cli');
-    process.exit(1);
+  // Check for dry run mode
+  const isDryRun = process.argv.includes('--dry-run');
+  if (isDryRun) {
+    console.log("⚠️ DRY RUN MODE: Variables will not actually be set");
   }
   
-  // Check if user is logged in
-  try {
-    execSync('railway whoami', { stdio: 'ignore' });
-  } catch (error) {
-    console.error('Error: Not logged in to Railway. Please run:');
-    console.error('railway login');
-    process.exit(1);
-  }
-  
-  // Required environment variables
-  const variables = [
-    { name: 'REDIS_URL', question: 'Redis URL: ' },
-    { name: 'JWT_SECRET_KEY', question: 'JWT Secret Key: ' },
-    { name: 'SMTP_HOST', question: 'SMTP Host (e.g. smtp.gmail.com): ', default: 'smtp.gmail.com' },
-    { name: 'SMTP_PORT', question: 'SMTP Port: ', default: '587' },
-    { name: 'SMTP_USER', question: 'SMTP Username/Email: ' },
-    { name: 'SMTP_PASS', question: 'SMTP Password: ' },
-    { name: 'SMTP_FROM', question: 'From Email: ' },
-    { name: 'SMTP_FROM_NAME', question: 'From Name: ', default: 'Hempire Enterprise' },
-    { name: 'GEMINI_API_KEY', question: 'Gemini API Key: ' },
-    { name: 'NODE_ENV', question: 'Node Environment: ', default: 'production' }
-  ];
-  
-  for (const variable of variables) {
-    let value = await ask(`${variable.question}${variable.default ? `(default: ${variable.default}) ` : ''}`);
-    
-    if (!value && variable.default) {
-      value = variable.default;
+  // Check for Railway CLI
+  if (!isDryRun) {
+    try {
+      execSync('railway --version', { stdio: 'ignore' });
+    } catch (error) {
+      console.error("❌ Railway CLI not found. Please install it with:");
+      console.error("npm install -g @railway/cli");
+      process.exit(1);
     }
-    
+  }
+  
+  // Check if logged in
+  if (!isDryRun) {
+    try {
+      execSync('railway whoami', { stdio: 'ignore' });
+    } catch (error) {
+      console.error("❌ Not logged in to Railway. Please run:");
+      console.error("railway login");
+      process.exit(1);
+    }
+  }
+  
+  // Get variables from .env.local
+  const envVars = getEnvVars();
+  
+  // Combine with required vars, prioritizing .env.local values
+  const allVars = {};
+  for (const [key, defaultValue] of Object.entries(requiredVars)) {
+    allVars[key] = envVars[key] || defaultValue;
+  }
+  
+  // Display variables that will be set (mask sensitive ones)
+  console.log("\nThe following variables will be set in Railway:");
+  Object.entries(allVars).forEach(([key, value]) => {
+    // Mask sensitive values
+    const isSensitive = key.includes('KEY') || key.includes('SECRET') || key.includes('PASS') || key.includes('TOKEN');
+    const displayValue = isSensitive && value ? '******' : value;
+    console.log(`• ${key}: ${displayValue || '(empty)'}`);
+  });
+  
+  // Get confirmation
+  const proceed = await ask("\nProceed with setting these variables? (Y/n): ");
+  if (proceed.toLowerCase() === 'n') {
+    console.log("Operation canceled.");
+    process.exit(0);
+  }
+  
+  // Set the variables
+  console.log("\nSetting environment variables on Railway...");
+  for (const [key, value] of Object.entries(allVars)) {
     if (value) {
       try {
-        // Set the variable in Railway
-        execSync(`railway variables set ${variable.name}="${value}"`, { stdio: 'inherit' });
-        console.log(`✓ Set ${variable.name}`);
+        if (!isDryRun) {
+          execSync(`railway variables set ${key}="${value}"`, { stdio: 'inherit' });
+          console.log(`✓ Set ${key}`);
+        } else {
+          console.log(`[DRY RUN] Would set ${key}`);
+        }
       } catch (error) {
-        console.error(`× Failed to set ${variable.name}: ${error.message}`);
+        console.error(`✗ Failed to set ${key}: ${error.message}`);
       }
     } else {
-      console.warn(`× Skipped ${variable.name} (no value provided)`);
+      console.warn(`⚠️ Skipping ${key} - no value provided`);
     }
   }
   
@@ -85,4 +151,7 @@ async function main() {
   rl.close();
 }
 
-main().catch(console.error);
+main().catch(error => {
+  console.error("Error:", error);
+  process.exit(1);
+});

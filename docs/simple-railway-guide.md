@@ -1,8 +1,8 @@
 # Simple Railway Deployment Guide
 
-This guide provides straightforward instructions for deploying your Hempire Enterprise application to Railway.
+This guide provides the simplest way to deploy your application to Railway with all environment variables.
 
-## Steps to Deploy
+## Prerequisites
 
 1. **Install Railway CLI**
 
@@ -16,53 +16,83 @@ This guide provides straightforward instructions for deploying your Hempire Ente
    railway login
    ```
 
-3. **Set Environment Variables**
+## Deployment Steps
 
-   ```bash
-   npm run railway:setup
-   ```
+### Step 1: Set Environment Variables
 
-   This will guide you through setting up all required environment variables.
+Run the setup script to copy all variables from your `.env.local` to Railway:
 
-4. **Deploy the Application**
+```bash
+node setup-railway.js
+```
 
-   ```bash
-   railway up
-   ```
+This script will:
+- Read all variables from `.env.local`
+- Add required variables with defaults if missing
+- Set the `DATABASE_URL` for Railway PostgreSQL integration
+- Set all variables in your Railway project
+
+### Step 2: Deploy the Application
+
+Deploy your application with a single command:
+
+```bash
+railway up
+```
+
+## What's Been Fixed
+
+1. **Node.js Version**: The Dockerfile now uses Node.js 20 for better compatibility.
+
+2. **Dependency Installation**: The installation process has been simplified:
+   - Uses `--legacy-peer-deps` to handle React version conflicts
+   - Skips optional dependencies that might cause issues
+
+3. **Prisma Setup**: Prisma schema is now properly handled:
+   - Dockerfile copies all files at once
+   - Prisma client is generated explicitly
+
+4. **Environment Variables**: All required variables are:
+   - Added to the Railway project automatically
+   - Properly formatted for Railway's PostgreSQL integration
 
 ## Required Environment Variables
 
-Make sure these variables are set:
+All these variables will be automatically copied from your `.env.local` file:
 
 - `REDIS_URL` - Redis connection string
 - `JWT_SECRET_KEY` - Secret key for JWT authentication
-- `SMTP_HOST` - Email server host (e.g., smtp.gmail.com)
-- `SMTP_PORT` - Email server port (usually 587)
-- `SMTP_USER` - Email username (your email address)
-- `SMTP_PASS` - Email password (App Password for Gmail)
+- `SMTP_HOST` - Email server host
+- `SMTP_PORT` - Email server port
+- `SMTP_USER` - Email username
+- `SMTP_PASS` - Email password
 - `SMTP_FROM` - From email address
 - `SMTP_FROM_NAME` - From name for emails
 - `GEMINI_API_KEY` - API key for the chatbot
-- `NODE_ENV` - Set to "production"
+- `DATABASE_URL` - Added automatically for Railway PostgreSQL
+- `NODE_ENV` - Set to "production" automatically
 
 ## Troubleshooting
 
 If you encounter deployment issues:
 
-1. **Check Logs**
-   
+1. **Check Railway logs**:
    ```bash
    railway logs
    ```
 
-2. **Test Email Configuration**
-   
+2. **Verify environment variables**:
+   ```bash
+   railway variables
+   ```
+
+3. **Restart the deployment**:
+   ```bash
+   railway up
+   ```
+
+4. **Check the application health**:
+   Navigate to `/healthcheck` endpoint after deployment.
+
+5. **Test email functionality**:
    Visit `/api/test-email` on your deployed application.
-
-3. **Verify Build Settings**
-   
-   Make sure your Railway project is using the Nixpacks builder.
-
-4. **Memory Issues**
-   
-   If you see memory errors during build, increase the builder's memory allocation in the Railway dashboard.

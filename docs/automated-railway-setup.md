@@ -54,6 +54,28 @@ If you encounter any issues:
 3. **Not logged in**: Run `railway login` to authenticate with Railway.
 4. **Deployment errors**: Check Railway logs with `railway logs`.
 5. **Health check failures**: Visit `/healthcheck` endpoint to verify your application status.
+6. **Dependency conflicts**: The application uses React 19, but some packages like `react-leaflet-cluster` expect React 18. The Dockerfile has been updated to use the `--legacy-peer-deps` flag to resolve these conflicts.
+
+## Handling Dependency Conflicts
+
+The project uses React 19, but some dependencies like `react-leaflet-cluster` require React 18. To handle this:
+
+1. We've updated the Dockerfile to use `--legacy-peer-deps` during installation:
+   ```bash
+   RUN npm ci --legacy-peer-deps
+   ```
+
+2. The build script also includes the same flag:
+   ```bash
+   RUN npm run build --legacy-peer-deps
+   ```
+
+3. If you need to install new packages locally, use:
+   ```bash
+   npm install package-name --legacy-peer-deps
+   ```
+
+4. All Railway deployment configurations have been updated to use the Dockerfile-based deployment method to ensure consistent builds.
 
 ## Checking Deployment Status
 

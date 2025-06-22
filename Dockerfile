@@ -5,7 +5,8 @@ WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json* ./
-RUN npm ci
+# Use legacy-peer-deps to handle React version conflicts
+RUN npm ci --legacy-peer-deps
 
 # Copy application code
 COPY . .
@@ -16,8 +17,8 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# Build the application
-RUN npm run build
+# Build the application with legacy peer dependencies flag
+RUN npm run build --legacy-peer-deps
 
 # Expose the listening port
 EXPOSE 8080

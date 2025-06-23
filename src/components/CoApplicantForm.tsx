@@ -29,10 +29,12 @@ type CoApplicantFormProps = {
   signature?: string | null;
 };
 
-export default function CoApplicantForm({ onNext, onBack, formData = {}, signature = null }: CoApplicantFormProps) {
-  const [includeCoApplicant, setIncludeCoApplicant] = useState(!!Object.keys(formData).length);
+export default function CoApplicantForm({ onNext, onBack, formData = {}, signature = null }: CoApplicantFormProps) {  const [includeCoApplicant, setIncludeCoApplicant] = useState(!!Object.keys(formData).length);
   const [sigPad, setSigPad] = useState<SignatureCanvas | null>(null);
   const [sigDataURL, setSigDataURL] = useState<string | null>(signature);
+  const [showTextSignature, setShowTextSignature] = useState<boolean>(true);
+  const [coApplicantFirstName, setCoApplicantFirstName] = useState<string>('');
+  const [coApplicantLastName, setCoApplicantLastName] = useState<string>('');
 
   // Initialize form with validation schema and default values
   const {
@@ -75,11 +77,14 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
       if (sigPad) sigPad.clear();
     }
   };
-
   // Signature pad methods
   const handleSigPadClear = () => {
     if (sigPad) {
       sigPad.clear();
+      setSigDataURL(null);
+    } else {
+      setCoApplicantFirstName('');
+      setCoApplicantLastName('');
       setSigDataURL(null);
     }
   };
@@ -87,6 +92,37 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
   const handleSigPadEnd = () => {
     if (sigPad && !sigPad.isEmpty()) {
       setSigDataURL(sigPad.getTrimmedCanvas().toDataURL('image/png'));
+    }
+  };
+  
+  // Generate signature from name
+  const generateSignature = () => {
+    if (coApplicantFirstName && coApplicantLastName) {
+      // Generate signature from name
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        // Set signature style
+        ctx.font = 'italic 36px cursive';
+        ctx.fillStyle = 'black';
+        ctx.textBaseline = 'middle';
+        
+        // Position in the middle of canvas
+        const fullName = `${coApplicantFirstName} ${coApplicantLastName}`;
+        const textWidth = ctx.measureText(fullName).width;
+        const xPos = (canvas.width - textWidth) / 2;
+        
+        // Draw the signature
+        ctx.fillText(fullName, xPos, canvas.height / 2);
+        
+        // Convert to data URL and set as signature
+        const signatureDataUrl = canvas.toDataURL('image/png');
+        setSigDataURL(signatureDataUrl);
+      }
+    } else {
+      alert('Please enter both first name and last name to generate a signature');
     }
   };
 
@@ -290,13 +326,13 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
             </div>
           </div>
 
-          {/* Signature Pad */}
-          <div className="mb-6">
+          {/* Signature Pad */}          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Co-Applicant Signature *
             </label>
-            <div className="border border-gray-300 rounded p-2 mb-2">
-              {sigDataURL ? (
+            
+            {sigDataURL ? (
+              <div className="border border-gray-300 rounded p-2 mb-2">
                 <div className="flex flex-col items-center">
                   <img src={sigDataURL} alt="Signature" className="max-h-32" />
                   <button
@@ -307,19 +343,77 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
                     Clear Signature
                   </button>
                 </div>
-              ) : (
-                <>
-                  <SignatureCanvas
-                    ref={(ref) => setSigPad(ref)}
-                    canvasProps={{
-                      className: 'w-full h-40 bg-white',
-                    }}
-                    onEnd={handleSigPadEnd}
-                  />
-                  <p className="text-sm text-gray-500 mt-1">Sign above using your mouse or touch screen</p>
-                </>
-              )}
-            </div>
+              </div>
+            ) : showTextSignature ? (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label htmlFor="coApplicantFirstName" className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      id="coApplicantFirstName"
+                      value={coApplicantFirstName}
+                      onChange={(e) => setCoApplicantFirstName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="coApplicantLastName" className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      id="coApplicantLastName"
+                      value={coApplicantLastName}
+                      onChange={(e) => setCoApplicantLastName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={generateSignature}
+                  className="w-full py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition"
+                  disabled={!coApplicantFirstName || !coApplicantLastName}
+                >
+                  Click here to sign
+                </button>
+                
+                <p className="mt-3 text-center text-sm text-gray-500">- OR -</p>
+                <button 
+                  type="button" 
+                  onClick={() => setShowTextSignature(false)}
+                  className="w-full mt-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                >
+                  Draw my signature manually
+                </button>
+              </div>
+            ) : (
+              <div className="border border-gray-300 rounded p-2 mb-2">
+                <SignatureCanvas
+                  ref={(ref) => setSigPad(ref)}
+                  canvasProps={{
+                    className: 'w-full h-40 bg-white',
+                  }}
+                  onEnd={handleSigPadEnd}
+                />
+                <div className="flex justify-between mt-2">
+                  <p className="text-sm text-gray-500">Sign above using your mouse or touch screen</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowTextSignature(true)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Back to text signature
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

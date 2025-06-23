@@ -41,12 +41,17 @@ export default function SignatureForm({
       }
     };
   }, []);
-  
-  // Handle form submission
+    // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // If using text signature, we've already set the signature
+    // Check if signature exists
+    if (!isSigned) {
+      alert("Please add your signature before proceeding");
+      return;
+    }
+    
+    // If using canvas signature and there's a signature pad
     if (showSignatureCanvas && sigCanvas.current) {
       // Always get the signature from the canvas to ensure we have the most recent version
       const isEmpty = sigCanvas.current.isEmpty();
@@ -74,6 +79,7 @@ export default function SignatureForm({
       }
     }
     
+    // If we've reached here, we have a signature (either from canvas or text)
     onNext({});
   };
   

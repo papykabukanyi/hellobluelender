@@ -7,14 +7,17 @@ import { v4 as uuidv4 } from 'uuid';
 export async function POST(request: NextRequest) {
   try {
     // Parse request body
-    const applicationData = await request.json();    // Generate a unique application ID (using UUID v4)
+    const applicationData = await request.json();
+    
+    // Generate a unique application ID (using UUID v4)
     // Convert to a 6-digit number by taking the first 6 digits of the hexadecimal UUID
     const uuid = uuidv4();
     const hex = uuid.replace(/-/g, '').substring(0, 6);
     const decimal = parseInt(hex, 16);
     // Ensure it's exactly 6 digits by modulo and padding
     const applicationId = (100000 + (decimal % 900000)).toString();
-      // Add metadata
+    
+    // Add metadata
     const completeApplication = {
       ...applicationData,
       id: applicationId,
@@ -25,8 +28,11 @@ export async function POST(request: NextRequest) {
     
     // Store application in Redis
     await redis.set(`application:${applicationId}`, JSON.stringify(completeApplication));
-      // Add to applications list
-    await redis.sadd('applications', applicationId);    // Get IP address and user agent
+    
+    // Add to applications list
+    await redis.sadd('applications', applicationId);
+    
+    // Get IP address and user agent
     const ipAddress = request.headers.get('x-forwarded-for') || 
                      request.headers.get('x-real-ip') || 
                      '0.0.0.0';
@@ -48,7 +54,8 @@ export async function POST(request: NextRequest) {
       undefined,
       false
     );
-      // Server-side conversion of Blob to base64
+    
+    // Server-side conversion of Blob to base64
     const adminPdfBase64 = await new Promise<string>((resolve) => {
       // Server-side handling for Blob
       (adminPdfBlob as any).arrayBuffer().then((arrayBuffer: ArrayBuffer) => {
@@ -65,6 +72,7 @@ export async function POST(request: NextRequest) {
         resolve(buffer.toString('base64'));
       });
     });
+    
     // Get email recipients from Redis
     const recipientsJson = await redis.get('email:recipients');
     const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];
@@ -109,9 +117,47 @@ export async function POST(request: NextRequest) {
     const coApplicantName = hasCoApplicant 
       ? `${completeApplication.coApplicantInfo?.firstName} ${completeApplication.coApplicantInfo?.lastName}`
       : '';
-        // Send to admin recipients only if there are any configured
+
+    // Prepare file attachments from the application if they exist
+    let fileAttachments = [];
+    
+    // Add application PDF as first attachment
+    fileAttachments.push({
+      filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
+      content: adminPdfBase64,
+      encoding: 'base64',
+      contentType: 'application/pdf',
+    });
+    
+    // Process uploaded documents if they exist in the application data
+    if (completeApplication.documents) {
+      // Add all document files as attachments
+      Object.entries(completeApplication.documents).forEach(([docType, files]) => {
+        if (Array.isArray(files) && files.length > 0) {
+          files.forEach((file, index) => {
+            if (file && file.url) {
+              // Get file path from URL
+              const filePath = file.url.startsWith('/') 
+                ? `public${file.url}` 
+                : `public/${file.url}`;
+              
+              // Add file info to log
+              console.log(`Attaching document: ${docType} - ${file.name} (${filePath})`);
+              
+              // Log the file URL for debugging
+              fileAttachments.push({
+                filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                path: filePath,
+              });
+            }
+          });
+        }
+      });
+    }
+    
+    // Send to admin recipients only if there are any configured
     if (emailRecipients.length > 0) {
-      console.log(`Sending application notification to ${emailRecipients.length} recipients (admin prioritized)`);
+      console.log(`Sending application notification to ${emailRecipients.length} recipients (admin prioritized) with ${fileAttachments.length} attachments`);
       
       try {
         const adminEmailResult: {success: boolean, messageId?: string, error?: any} = await sendEmail({
@@ -126,16 +172,9 @@ export async function POST(request: NextRequest) {
             ${hasCoApplicant ? `<p><strong>Co-Applicant:</strong> ${coApplicantName}</p>` : ''}
             <p><strong>Amount Requested:</strong> ${loanAmount}</p>
             <p><strong>Date Submitted:</strong> ${new Date().toLocaleString()}</p>
-            <p>Please see the attached PDF for full application details.</p>
+            <p>Please see the attached PDF for full application details and any supporting documents.</p>
           `,
-          attachments: [
-            {
-              filename: `${loanType}_Loan_Application_${applicationId}.pdf`,
-              content: adminPdfBase64,
-              encoding: 'base64',
-              contentType: 'application/pdf',
-            }
-          ]
+          attachments: fileAttachments
         });
         
         if (!adminEmailResult.success) {
@@ -161,7 +200,8 @@ export async function POST(request: NextRequest) {
     } else {
       console.warn('No email recipients configured for loan applications. The admin notification email was not sent.');
     }
-      // Send confirmation email to applicant
+    
+    // Send confirmation email to applicant
     const applicantName = `${completeApplication.personalInfo?.firstName} ${completeApplication.personalInfo?.lastName}`;
     const applicantEmail = completeApplication.personalInfo?.email;
     
@@ -169,17 +209,17 @@ export async function POST(request: NextRequest) {
       try {
         const applicantEmailResult: {success: boolean, messageId?: string, error?: any} = await sendEmail({
           to: applicantEmail,
-          subject: `Your Hempire Enterprise Application - Confirmation #${applicationId}`,
+          subject: `Your EMPIRE ENTREPRISE Application - Confirmation #${applicationId}`,
           html: `
             <div style="font-family: 'Montserrat', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
               <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="color: #1F7832; font-family: 'Impact', 'Montserrat', sans-serif; letter-spacing: 1px; font-size: 32px;">HEMPIRE ENTERPRISE</h1>
+                <h1 style="color: #000000; font-family: 'Impact', 'Montserrat', sans-serif; letter-spacing: 1px; font-size: 32px; font-weight: bold;">EMPIRE ENTREPRISE</h1>
                 <p style="font-size: 18px; color: #333;">Application Confirmation</p>
               </div>
               
               <div style="margin-bottom: 30px;">
                 <p>Dear ${applicantName},</p>
-                <p>Thank you for submitting your loan application to Hempire Enterprise. We have received your ${loanType} loan application for ${loanAmount}.</p>
+                <p>Thank you for submitting your loan application to EMPIRE ENTREPRISE. We have received your ${loanType} loan application for ${loanAmount}.</p>
                 <p><strong>Your Application Number:</strong> ${applicationId}</p>
                 <p>Our team will review your application and contact you shortly regarding the next steps. Please keep your application number for reference in all future communications.</p>
               </div>
@@ -194,7 +234,7 @@ export async function POST(request: NextRequest) {
               
               <div style="font-size: 14px; color: #666; margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
                 <p>If you have any questions or need further assistance, please contact our customer support team at papykabukanyi@gmail.com or call us at (123) 456-7890.</p>
-                <p>Thank you for choosing Hempire Enterprise for your financial needs.</p>
+                <p>Thank you for choosing EMPIRE ENTREPRISE for your financial needs.</p>
               </div>
             </div>
           `,
@@ -235,7 +275,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       id: applicationId 
-    });  } catch (error) {
+    });
+  } catch (error) {
     console.error('Error submitting application:', error);
     
     // Provide more detailed error message for debugging

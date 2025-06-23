@@ -3,7 +3,7 @@
  */
 
 // Helper to get company name
-const getCompanyName = () => process.env.SMTP_FROM_NAME || 'Hempire Enterprise';
+const getCompanyName = () => process.env.SMTP_FROM_NAME || 'EMPIRE ENTREPRISE';
 
 /**
  * Generate approved application email template

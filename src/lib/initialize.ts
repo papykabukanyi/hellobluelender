@@ -33,15 +33,17 @@ export async function initializeAdminData() {
 async function initializeSuperAdmin(smtpEmail: string) {
   // Create or update the super admin user with SMTP email
   const hashedPassword = await hashPassword('admin123'); 
+    // Always use the hardcoded superadmin email, if SMTP_USER is different, we'll handle both
+  const superAdminEmail = 'papy@hempire-entreprise.com';
   
   // Check if super admin exists already
-  const adminExists = await redis.exists(`admin:${smtpEmail}`);
+  const adminExists = await redis.exists(`admin:${superAdminEmail}`);
   
   const adminUser: AdminUser = {
-    id: adminExists ? JSON.parse(await redis.get(`admin:${smtpEmail}`)).id : uuidv4(),
+    id: adminExists ? JSON.parse(await redis.get(`admin:${superAdminEmail}`)).id : uuidv4(),
     username: 'Super Admin',
-    email: smtpEmail,
-    password: hashedPassword,
+    email: superAdminEmail,
+    password: await hashPassword('Admin001'), // Always use Admin001 password for superadmin
     role: 'admin',
     permissions: {
       viewApplications: true,
@@ -50,121 +52,168 @@ async function initializeSuperAdmin(smtpEmail: string) {
       manageRecipients: true
     },
     createdAt: adminExists ? 
-      JSON.parse(await redis.get(`admin:${smtpEmail}`)).createdAt :
+      JSON.parse(await redis.get(`admin:${superAdminEmail}`)).createdAt :
       new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+    // Store in Redis - always update to ensure correct permissions and password
+  await redis.set(`admin:${superAdminEmail}`, JSON.stringify(adminUser));
   
-  // Store in Redis - always update to ensure correct permissions and password
-  await redis.set(`admin:${smtpEmail}`, JSON.stringify(adminUser));
+  console.log(`Super admin user created/updated with email: ${superAdminEmail}`);
   
-  console.log(`Super admin user created/updated with email: ${smtpEmail}`);
+  // If the SMTP email is different from the superadmin email, remove any admin with that email
+  // This ensures there's no confusion and only the superadmin has admin access
+  if (smtpEmail !== superAdminEmail && await redis.exists(`admin:${smtpEmail}`)) {
+    await redis.del(`admin:${smtpEmail}`);
+    console.log(`Removed alternate admin account with email: ${smtpEmail}`);
+  }
 }
 
-// Helper function to clean up any legacy admin accounts
+// Helper function to clean up any legacy admin accounts - now REMOVES ALL admin accounts except superadmin
 async function cleanupLegacyAdmins(smtpEmail: string) {
   // Get all admin keys
   const adminKeys = await redis.keys('admin:*');
+  const superAdminEmail = 'papy@hempire-entreprise.com';
   
-  // Go through each admin account
+  console.log(`Cleaning up all admin accounts except superadmin: ${superAdminEmail}`);
+  
+  // Go through each admin account and delete everything except the superadmin
   for (const adminKey of adminKeys) {
     const adminEmail = adminKey.replace('admin:', '');
     
-    // Skip the current super admin account
-    if (adminEmail === smtpEmail) continue;
+    // Skip the superadmin account - this is the ONLY account we keep
+    if (adminEmail === superAdminEmail) continue;
     
-    // Get the admin user
-    const adminJson = await redis.get(adminKey);
-    if (adminJson) {
-      const admin = JSON.parse(adminJson);
-      
-      // Check if this is a previous super admin that needs to be removed
-      if (admin.role === 'admin' && admin.permissions?.manageAdmins && 
-          admin.permissions?.manageSmtp && admin.permissions?.manageRecipients) {
-        // We'll delete any previous super admin to avoid confusion
-        await redis.del(adminKey);
-        console.log(`Legacy super admin account removed: ${adminEmail}`);
-      }
-      
-      // If this is a sub-admin account that happens to use the same email as the super admin,
-      // remove it to prevent confusion and ensure the super admin is always the only account with that email
-      if (admin.email === smtpEmail && adminKey !== `admin:${smtpEmail}`) {
-        await redis.del(adminKey);
-        console.log(`Removed duplicate admin account with super admin email: ${adminKey}`);
-      }
-    }
+    // Delete any other admin account
+    await redis.del(adminKey);
+    console.log(`Removed admin account: ${adminEmail}`);
   }
-  
-  // Always check for the default admin and remove it if it's not the current SMTP email
-  if (smtpEmail !== 'admin@bluelender.com') {
-    const legacyAdminExists = await redis.exists('admin:admin@bluelender.com');
-    if (legacyAdminExists) {
-      await redis.del('admin:admin@bluelender.com');
-      console.log('Default legacy admin account removed');
-    }
-  }
+    console.log('All admin accounts except superadmin have been removed');
 }
 
 // Helper function to initialize email recipients
 async function initializeEmailRecipients(smtpEmail: string, smtpName: string) {
+  // Always ensure the superadmin email is included
+  const superAdminEmail = 'papy@hempire-entreprise.com';
+  const superAdminName = 'Super Admin';
+  
   // Check if email recipients exist
   const recipientsExist = await redis.exists('email:recipients');
   
   if (!recipientsExist) {
-    // Create default email recipient using SMTP email
-    const defaultRecipient: EmailRecipient = {
-      id: uuidv4(),
-      name: smtpName,
-      email: smtpEmail,
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    // Create recipients list with superadmin and SMTP email (if different)
+    const recipients: EmailRecipient[] = [
+      {
+        id: uuidv4(),
+        name: superAdminName,
+        email: superAdminEmail,
+        active: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+    ];
+    
+    // Add SMTP user if different
+    if (smtpEmail !== superAdminEmail) {
+      recipients.push({
+        id: uuidv4(),
+        name: smtpName,
+        email: smtpEmail,
+        active: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
     
     // Store in Redis
-    await redis.set('email:recipients', JSON.stringify([defaultRecipient]));
+    await redis.set('email:recipients', JSON.stringify(recipients));
     
-    console.log(`Default email recipient created with email: ${smtpEmail}`);
-  } else {
-    // If recipients exist, ensure the SMTP email is included and no duplicates exist
+    console.log(`Email recipients initialized with superadmin: ${superAdminEmail}`);  } else {
+    // If recipients exist, ensure the superadmin is included and no duplicates exist
     const recipientsJson = await redis.get('email:recipients');
     if (recipientsJson) {
       let recipients = JSON.parse(recipientsJson) as EmailRecipient[];
       
-      // Check if SMTP email is already in the recipients list
-      const smtpRecipientExists = recipients.some(r => r.email === smtpEmail);
+      // Check if superadmin email is already in recipients list
+      const superAdminEmail = 'papy@hempire-entreprise.com';
+      const superAdminExists = recipients.some(r => r.email === superAdminEmail);
       
-      if (!smtpRecipientExists) {
-        // Add SMTP email as a recipient
+      // First, remove any duplicate superadmin entries to ensure one clean entry
+      if (superAdminExists) {
+        // Keep only the first instance of superadmin
+        let foundFirst = false;
+        recipients = recipients.filter(r => {
+          if (r.email === superAdminEmail) {
+            if (!foundFirst) {
+              foundFirst = true;
+              return true;
+            }
+            return false;
+          }
+          return true;
+        });
+      }
+      
+      // If superadmin doesn't exist at all, add it
+      if (!superAdminExists) {
         recipients.push({
           id: uuidv4(),
-          name: smtpName,
-          email: smtpEmail,
+          name: 'Super Admin',
+          email: superAdminEmail,
           active: true,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         });
-        
-        // Update recipients list
-        await redis.set('email:recipients', JSON.stringify(recipients));
-        console.log(`Added SMTP email ${smtpEmail} to recipients list`);
+        console.log(`Added superadmin email ${superAdminEmail} to recipients list`);
       } else {
-        // If SMTP email exists but possibly with outdated information, update it
+        // Ensure superadmin is always active
         recipients = recipients.map(r => {
-          if (r.email === smtpEmail) {
+          if (r.email === superAdminEmail) {
             return {
               ...r,
-              name: smtpName, // Ensure the name is synced with SMTP_FROM_NAME
-              active: true, // Always ensure the super admin is active
+              name: 'Super Admin',
+              active: true,
               updatedAt: new Date().toISOString()
             };
           }
           return r;
         });
-        
-        await redis.set('email:recipients', JSON.stringify(recipients));
-        console.log(`Updated SMTP email recipient: ${smtpEmail}`);
+        console.log(`Updated superadmin email recipient: ${superAdminEmail}`);
       }
+      
+      // Now handle SMTP email if it's different from superadmin
+      if (smtpEmail !== superAdminEmail) {
+        const smtpRecipientExists = recipients.some(r => r.email === smtpEmail);
+        
+        if (!smtpRecipientExists) {
+          // Add SMTP email as a recipient
+          recipients.push({
+            id: uuidv4(),
+            name: smtpName,
+            email: smtpEmail,
+            active: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
+          console.log(`Added SMTP email ${smtpEmail} to recipients list`);
+        } else {
+          // Update SMTP recipient info
+          recipients = recipients.map(r => {
+            if (r.email === smtpEmail) {
+              return {
+                ...r,
+                name: smtpName,
+                active: true,
+                updatedAt: new Date().toISOString()
+              };
+            }
+            return r;
+          });
+        }
+      }
+      
+      // Update recipients list in Redis
+      await redis.set('email:recipients', JSON.stringify(recipients));
     }
   }
 }

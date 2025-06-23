@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import redis from '@/lib/redis';
 import { requirePermission } from '@/lib/permissions';
 
-// Get all loan applications or a single application by ID
+// Get all applications or single application by ID
 export async function GET(request: NextRequest) {
   try {
     // Verify current admin has permission to view applications
@@ -172,17 +172,16 @@ export async function PUT(request: NextRequest) {
         let emailHtml = '';
         
         // Select the appropriate email template based on status
-        switch (status) {
-          case 'approved':
-            emailSubject = 'Your Application Has Been Approved! - Hempire Enterprise';
+        switch (status) {          case 'approved':
+            emailSubject = 'Your Application Has Been Approved! - EMPIRE ENTREPRISE';
             emailHtml = getApprovedEmailTemplate(application);
             break;
           case 'denied':
-            emailSubject = 'Update on Your Application - Hempire Enterprise';
+            emailSubject = 'Update on Your Application - EMPIRE ENTREPRISE';
             emailHtml = getDeniedEmailTemplate(application);
             break;
           case 'in-review':
-            emailSubject = 'Your Application is Under Review - Hempire Enterprise';
+            emailSubject = 'Your Application is Under Review - EMPIRE ENTREPRISE';
             emailHtml = getInReviewEmailTemplate(application);
             break;
         }

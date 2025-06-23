@@ -16,7 +16,7 @@ const FINANCING_KNOWLEDGE = {
   loanTerms: "3 months to 10 years depending on financing type",
   qualifications: "6+ months in business, $10,000+ in monthly revenue, and 550+ credit score",
   contact: {
-    email: "papykabukanyi@gmail.com",
+    email: "papy@hempire-entreprise.com",
     phone: "(123) 456-7890"
   }
 };
@@ -38,10 +38,9 @@ export async function POST(request: NextRequest) {
     const formattedHistory = history.map((msg: any) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
-    }));
-      // Prepare prompt with role-based instructions
+    }));    // Prepare prompt with role-based instructions
     const prompt = `You are a helpful, friendly assistant for Hempire Enterprise, a business financing company.
-Your name is Hempire Assistant. Keep responses brief and professional, focusing on business financing topics.
+Your name is Hempire AI Assistant. Keep responses brief and professional, focusing on business financing topics.
 
 Here's information about our products and services:
 - Products: ${FINANCING_KNOWLEDGE.products.join(', ')}
@@ -50,8 +49,15 @@ Here's information about our products and services:
 - Qualification requirements: ${FINANCING_KNOWLEDGE.qualifications}
 - Contact: Email ${FINANCING_KNOWLEDGE.contact.email}, Phone ${FINANCING_KNOWLEDGE.contact.phone}
 
+As Hempire AI Assistant:
+1. Always be professional, helpful and courteous
+2. Focus on providing accurate information about our financing options
+3. Encourage visitors to complete an application if they're interested
+4. Refer complex questions to our team at ${FINANCING_KNOWLEDGE.contact.email}
+5. Never make up information you're unsure about
+
 Based on this conversation history and the user's latest message, provide a helpful response:
-${message}`;    // Use a try-catch block to handle API errors
+${message}`;// Use a try-catch block to handle API errors
     try {
       // Get the text-only generative model
       const result = await model.generateContent(prompt);

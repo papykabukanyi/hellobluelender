@@ -10,11 +10,11 @@ export const generatePDF = async (
   isAdmin: boolean = true
 ): Promise<Blob> => {
   const doc = new jsPDF();
-  
-  // Add company header
-  doc.setFontSize(24);
-  doc.setTextColor(31, 120, 50); // Green color for Hempire
-  doc.text('HEMPIRE ENTERPRISE', 105, 20, { align: 'center' });
+    // Add company header with updated branding
+  doc.setFontSize(28);
+  doc.setTextColor(0, 0, 0); // Black color for EMPIRE ENTREPRISE
+  doc.setFont(undefined, 'bold');
+  doc.text('EMPIRE ENTREPRISE', 105, 20, { align: 'center' });
   
   doc.setFontSize(14);
   doc.text(applicationData.loanInfo?.loanType + ' Loan Application', 105, 30, { align: 'center' });
@@ -59,18 +59,28 @@ export const generatePDF = async (
     doc.text(`Equipment Cost: $${equipmentLoanInfo.equipmentCost || 'N/A'}`, 20, 155);
     doc.text(`Equipment Vendor: ${equipmentLoanInfo.equipmentVendor || 'N/A'}`, 20, 160);
   }
-  
-  // Agreement
+    // Agreement
   doc.setFontSize(12);
   doc.text('Agreement', 20, 170);
   doc.setFontSize(10);
   doc.text('I confirm that the information provided in this application is true and accurate.', 20, 180);
-  doc.text('I authorize Hempire Enterprise to verify any information provided in this application.', 20, 185);
-  
-  // Add signature if provided
+  doc.text('I authorize EMPIRE ENTREPRISE to verify any information provided in this application.', 20, 185);
+    // Add signature if provided or generate a signature from name
   if (signatureDataUrl) {
     doc.text('Signature:', 20, 195);
     doc.addImage(signatureDataUrl, 'PNG', 60, 190, 50, 20);
+  } else if (applicationData.personalInfo?.firstName && applicationData.personalInfo?.lastName) {
+    // Generate a signature-like text with the name
+    doc.text('Signature:', 20, 195);
+    
+    // Set signature style with italics and signature-like font
+    doc.setFont('italic');
+    doc.setFontSize(18);
+    doc.text(`${applicationData.personalInfo.firstName} ${applicationData.personalInfo.lastName}`, 60, 195);
+    
+    // Reset font
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(10);
   }
   
   // Add date
@@ -86,10 +96,10 @@ export const generatePDF = async (
     doc.text(`Submission Date: ${new Date().toLocaleString()}`, 20, 260);
     doc.text(`Application ID: ${applicationData.id || 'Not assigned yet'}`, 20, 266);
   }
-  
-  // Footer
+    // Footer
   doc.setFontSize(8);
-  doc.text('Hempire Enterprise - Confidential Application Document', 105, 280, { align: 'center' });
+  doc.setFont(undefined, 'normal');
+  doc.text('EMPIRE ENTREPRISE - Confidential Application Document', 105, 280, { align: 'center' });
   
   // Save to blob
   const pdfBlob = doc.output('blob');

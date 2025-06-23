@@ -77,20 +77,39 @@ const ChatBot = () => {
       console.error('Error saving chat conversation:', error);
     }
   };
-
-  // Initial greeting message
+  // Initial greeting message and auto-popup after 90 seconds
   useEffect(() => {
+    // Set initial greeting message
     if (messages.length === 0) {
       setMessages([
         {
           id: '1',
           role: 'assistant',
-          content: 'Hello! I\'m the Hempire Enterprise assistant. I can help you with questions about our financing options or assist you in starting a new application. To better assist you, could you please share your name and email address?',
+          content: 'Hello! I\'m the EMPIRE ENTREPRISE assistant. I can help you with questions about our financing options or assist you in starting a new application. To better assist you, could you please share your name and email address?',
           timestamp: new Date()
         }
       ]);
     }
-  }, [messages.length]);
+    
+    // Auto-popup after 90 seconds (90000 ms) of user presence
+    const autoPopupTimer = setTimeout(() => {
+      if (!isOpen) {
+        setIsOpen(true);
+        // Play notification sound if available
+        try {
+          const notificationSound = new Audio('/notification.mp3');
+          notificationSound.play().catch(error => {
+            console.log('Notification sound failed to play:', error);
+          });
+        } catch (error) {
+          console.log('Error with notification sound:', error);
+        }
+      }
+    }, 90000);
+    
+    // Clear the timeout when component unmounts or if chat is manually opened
+    return () => clearTimeout(autoPopupTimer);
+  }, [messages.length, isOpen]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {

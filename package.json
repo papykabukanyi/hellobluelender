@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node cleanup.js",
-    "build": "next build || next build --no-prebuild",
+    "prebuild": "node ./cleanup.js || exit 0",
+    "build": "next build",
     "start": "node server.js",
     "healthcheck": "node healthcheck.js",
     "lint": "next lint --fix",
@@ -17,6 +17,7 @@
     "test:admin-no-username": "node --experimental-json-modules scripts/test-admin-without-username.mjs",
     "verify:super-admin": "node --experimental-json-modules scripts/verify-super-admin.mjs",
     "verify:super-admin-email": "node --experimental-json-modules scripts/verify-super-admin-email.mjs",
+    "reset:admins": "node scripts/reset-admins.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",

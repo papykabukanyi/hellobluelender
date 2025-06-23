@@ -41,14 +41,13 @@ export default function SignatureForm({
       }
     };
   }, []);
-  
-  // Handle form submission
+    // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // If using text signature, we've already set the signature
-    if (showSignatureCanvas && sigCanvas.current) {
+    if (sigCanvas.current) {
       // Always get the signature from the canvas to ensure we have the most recent version
+      // This ensures we don't rely on the previous state which might be stale
       const isEmpty = sigCanvas.current.isEmpty();
       
       if (!isEmpty) {
@@ -77,47 +76,10 @@ export default function SignatureForm({
     onNext({});
   };
   
-  // Generate signature from name
-  const generateSignature = () => {
-    if (firstName && lastName) {
-      // Generate signature from name
-      const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth;
-      canvas.height = 200;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Set signature style
-        ctx.font = 'italic 36px cursive';
-        ctx.fillStyle = 'black';
-        ctx.textBaseline = 'middle';
-        
-        // Position in the middle of canvas
-        const fullName = `${firstName} ${lastName}`;
-        const textWidth = ctx.measureText(fullName).width;
-        const xPos = (canvas.width - textWidth) / 2;
-        
-        // Draw the signature
-        ctx.fillText(fullName, xPos, canvas.height / 2);
-        
-        // Convert to data URL and set as signature
-        const signatureDataUrl = canvas.toDataURL('image/png');
-        onSignatureChange(signatureDataUrl);
-        setIsSigned(true);
-      }
-    } else {
-      alert('Please enter both first name and last name to generate a signature');
-    }
-  };
-  
   // Clear signature
   const clearSignature = () => {
-    if (showSignatureCanvas && sigCanvas.current) {
+    if (sigCanvas.current) {
       sigCanvas.current.clear();
-      setIsSigned(false);
-      onSignatureChange(null);
-    } else {
-      setFirstName('');
-      setLastName('');
       setIsSigned(false);
       onSignatureChange(null);
     }
@@ -125,7 +87,7 @@ export default function SignatureForm({
   
   // Load saved signature if available
   useEffect(() => {
-    if (signature && sigCanvas.current && showSignatureCanvas) {
+    if (signature && sigCanvas.current) {
       // This is a bit hacky, but we need to load the signature image into the canvas
       // Creating a temporary image and using the canvas context to draw it
       const image = new Image();
@@ -141,29 +103,34 @@ export default function SignatureForm({
       };
       image.src = signature;
     }
-  }, [signature, showSignatureCanvas]);
-  
+  }, [signature]);
+
   return (
     <form onSubmit={handleSubmit}>
-      <div className="max-w-3xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-6">Agreement &amp; Signature</h2>
+      <div className="mb-6">
+        <p className="text-gray-600 mb-4">
+          Please read and sign the application agreement below:
+        </p>
         
-        <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg mb-6">
-          <h3 className="text-lg font-medium mb-2">Terms &amp; Agreement</h3>
-          <p className="text-sm text-gray-600 mb-4">
-            By signing below, I confirm that all information provided is accurate and complete.
-            I authorize EMPIRE ENTREPRISE to verify any information provided on this application,
-            including but not limited to credit history, bank references, and business information.
+        <div className="mb-6 p-4 border border-gray-300 rounded bg-gray-50 text-sm leading-relaxed">
+          <h4 className="font-bold mb-2">Application Agreement and Authorization</h4>
+          <p className="mb-2">
+            By signing below, I/we certify that all information provided in this application is true, correct, and complete.
           </p>
-          
-          <p className="text-sm text-gray-600">
-            I understand that submission of this application does not guarantee approval for financing.
-            If approved, additional documentation and a formal agreement will be required
+          <p className="mb-2">
+            I/we authorize <span className="font-permanentMarker">Hempire Enterprise</span> to investigate all information provided, including obtaining credit reports, 
+            contacting references, and verifying any information provided with this application.
+          </p>
+          <p className="mb-2">
+            I/we understand that submission of this application does not guarantee approval for financing
+            and that additional information may be requested.
+          </p>
+          <p>
+            I/we acknowledge that if approved, the final terms of any financing will be provided in a separate agreement
             that must be reviewed and accepted before funds are disbursed.
           </p>
         </div>
-        
-        <div className="mb-6">
+          <div className="mb-6">
           <label htmlFor="signature" className="block text-sm font-medium text-gray-700 mb-2">
             Sign Here *
           </label>
@@ -201,7 +168,36 @@ export default function SignatureForm({
               
               <button
                 type="button"
-                onClick={generateSignature}
+                onClick={() => {
+                  if (firstName && lastName) {
+                    // Generate signature from name
+                    const canvas = document.createElement('canvas');
+                    canvas.width = canvasWidth;
+                    canvas.height = 200;
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                      // Set signature style
+                      ctx.font = 'italic 36px cursive';
+                      ctx.fillStyle = 'black';
+                      ctx.textBaseline = 'middle';
+                      
+                      // Position in the middle of canvas
+                      const fullName = `${firstName} ${lastName}`;
+                      const textWidth = ctx.measureText(fullName).width;
+                      const xPos = (canvas.width - textWidth) / 2;
+                      
+                      // Draw the signature
+                      ctx.fillText(fullName, xPos, canvas.height / 2);
+                      
+                      // Convert to data URL and set as signature
+                      const signatureDataUrl = canvas.toDataURL('image/png');
+                      onSignatureChange(signatureDataUrl);
+                      setIsSigned(true);
+                    }
+                  } else {
+                    alert('Please enter both first name and last name to generate a signature');
+                  }
+                }}
                 className="w-full py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition"
                 disabled={!firstName || !lastName}
               >
@@ -253,8 +249,7 @@ export default function SignatureForm({
                   Back to text signature
                 </button>
               </div>
-            </>
-          )}
+            </>          )}
           
           <div className="mt-2 flex justify-end">
             <button
@@ -275,11 +270,10 @@ export default function SignatureForm({
           className="btn-outline"
         >
           Back
-        </button>
-        <button
+        </button>          <button
           type="submit"
           className="btn-primary"
-          disabled={!isSigned}
+          disabled={!isSigned && (!sigCanvas.current || sigCanvas.current.isEmpty())}
         >
           Next
         </button>

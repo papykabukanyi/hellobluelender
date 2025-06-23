@@ -83,37 +83,33 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
     return undefined;
   };
-  
   return (
     <AuthCheck requiredPermission={getRequiredPermission()}>
       <div className="min-h-screen bg-gray-100">
-        <div className="bg-primary text-white">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Link href="/admin/dashboard" className="text-xl font-bold">
-                  <span className="font-permanentMarker">Hempire Enterprise</span> Admin
-                </Link>
-              </div>
-              <div className="flex items-center space-x-3">
-                {userData && (
-                  <span className="text-sm text-white/80">
-                    {userData.email} ({userData.role})
-                  </span>
-                )}
+        <div className="relative">
+          <div className="absolute top-4 right-4 flex items-center gap-4 z-10">
+            {userData && (
+              <div className="bg-white px-4 py-2 rounded-lg shadow flex items-center gap-3">
+                <div className="text-gray-700">
+                  <div className="font-semibold">{userData.email}</div>
+                  <div className="text-xs text-gray-500">{userData.role}</div>
+                </div>
                 <button
                   onClick={handleLogout}
                   disabled={isLoading}
-                  className="px-3 py-1 text-sm bg-white bg-opacity-20 rounded hover:bg-opacity-30 transition"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md font-medium flex items-center gap-2"
                 >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm7 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm1 4a1 1 0 102 0V7a1 1 0 10-2 0v4z" clipRule="evenodd" />
+                  </svg>
                   {isLoading ? 'Logging out...' : 'Logout'}
                 </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
-
-      <div className="container mx-auto px-4 py-6">
+        
+        <div className="container mx-auto px-4 py-6 mt-12">
         <div className="flex flex-col md:flex-row">
           <aside className="w-full md:w-64 mb-6 md:mb-0">
             <nav className="bg-white shadow rounded-lg overflow-hidden">

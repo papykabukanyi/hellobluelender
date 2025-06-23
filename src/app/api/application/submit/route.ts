@@ -65,25 +65,37 @@ export async function POST(request: NextRequest) {
         resolve(buffer.toString('base64'));
       });
     });
-      // Get email recipients from Redis
+    // Get email recipients from Redis
     const recipientsJson = await redis.get('email:recipients');
     const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];
     
     // Filter active recipients
-    const activeRecipients = recipients.filter((r: any) => r.active);    // Get SMTP owner email from environment variable (super admin, always include this)
-    const smtpOwnerEmail = 'papykabukanyi@gmail.com';
+    const activeRecipients = recipients.filter((r: any) => r.active);
     
-    // Prepare recipient list with SMTP owner first
-    const emailRecipients: string[] = [smtpOwnerEmail];
+    // Get SMTP owner email from environment variable (super admin, always include this)
+    // First try the hardcoded value for the superadmin, then fallback to env variable
+    const superAdminEmail = 'papy@hempire-entreprise.com';
+    const smtpEnvEmail = process.env.SMTP_USER || '';
+    
+    // Prepare recipient list with super admin and SMTP user first (if they're different)
+    const emailRecipients: string[] = [];
+    
+    // Always add superadmin email first
+    emailRecipients.push(superAdminEmail);
+    
+    // Add SMTP_USER email if it's different from superadmin
+    if (smtpEnvEmail && smtpEnvEmail !== superAdminEmail && !emailRecipients.includes(smtpEnvEmail)) {
+      emailRecipients.push(smtpEnvEmail);
+    }
     
     // Add all other active recipients (avoiding duplicates)
     activeRecipients.forEach((recipient: any) => {
-      if (recipient.email !== smtpOwnerEmail && !emailRecipients.includes(recipient.email)) {
+      if (!emailRecipients.includes(recipient.email)) {
         emailRecipients.push(recipient.email);
       }
     });
     
-    console.log(`Super admin (${smtpOwnerEmail}) and ${activeRecipients.length} other recipients will receive this application`);
+    console.log(`Super admin (${superAdminEmail}) and ${activeRecipients.length} other recipients will receive this application`);
     
     // Get application details for email
     const businessName = completeApplication.businessInfo?.businessName || 'Unknown Business';

@@ -90,6 +90,51 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Use this function to determine if we're on an admin page
+  // We have to use a function since we can't use hooks like usePathname in a server component
+  function getPageContent() {
+    // Check if the URL contains admin (this must be done client-side)
+    return (
+      <>
+        <SchemaScript />
+        <InitializeApp />
+        <div id="nav-placeholder" suppressHydrationWarning>
+          <Navbar />
+        </div>
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
+        <CookieConsent />
+        <ChatBot />
+        
+        {/* Client-side script to remove navbar and adjust layout for admin pages */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              const isAdminPage = window.location.pathname.startsWith('/admin');
+              if (isAdminPage) {
+                // Remove navbar for admin pages
+                const navPlaceholder = document.getElementById('nav-placeholder');
+                if (navPlaceholder) navPlaceholder.innerHTML = '';
+                
+                // Remove padding that was added for navbar
+                const mainElement = document.querySelector('main');
+                if (mainElement) mainElement.classList.remove('pt-16');
+                
+                // Hide chatbot on admin pages
+                const chatElements = document.querySelectorAll('[class*="fixed bottom-5"]'); // Target chatbot elements
+                chatElements.forEach(el => {
+                  if (el.tagName === 'BUTTON') el.style.display = 'none';
+                });
+              }
+            })();
+          `
+        }} />
+      </>
+    );
+  }
+  
   return (
     <html lang="en" className={`${inter.variable} ${permanentMarker.variable}`}>
       <head>
@@ -98,13 +143,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet" />
       </head>
       <body className="flex flex-col min-h-screen">
-        <SchemaScript />
-        <InitializeApp />
-        <Navbar />
-        <main className="flex-grow pt-16">{children}</main>
-        <Footer />
-        <CookieConsent />
-        <ChatBot />
+        {getPageContent()}
       </body>
     </html>
   );

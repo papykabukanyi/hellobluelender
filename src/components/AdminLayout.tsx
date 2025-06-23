@@ -13,7 +13,8 @@ type AdminLayoutProps = {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);  const [userData, setUserData] = useState<{
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<{
     id?: string;
     email?: string;
     role?: string;
@@ -23,7 +24,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       manageSmtp: boolean;
       manageRecipients: boolean;
     }
-  } | null>(null);  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
+  } | null>(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState<boolean>(false);
   
   // Fetch user data and permissions
   useEffect(() => {
@@ -38,17 +40,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         
         if (response.ok && data.authenticated) {
           setUserData(data.user);
+            // Check if user is super admin (directly checking for papy@hempire-enterprise.com)
+          const superAdminEmail = 'papy@hempire-enterprise.com';
+          const isSuper = data.user.email === superAdminEmail;
+          console.log('Checking super admin status:', data.user.email, 'Is super admin:', isSuper);
           
-          // Fetch SMTP user to check if current user is super admin
-          try {
-            const smtpRes = await fetch('/api/admin/smtp-user');
-            if (smtpRes.ok) {
-              const { smtpUser } = await smtpRes.json();
-              setIsSuperAdmin(data.user.email === smtpUser);
-            }
-          } catch (smtpError) {
-            console.error('Error checking super admin status:', smtpError);
-          }
+          setIsSuperAdmin(isSuper);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -70,7 +67,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       setIsLoading(false);
     }
   };
-    // Determine the required permission based on pathname
+  
+  // Determine the required permission based on pathname
   const getRequiredPermission = () => {
     if (pathname.startsWith('/admin/manage-admins')) {
       return 'manageAdmins' as const;
@@ -202,7 +200,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <main className="flex-1 md:ml-6">
             <div className="bg-white shadow rounded-lg p-6">{children}</div>
           </main>
-        </div>      </div>    </div>
+        </div>      
+        </div>    
+      </div>
       {/* Add session timeout manager */}
       <SessionManager user={userData} />
     </AuthCheck>

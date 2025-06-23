@@ -12,12 +12,11 @@ export async function GET(request: NextRequest) {
     if ('status' in currentAdmin && currentAdmin.status === 403) {
       return currentAdmin;
     }
+      // Check if user is a super admin (hardcoded correct email)
+    const superAdminEmail = 'papy@hempire-entreprise.com';
+    console.log('Leads API - Current admin:', currentAdmin.email, 'Super admin:', superAdminEmail);
     
-    // Check if user is a super admin (SMTP User from env)
-    const smtpUser = process.env.SMTP_USER || '';
-    console.log('Leads API - Current admin:', currentAdmin.email, 'SMTP user:', smtpUser);
-    
-    if (currentAdmin.email !== smtpUser) {
+    if (currentAdmin.email !== superAdminEmail) {
       console.log('Access denied: Not super admin');
       return NextResponse.json(
         { success: false, error: 'Only the super admin can access this endpoint' },

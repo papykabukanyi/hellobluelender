@@ -76,9 +76,23 @@ const ChatBot = () => {
     } catch (error) {
       console.error('Error saving chat conversation:', error);
     }
-  };
+  };  // Check if current page is admin page to disable chatbot
+  const [isAdminPage, setIsAdminPage] = useState(false);
+  
+  useEffect(() => {
+    // Check if current path is admin path
+    if (typeof window !== 'undefined') {
+      const isAdmin = window.location.pathname.startsWith('/admin');
+      setIsAdminPage(isAdmin);
+      console.log('Is admin page:', isAdmin);
+    }
+  }, []);
+  
   // Initial greeting message and auto-popup after 90 seconds
   useEffect(() => {
+    // Don't run on admin pages
+    if (isAdminPage) return;
+
     // Set initial greeting message
     if (messages.length === 0) {
       setMessages([
@@ -93,7 +107,7 @@ const ChatBot = () => {
     
     // Auto-popup after 90 seconds (90000 ms) of user presence
     const autoPopupTimer = setTimeout(() => {
-      if (!isOpen) {
+      if (!isOpen && !isAdminPage) {
         setIsOpen(true);
         // Play notification sound if available
         try {
@@ -706,7 +720,11 @@ const ChatBot = () => {
       minute: '2-digit',
     }).format(date);
   };
-
+  // Don't render anything if on admin page
+  if (isAdminPage) {
+    return null;
+  }
+  
   return (
     <>
       {/* Chat button fixed at bottom right */}

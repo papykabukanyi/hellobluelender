@@ -143,12 +143,38 @@ export async function POST(request: NextRequest) {
               
               // Add file info to log
               console.log(`Attaching document: ${docType} - ${file.name} (${filePath})`);
-              
-              // Log the file URL for debugging
-              fileAttachments.push({
-                filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
-                path: filePath,
-              });
+                // Include the file as an attachment
+              try {
+                const fs = require('fs');
+                if (fs.existsSync(filePath)) {
+                  // Read the file and convert to base64
+                  const fileContent = fs.readFileSync(filePath);
+                  const base64Content = fileContent.toString('base64');
+                  
+                  fileAttachments.push({
+                    filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                    content: base64Content,
+                    encoding: 'base64',
+                    contentType: file.name?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream',
+                  });
+                  
+                  console.log(`Successfully attached document: ${docType} - ${file.name}`);
+                } else {
+                  console.error(`File not found: ${filePath}`);
+                  // Fallback to path-based attachment
+                  fileAttachments.push({
+                    filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                    path: filePath,
+                  });
+                }
+              } catch (fileErr) {
+                console.error(`Error attaching file ${filePath}:`, fileErr);
+                // Fallback to path-based attachment
+                fileAttachments.push({
+                  filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                  path: filePath,
+                });
+              }
             }
           });
         }

@@ -214,14 +214,20 @@ export default function SignatureForm({
                 Click here to sign
               </button>
               
-              <p className="mt-3 text-center text-sm text-gray-500">- OR -</p>
-              <button 
-                type="button" 
+              <p className="mt-3 text-center text-sm text-gray-500">- OR -</p>              <button
+                type="button"
                 onClick={() => setShowSignatureCanvas(true)}
                 className="w-full mt-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
               >
                 Draw my signature manually
               </button>
+              
+              {isSigned && (
+                <div className="mt-4 p-3 border rounded bg-gray-50">
+                  <p className="text-sm text-gray-700 mb-1">Your signature:</p>
+                  <img src={signature || ''} alt="Your signature" className="max-h-24 mx-auto" />
+                </div>
+              )}
             </div>
           ) : (
             <>

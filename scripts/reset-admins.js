@@ -48,7 +48,7 @@ function loadEnvFile() {
 loadEnvFile();
 
 // Define new superadmin details
-const SUPER_ADMIN_EMAIL = 'papy@hempire-entreprise.com';
+const SUPER_ADMIN_EMAIL = 'papy@hempire-enterprise.com';
 const SUPER_ADMIN_PASSWORD = 'Admin001';
 const SUPER_ADMIN_NAME = 'Super Admin';
 

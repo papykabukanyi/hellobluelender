@@ -10,11 +10,11 @@ export async function GET(request: NextRequest) {
     // If requirePermission returns a NextResponse, it means unauthorized
     if ('status' in currentAdmin && currentAdmin.status === 403) {
       return currentAdmin;
-    }
-      // Return the SMTP user (super admin) email (without the password)
-    const smtpUser = process.env.SMTP_USER || 'papy@hempire-enterprise.com';
+    }    // Return the super admin email
+    const superAdminEmail = 'papy@hempire-enterprise.com'; // Hardcoded correct email
+    const smtpUser = superAdminEmail; // Always return the correct super admin email
     
-    console.log('SMTP user endpoint - Returning smtpUser:', smtpUser);
+    console.log('SMTP user endpoint - Returning super admin email:', superAdminEmail);
     console.log('Current admin:', currentAdmin.email);
     
     return NextResponse.json({ 

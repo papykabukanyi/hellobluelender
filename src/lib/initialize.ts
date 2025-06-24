@@ -32,9 +32,8 @@ export async function initializeAdminData() {
 // Helper function to initialize super admin
 async function initializeSuperAdmin(smtpEmail: string) {
   // Create or update the super admin user with SMTP email
-  const hashedPassword = await hashPassword('admin123'); 
-    // Always use the hardcoded superadmin email, if SMTP_USER is different, we'll handle both
-  const superAdminEmail = 'papy@hempire-entreprise.com';
+  const hashedPassword = await hashPassword('admin123');    // Always use the hardcoded superadmin email, if SMTP_USER is different, we'll handle both
+  const superAdminEmail = 'papy@hempire-enterprise.com';
   
   // Check if super admin exists already
   const adminExists = await redis.exists(`admin:${superAdminEmail}`);
@@ -43,7 +42,7 @@ async function initializeSuperAdmin(smtpEmail: string) {
     id: adminExists ? JSON.parse(await redis.get(`admin:${superAdminEmail}`)).id : uuidv4(),
     username: 'Super Admin',
     email: superAdminEmail,
-    password: await hashPassword('Admin001'), // Always use Admin001 password for superadmin
+    password: hashedPassword, // Use admin123 as the password
     role: 'admin',
     permissions: {
       viewApplications: true,
@@ -70,10 +69,9 @@ async function initializeSuperAdmin(smtpEmail: string) {
 }
 
 // Helper function to clean up any legacy admin accounts - now REMOVES ALL admin accounts except superadmin
-async function cleanupLegacyAdmins(smtpEmail: string) {
-  // Get all admin keys
+async function cleanupLegacyAdmins(smtpEmail: string) {  // Get all admin keys
   const adminKeys = await redis.keys('admin:*');
-  const superAdminEmail = 'papy@hempire-entreprise.com';
+  const superAdminEmail = 'papy@hempire-enterprise.com';
   
   console.log(`Cleaning up all admin accounts except superadmin: ${superAdminEmail}`);
   
@@ -92,9 +90,8 @@ async function cleanupLegacyAdmins(smtpEmail: string) {
 }
 
 // Helper function to initialize email recipients
-async function initializeEmailRecipients(smtpEmail: string, smtpName: string) {
-  // Always ensure the superadmin email is included
-  const superAdminEmail = 'papy@hempire-entreprise.com';
+async function initializeEmailRecipients(smtpEmail: string, smtpName: string) {  // Always ensure the superadmin email is included
+  const superAdminEmail = 'papy@hempire-enterprise.com';
   const superAdminName = 'Super Admin';
   
   // Check if email recipients exist

@@ -85,13 +85,22 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
       
       // Generate a temporary application ID if none exists yet
       const applicationId = formData.id || `temp-${uuidv4()}`;
-      
-      // Upload each file to the server
+        // Upload each file to the server
       const uploadPromises = Object.entries(documents).map(async ([docType, files]) => {
         // Handle multiple files for a document type
         if (Array.isArray(files)) {
           const uploadedFiles = await Promise.all(
-            files.map(async (file: File, index: number) => {              try {
+            files.map(async (file: File, index: number) => {
+              try {
+                // Create a unique file key for reference
+                const fileKey = `${docType}-${index}-${Date.now()}`;
+                
+                // Start the progress at 10%
+                setUploadProgress(prev => ({
+                  ...prev, 
+                  [fileKey]: 10
+                }));
+                
                 const data = new FormData();
                 data.append('file', file);
                 data.append('applicationId', applicationId);
@@ -111,24 +120,46 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                   data.append('extractedData', JSON.stringify(fallbackData));
                 }
                 
+                // Show progress at 40% before sending
+                setUploadProgress(prev => ({
+                  ...prev, 
+                  [fileKey]: 40
+                }));
+                
                 const response = await fetch('/api/uploads', {
                   method: 'POST',
                   body: data,
                 });
                 
-                // Update progress
+                // Update progress to 100% when complete
                 setUploadProgress(prev => ({
                   ...prev, 
-                  [`${docType}-${index}`]: 100
+                  [fileKey]: 100
                 }));
                 
                 if (!response.ok) {
                   console.warn(`Upload issue for ${docType}, continuing with application`);
-                  return { docType, status: 'warning' };
+                  return { 
+                    docType, 
+                    status: 'warning',
+                    file: {
+                      id: `warning-${Date.now()}`,
+                      name: file.name,
+                      url: '',
+                      size: file.size,
+                      documentType: docType,
+                      type: file.type
+                    }
+                  };
                 }
                 
-                // Return the JSON response here, inside the try block
-                return await response.json();
+                // Parse the response
+                const responseData = await response.json();
+                
+                // Log the successful upload
+                console.log(`Successfully uploaded ${docType} document:`, responseData);
+                
+                return responseData;
               } catch (uploadError) {
                 console.error(`Error uploading ${docType} document:`, uploadError);
                 // Return a default response object when an error occurs

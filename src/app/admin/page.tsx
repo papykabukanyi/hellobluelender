@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 // Metadata is handled in layout.tsx for client components
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Pre-fill with correct superadmin credentials for easy access
+  const [email, setEmail] = useState('papy@hempire-enterprise.com');
+  const [password, setPassword] = useState('admin123');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -49,10 +50,10 @@ export default function AdminLogin() {
   
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary">Blue Lender Admin</h1>
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-primary">EMPIRE ENTREPRISE ADMIN</h1>
           <p className="text-gray-600">Sign in to access the admin dashboard</p>
+          <p className="text-sm text-blue-500 mt-2">Super admin credentials pre-filled for convenience</p>
         </div>
         
         {error && (

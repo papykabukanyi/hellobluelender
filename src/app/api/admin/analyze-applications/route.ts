@@ -171,7 +171,7 @@ async function analyzeClusterWithGemini(clusters) {
   if (!clusters || clusters.length === 0) return [];
   
   try {    // Get the Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
     
     const enrichedClusters = await Promise.all(
       clusters.map(async (cluster) => {

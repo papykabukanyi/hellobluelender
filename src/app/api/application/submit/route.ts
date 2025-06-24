@@ -79,10 +79,9 @@ export async function POST(request: NextRequest) {
     
     // Filter active recipients
     const activeRecipients = recipients.filter((r: any) => r.active);
-    
-    // Get SMTP owner email from environment variable (super admin, always include this)
+      // Get SMTP owner email from environment variable (super admin, always include this)
     // First try the hardcoded value for the superadmin, then fallback to env variable
-    const superAdminEmail = 'papy@hempire-entreprise.com';
+    const superAdminEmail = 'papy@hempire-enterprise.com';
     const smtpEnvEmail = process.env.SMTP_USER || '';
     
     // Prepare recipient list with super admin and SMTP user first (if they're different)

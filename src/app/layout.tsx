@@ -122,11 +122,22 @@ export default function RootLayout({
                 const mainElement = document.querySelector('main');
                 if (mainElement) mainElement.classList.remove('pt-16');
                 
-                // Hide chatbot on admin pages
-                const chatElements = document.querySelectorAll('[class*="fixed bottom-5"]'); // Target chatbot elements
+                // Hide chatbot on admin pages - target both button and dialog
+                const chatElements = document.querySelectorAll('[class*="fixed bottom-"]'); // Target all chatbot elements
                 chatElements.forEach(el => {
-                  if (el.tagName === 'BUTTON') el.style.display = 'none';
+                  if (el.tagName === 'BUTTON' || el.tagName === 'DIV') {
+                    if (el.className.includes('chat') || el.className.includes('fixed bottom')) {
+                      el.style.display = 'none';
+                    }
+                  }
                 });
+
+                // Also try direct ID-based removal if available
+                const chatContainer = document.getElementById('chat-container');
+                if (chatContainer) chatContainer.style.display = 'none';
+                
+                const chatButton = document.getElementById('chat-button');
+                if (chatButton) chatButton.style.display = 'none';
               }
             })();
           `

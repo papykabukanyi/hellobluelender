@@ -16,7 +16,7 @@ const FINANCING_KNOWLEDGE = {
   loanTerms: "3 months to 10 years depending on financing type",
   qualifications: "6+ months in business, $10,000+ in monthly revenue, and 550+ credit score",
   contact: {
-    email: "papy@hempire-entreprise.com",
+    email: "papy@hempire-enterprise.com",
     phone: "(123) 456-7890"
   }
 };
@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }    // Get the Gemini model (text-only model)
-    // Using the correct model name for Gemini API
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-
+    // Fixing the model name to use the most recent stable API version
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    
     // Prepare chat history for context
     const formattedHistory = history.map((msg: any) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
-    }));    // Prepare prompt with role-based instructions
+    }));// Prepare prompt with role-based instructions
     const prompt = `You are a helpful, friendly assistant for EMPIRE ENTREPRISE, a business financing company.
 Your name is EMPIRE AI Assistant. Keep responses brief and professional, focusing on business financing topics.
 

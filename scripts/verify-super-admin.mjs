@@ -49,9 +49,8 @@ const redis = new Redis(process.env.REDIS_URL);
 
 async function verifyAdminConfig() {
   try {
-    console.log('Verifying Super Admin Configuration...');
-      // Use the hardcoded superadmin email for verification
-    const superAdminEmail = 'papy@hempire-entreprise.com';
+    console.log('Verifying Super Admin Configuration...');    // Use the hardcoded superadmin email for verification
+    const superAdminEmail = 'papy@hempire-enterprise.com';
     console.log(`Expected Super Admin Email: ${superAdminEmail}`);
     
     // 1. Check if super admin user exists
@@ -62,14 +61,13 @@ async function verifyAdminConfig() {
     }
     
     const admin = JSON.parse(adminJson);
-    console.log('✅ Super admin user exists');
-      // 2. Check password (without revealing the actual hash)
-    const isCorrectPassword = await bcrypt.compare('Admin001', admin.password);
+    console.log('✅ Super admin user exists');    // 2. Check password (without revealing the actual hash)
+    const isCorrectPassword = await bcrypt.compare('admin123', admin.password);
     if (!isCorrectPassword) {
-      console.error('❌ ERROR: Super admin password is not set to "Admin001"!');
+      console.error('❌ ERROR: Super admin password is not set to "admin123"!');
       process.exit(1);
     }
-    console.log('✅ Super admin password is correctly set to "Admin001"');
+    console.log('✅ Super admin password is correctly set to "admin123"');
     
     // 3. Check permissions
     const hasAllPermissions = 

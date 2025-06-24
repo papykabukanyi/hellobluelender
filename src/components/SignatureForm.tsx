@@ -41,73 +41,168 @@ export default function SignatureForm({
       }
     };
   }, []);
-    // Handle form submission
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // Check if signature exists
-    if (!isSigned) {
+    if (!isSigned || !signature) {
       alert("Please add your signature before proceeding");
       return;
     }
     
     // If using canvas signature and there's a signature pad
     if (showSignatureCanvas && sigCanvas.current) {
-      // Always get the signature from the canvas to ensure we have the most recent version
-      const isEmpty = sigCanvas.current.isEmpty();
-      
-      if (!isEmpty) {
-        // If canvas is not empty, get the signature data
-        const dataUrl = sigCanvas.current.toDataURL('image/png');
+      try {
+        // Always get the signature from the canvas to ensure we have the most recent version
+        const isEmpty = sigCanvas.current.isEmpty();
         
-        // Verify the data URL looks valid
-        if (dataUrl && dataUrl.startsWith('data:image/png;base64,')) {
-          console.log('Signature captured successfully');
-          onSignatureChange(dataUrl);
-          setIsSigned(true);
+        if (!isEmpty) {
+          try {
+            // If canvas is not empty, get the signature data
+            const dataUrl = sigCanvas.current.toDataURL('image/png');
+            
+            // Verify the data URL looks valid
+            if (dataUrl && dataUrl.startsWith('data:image/png;base64,')) {
+              console.log('Signature captured successfully');
+              onSignatureChange(dataUrl);
+              setIsSigned(true);
+            } else {
+              console.error('Failed to generate valid signature data URL');
+              // Try again with different format
+              const jpgDataUrl = sigCanvas.current.toDataURL('image/jpeg');
+              onSignatureChange(jpgDataUrl);
+              setIsSigned(true);
+            }
+          } catch (error) {
+            console.error('Error creating signature data URL:', error);
+            alert("There was a problem processing your signature. Please try again or use the text-based signature option.");
+            return;
+          }
         } else {
-          console.error('Failed to generate valid signature data URL');
-          // Try again with different format
-          const jpgDataUrl = sigCanvas.current.toDataURL('image/jpeg');
-          onSignatureChange(jpgDataUrl);
-          setIsSigned(true);
+          console.warn('Signature canvas is empty');
+          alert("Your signature appears to be empty. Please sign before proceeding.");
+          setIsSigned(false);
+          return; // Don't proceed if no signature
         }
-      } else {
-        console.warn('Signature canvas is empty');
-        setIsSigned(false);
-        return; // Don't proceed if no signature
+      } catch (error) {
+        console.error('Error processing canvas signature:', error);
+        alert("There was a problem with your signature. Please try again.");
+        return;
       }
+    }
+    
+    // Verify we have a valid signature before proceeding
+    if (!signature) {
+      alert("Please create a valid signature before proceeding");
+      return;
     }
     
     // If we've reached here, we have a signature (either from canvas or text)
     onNext({});
   };
-  
-  // Generate signature from name
+  // Generate signature from name - simplified to avoid tesseract errors
   const generateSignature = () => {
     if (firstName && lastName) {
-      // Generate signature from name
-      const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth;
-      canvas.height = 200;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        // Set signature style
-        ctx.font = 'italic 36px cursive';
-        ctx.fillStyle = 'black';
-        ctx.textBaseline = 'middle';
+      try {
+        // Create a simpler signature without any OCR dependencies
+        const canvas = document.createElement('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
         
-        // Position in the middle of canvas
+        if (!ctx) {
+          throw new Error("Could not get canvas context");
+        }
+        
+        // Clear canvas and set white background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw a simple line as base
+        ctx.strokeStyle = '#f0f0f0';
+        ctx.beginPath();
+        ctx.moveTo(40, 150);
+        ctx.lineTo(canvas.width - 40, 150);
+        ctx.stroke();
+        
+        // Format full name text
         const fullName = `${firstName} ${lastName}`;
-        const textWidth = ctx.measureText(fullName).width;
-        const xPos = (canvas.width - textWidth) / 2;
         
-        // Draw the signature
+        // Draw text signature
+        ctx.fillStyle = 'black';
+        
+        // Try different fonts based on availability
+        const fonts = [
+          'italic 38px "Dancing Script", cursive',
+          'italic 38px "Caveat", cursive',
+          'italic 38px "Pacifico", cursive',
+          'italic 38px "Great Vibes", cursive',
+          'italic 38px cursive',
+          'italic 38px "Comic Sans MS"',
+          'italic 38px "Arial"'
+        ];
+        
+        // Try fonts until one works
+        let fontUsed = false;
+        for (const font of fonts) {
+          try {
+            ctx.font = font;
+            const textWidth = ctx.measureText(fullName).width;
+            if (textWidth > 0) {
+              fontUsed = true;
+              break;
+            }
+          } catch (e) {
+            console.warn(`Font failed: ${font}`, e);
+          }
+        }
+        
+        if (!fontUsed) {
+          ctx.font = 'italic 38px sans-serif';
+        }
+        
+        // Calculate position for centered text
+        const textWidth = ctx.measureText(fullName).width;
+        const xPos = Math.max(20, (canvas.width - textWidth) / 2);
+        
+        // Draw the signature text
         ctx.fillText(fullName, xPos, canvas.height / 2);
         
-        // Convert to data URL and set as signature
-        const signatureDataUrl = canvas.toDataURL('image/png');
-        onSignatureChange(signatureDataUrl);
+        // Add some decorative elements to make it look more like a signature
+        const lastNameStart = ctx.measureText(firstName + " ").width + xPos;
+        ctx.beginPath();
+        ctx.moveTo(lastNameStart, canvas.height / 2 + 5);
+        ctx.lineTo(lastNameStart + ctx.measureText(lastName).width * 0.8, canvas.height / 2 + 5);
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // Convert to data URL
+        try {
+          const signatureDataUrl = canvas.toDataURL('image/png');
+          onSignatureChange(signatureDataUrl);
+          setIsSigned(true);
+          console.log("Text signature generated successfully");
+        } catch (e) {
+          console.error("Error with PNG signature:", e);
+          try {
+            const jpgDataUrl = canvas.toDataURL('image/jpeg');
+            onSignatureChange(jpgDataUrl);
+            setIsSigned(true);
+          } catch (jpgError) {
+            console.error("Error with JPG signature:", jpgError);
+            // Simple fallback - create a base64 image directly
+            const fallbackBase64 = `data:image/png;base64,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`;
+            onSignatureChange(fallbackBase64);
+            setIsSigned(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error in signature generation:", error);
+        // Create a very simple text signature as absolute fallback
+        const fallbackBase64 = `data:image/png;base64,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`;
+        onSignatureChange(fallbackBase64);
         setIsSigned(true);
       }
     } else {
@@ -204,17 +299,22 @@ export default function SignatureForm({
                   />
                 </div>
               </div>
+                <div className="mt-4 mb-4 flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={generateSignature}
+                  className="w-full py-3 bg-blue-600 text-white text-lg font-bold rounded-md hover:bg-blue-700 transition shadow-lg flex items-center justify-center space-x-2"
+                  disabled={!firstName || !lastName}
+                >
+                  <span>✍️</span>
+                  <span>CLICK HERE TO SIGN</span>
+                </button>
+                {(!firstName || !lastName) && (
+                  <p className="mt-2 text-red-500 text-sm">Please enter both first and last name to generate your signature</p>
+                )}
+              </div>
               
-              <button
-                type="button"
-                onClick={generateSignature}
-                className="w-full py-3 bg-primary text-white rounded-md hover:bg-primary-dark transition"
-                disabled={!firstName || !lastName}
-              >
-                Click here to sign
-              </button>
-              
-              <p className="mt-3 text-center text-sm text-gray-500">- OR -</p>              <button
+              <p className="mt-3 text-center text-sm text-gray-500">- OR -</p><button
                 type="button"
                 onClick={() => setShowSignatureCanvas(true)}
                 className="w-full mt-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"

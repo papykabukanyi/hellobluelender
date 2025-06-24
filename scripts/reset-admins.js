@@ -4,7 +4,7 @@
  * Script to reset all admin accounts except superadmin
  * 
  * This script:
- * 1. Sets superadmin credentials to papy@hempire-entreprise.com with password Admin001
+ * 1. Sets superadmin credentials to papy@hempire-enterprise.com with password admin123
  * 2. Removes all other admin accounts
  * 3. Ensures the superadmin has all permissions
  * 4. Makes sure the superadmin is included in email recipients
@@ -49,7 +49,7 @@ loadEnvFile();
 
 // Define new superadmin details
 const SUPER_ADMIN_EMAIL = 'papy@hempire-enterprise.com';
-const SUPER_ADMIN_PASSWORD = 'Admin001';
+const SUPER_ADMIN_PASSWORD = 'admin123';
 const SUPER_ADMIN_NAME = 'Super Admin';
 
 async function resetAdmins() {

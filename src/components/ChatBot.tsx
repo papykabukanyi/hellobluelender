@@ -95,11 +95,20 @@ const ChatBot = () => {
 
     // Set initial greeting message
     if (messages.length === 0) {
+      const greetings = [
+        'Hello! I\'m the EMPIRE ENTREPRISE assistant. I specialize in helping businesses find the right financing solutions. What brings you here today?',
+        'Hi there! Welcome to EMPIRE ENTREPRISE. I\'d love to help you discover financing options that could accelerate your business growth. What\'s your biggest business challenge right now?',
+        'Welcome! I\'m here to help you explore smart financing solutions for your business. What type of business are you running?',
+        'Good day! I\'m the EMPIRE financing specialist. Whether you need equipment, working capital, or expansion funding, I\'m here to help. What\'s your business focus?'
+      ];
+      
+      const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+      
       setMessages([
         {
           id: '1',
           role: 'assistant',
-          content: 'Hello! I\'m the EMPIRE ENTREPRISE assistant. I can help you with questions about our financing options or assist you in starting a new application. To better assist you, could you please share your name and email address?',
+          content: randomGreeting,
           timestamp: new Date()
         }
       ]);
@@ -215,6 +224,8 @@ const ChatBot = () => {
         },
         body: JSON.stringify({ 
           message: userMessage,
+          sessionId: sessionId,
+          history: messages.slice(-10) // Include last 10 messages for context
         }),
       });
 
@@ -227,18 +238,32 @@ const ChatBot = () => {
       const botReply: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.reply,
+        content: data.message,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botReply]);
+      
+      // Show lead generation success message if applicable
+      if (data.leadGenerated && data.conversationQuality > 7) {
+        setTimeout(() => {
+          const leadSuccessMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            role: 'assistant',
+            content: "Perfect! I have enough information to have our team reach out to you. Someone will contact you within 24 hours to discuss your financing options. Is there anything else I can help you with in the meantime?",
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, leadSuccessMessage]);
+        }, 2000);
+      }
+      
     } catch (error) {
       console.error('Error processing message:', error);
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Sorry, I encountered an error processing your request. Please try again later.',
+        content: 'I apologize, but I encountered a technical issue. Let me try to help you anyway! What type of business financing are you interested in learning about?',
         timestamp: new Date()
       };
       

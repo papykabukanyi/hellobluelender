@@ -2,6 +2,66 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/permissions';
 import redis from '@/lib/redis';
 
+// Backup geocoding function using multiple services
+async function tryGeocoding(address: string, appId: string): Promise<{lat: number, lng: number, accuracy: number} | null> {
+  // Try Nominatim first
+  try {
+    console.log(`Trying Nominatim for ${appId}: ${address}`);
+    const encodedQuery = encodeURIComponent(address);
+    
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=1&countrycodes=us&addressdetails=1&dedupe=1`, {
+      headers: {
+        'User-Agent': 'EMPIRE-ENTREPRISE-Admin/1.0 (business@empire-entreprise.com)',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const result = data[0];
+        return {
+          lat: parseFloat(result.lat),
+          lng: parseFloat(result.lon),
+          accuracy: Math.round(parseFloat(result.importance || 0.5) * 10),
+        };
+      }
+    }
+  } catch (error) {
+    console.warn(`Nominatim failed for ${address}:`, error);
+  }
+  
+  // Try Photon (another OpenStreetMap-based service) as backup
+  try {
+    console.log(`Trying Photon for ${appId}: ${address}`);
+    const encodedQuery = encodeURIComponent(address);
+    
+    const response = await fetch(`https://photon.komoot.io/api/?q=${encodedQuery}&limit=1&osm_tag=!city`, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.geometry.coordinates;
+        return {
+          lat: lat,
+          lng: lng,
+          accuracy: 7, // Default accuracy for Photon
+        };
+      }
+    }
+  } catch (error) {
+    console.warn(`Photon failed for ${address}:`, error);
+  }
+  
+  return null;
+}
+
 // API route to geocode applications
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +94,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Geocode each application using business address
+      // Geocode each application using business address with fallback strategies
     const geocodedApplications = await Promise.all(
       applications.map(async (app) => {
         try {
@@ -44,10 +104,12 @@ export async function POST(request: NextRequest) {
           const businessState = app.businessInfo?.businessState;
           const businessZipCode = app.businessInfo?.businessZipCode;
           
-          // Build full business address
-          let fullAddress = '';
+          // Try multiple address formats for better geocoding success
+          const addressVariations = [];
+          
+          // Full address
           if (businessAddress) {
-            fullAddress = businessAddress;
+            let fullAddress = businessAddress;
             if (businessCity) {
               fullAddress += `, ${businessCity}`;
             }
@@ -57,13 +119,26 @@ export async function POST(request: NextRequest) {
             if (businessZipCode) {
               fullAddress += ` ${businessZipCode}`;
             }
-          } else if (businessZipCode) {
-            // Fallback to ZIP code if no business address
-            fullAddress = businessZipCode;
+            addressVariations.push(fullAddress);
+          }
+          
+          // City, State ZIP
+          if (businessCity && businessState) {
+            addressVariations.push(`${businessCity}, ${businessState} ${businessZipCode || ''}`);
+          }
+          
+          // State ZIP
+          if (businessState && businessZipCode) {
+            addressVariations.push(`${businessState} ${businessZipCode}`);
+          }
+          
+          // ZIP code only
+          if (businessZipCode) {
+            addressVariations.push(businessZipCode);
           }
           
           // Skip if no address information is available
-          if (!fullAddress) {
+          if (addressVariations.length === 0) {
             console.warn(`No business address found for application ${app.id}`);
             return {
               ...app,
@@ -71,53 +146,80 @@ export async function POST(request: NextRequest) {
             };
           }
           
-          // Use full business address for geocoding
-          console.log(`Geocoding business address for ${app.id}: ${fullAddress}`);
-          const encodedQuery = encodeURIComponent(fullAddress);
-          
-          // Call the Nominatim API (OpenStreetMap)
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=1&countrycodes=us`, {
-            headers: {
-              'User-Agent': 'EMPIRE-ENTREPRISE-Admin/1.0',
-              'Accept-Language': 'en-US,en;q=0.9'
+          // Try geocoding with different address variations
+          for (const address of addressVariations) {
+            try {
+              console.log(`Geocoding business address for ${app.id}: ${address}`);
+              
+              // Call the Nominatim API (OpenStreetMap) with better parameters
+              const location = await tryGeocoding(address, app.id);
+              
+              if (location) {
+                console.log(`Successfully geocoded ${app.id} with address: ${address}`);
+                
+                // Store the location data with the application in Redis
+                const applicationJson = await redis.get(`application:${app.id}`);
+                if (applicationJson) {
+                  const applicationData = JSON.parse(applicationJson);
+                  applicationData.location = location;
+                  
+                  await redis.set(`application:${app.id}`, JSON.stringify(applicationData));
+                }
+                
+                // Add delay to respect Nominatim usage policy
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                return {
+                  ...app,
+                  location
+                };
+              }
+              
+              // Add small delay between attempts
+              await new Promise(resolve => setTimeout(resolve, 500));
+            } catch (geocodeError) {
+              console.warn(`Geocoding attempt failed for ${address}:`, geocodeError);
+              continue;
             }
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Nominatim API returned ${response.status}`);
           }
           
-          const data = await response.json();
-            // Check if we got results
-          if (!data || data.length === 0) {
-            console.warn(`No geocoding results found for business address: ${fullAddress}`);
-            return {
-              ...app,
-              location: null
+          // If all geocoding attempts failed, try to use ZIP code for approximate location
+          if (businessZipCode) {
+            // Basic ZIP code to approximate coordinates mapping for common areas
+            const zipCodeLocations: {[key: string]: {lat: number, lng: number}} = {
+              '78660': { lat: 30.4580, lng: -97.6173 }, // Pflugerville, TX
+              '84104': { lat: 40.7478, lng: -111.8792 }, // Salt Lake City, UT
+              // Add more as needed
             };
-          }
-            // Extract coordinates from the first result
-          const result = data[0];
-          const location = {
-            lat: parseFloat(result.lat),
-            lng: parseFloat(result.lon),
-            accuracy: Math.round(parseFloat(result.importance) * 10), // Convert importance to an accuracy score (0-10)
-          };
-            // Store the location data with the application in Redis
-          const applicationJson = await redis.get(`application:${app.id}`);
-          if (applicationJson) {
-            const applicationData = JSON.parse(applicationJson);
-            applicationData.location = location;
             
-            await redis.set(`application:${app.id}`, JSON.stringify(applicationData));
+            if (zipCodeLocations[businessZipCode]) {
+              const location = {
+                ...zipCodeLocations[businessZipCode],
+                accuracy: 3 // Low accuracy for ZIP-based location
+              };
+              
+              console.log(`Using ZIP-based location for ${app.id}: ${businessZipCode}`);
+              
+              // Store the location data with the application in Redis
+              const applicationJson = await redis.get(`application:${app.id}`);
+              if (applicationJson) {
+                const applicationData = JSON.parse(applicationJson);
+                applicationData.location = location;
+                
+                await redis.set(`application:${app.id}`, JSON.stringify(applicationData));
+              }
+              
+              return {
+                ...app,
+                location
+              };
+            }
           }
           
-          // Add 1-second delay to respect Nominatim usage policy
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
+          console.warn(`All geocoding attempts failed for application ${app.id}`);
           return {
             ...app,
-            location
+            location: null
           };
         } catch (error) {
           console.error(`Error geocoding application ${app.id}:`, error);

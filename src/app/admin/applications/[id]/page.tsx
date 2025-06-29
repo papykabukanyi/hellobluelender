@@ -207,6 +207,10 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 <p className="text-sm text-gray-500">Date of Birth</p>
                 <p>{application.personalInfo?.dateOfBirth || 'N/A'}</p>
               </div>
+              <div>
+                <p className="text-sm text-gray-500">SSN</p>
+                <p>{application.personalInfo?.ssn || 'N/A'}</p>
+              </div>
             </div>
           </div>
           
@@ -283,6 +287,14 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 <div>
                   <p className="text-sm text-gray-500">City/State/ZIP</p>
                   <p>{application.coApplicantInfo?.city || 'N/A'}, {application.coApplicantInfo?.state || 'N/A'} {application.coApplicantInfo?.zipCode || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Date of Birth</p>
+                  <p>{application.coApplicantInfo?.dateOfBirth || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">SSN</p>
+                  <p>{application.coApplicantInfo?.ssn || 'N/A'}</p>
                 </div>
               </div>
             </div>

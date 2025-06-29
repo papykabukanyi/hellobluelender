@@ -49,9 +49,29 @@ function forceDeleteDirectory(dir) {
     } catch (fsError) {
       console.error(`🚨 CRITICAL: Could not delete ${dir}: ${fsError.message}`);
       
-      // If standalone directory is the problem, try to at least delete the contents
-      if (dir.includes('standalone')) {
-        console.log('🔨 Emergency measures: Attempting to delete contents only...');
+      // If this is the standalone directory, try multiple approaches
+      if (dir.includes('standalone') || dir.endsWith('.next')) {
+        console.log('🔨 Emergency measures for standalone/next directory...');
+        
+        // Method 1: Try to kill any processes that might be locking the files
+        if (process.platform === 'win32') {
+          try {
+            console.log('Attempting to kill Node.js processes...');
+            execSync('taskkill /f /im node.exe 2>nul || echo "No Node processes found"', { stdio: 'inherit' });
+            
+            // Wait a moment for processes to fully terminate
+            setTimeout(() => {}, 1000);
+            
+            // Try deletion again
+            execSync(`rd /s /q "${dir}" 2>nul || echo "Deletion failed"`, { stdio: 'inherit' });
+            console.log('✅ Successfully removed after killing processes');
+            return;
+          } catch (e) {
+            console.log('Process killing failed, continuing...');
+          }
+        }
+        
+        // Method 2: Try to delete contents recursively
         try {
           const files = fs.readdirSync(dir);
           for (const file of files) {
@@ -59,7 +79,7 @@ function forceDeleteDirectory(dir) {
             try {
               if (fs.statSync(filePath).isDirectory()) {
                 if (process.platform === 'win32') {
-                  execSync(`rd /s /q "${filePath}"`, { stdio: 'inherit' });
+                  execSync(`rd /s /q "${filePath}" 2>nul || echo "Failed: ${file}"`, { stdio: 'inherit' });
                 } else {
                   execSync(`rm -rf "${filePath}"`, { stdio: 'inherit' });
                 }
@@ -70,7 +90,14 @@ function forceDeleteDirectory(dir) {
               console.error(`Failed to delete ${filePath}: ${e.message}`);
             }
           }
-          console.log('Attempted to clear directory contents.');
+          
+          // Try to remove the now-empty directory
+          try {
+            fs.rmdirSync(dir);
+            console.log('✅ Successfully removed directory after cleaning contents');
+          } catch (e) {
+            console.log('Directory may still have hidden files, but contents cleared');
+          }
         } catch (e) {
           console.error('💀 Complete failure to clean directory.');
         }

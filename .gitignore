@@ -70,3 +70,6 @@ test-status.txt
 *.secret
 credentials.txt
 admin-credentials.txt
+
+# Private project documentation
+project-documentation.txt

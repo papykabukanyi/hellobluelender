@@ -19,6 +19,14 @@ const nextConfig = {
   
   // Make sure SWC is used for the build
   swcMinify: true,
+  
+  // Experimental features to handle file system issues
+  experimental: {
+    // This helps with Windows file locking issues
+    caseSensitiveRoutes: false,
+    // Better error handling for standalone builds
+    outputFileTracingRoot: process.cwd(),
+  },
 };
 
 export default nextConfig;

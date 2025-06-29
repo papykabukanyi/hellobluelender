@@ -34,32 +34,51 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-      // Geocode each application
+      // Geocode each application using business address
     const geocodedApplications = await Promise.all(
       applications.map(async (app) => {
         try {
-          // Try to get location from business address or ZIP code
-          const address = app.businessInfo?.businessAddress;
-          const city = app.businessInfo?.city;
-          const state = app.businessInfo?.state;
-          const zipCode = app.businessInfo?.zipCode;
+          // Use business address primarily for geocoding
+          const businessAddress = app.businessInfo?.businessAddress;
+          const businessCity = app.businessInfo?.businessCity;
+          const businessState = app.businessInfo?.businessState;
+          const businessZipCode = app.businessInfo?.businessZipCode;
+          
+          // Build full business address
+          let fullAddress = '';
+          if (businessAddress) {
+            fullAddress = businessAddress;
+            if (businessCity) {
+              fullAddress += `, ${businessCity}`;
+            }
+            if (businessState) {
+              fullAddress += `, ${businessState}`;
+            }
+            if (businessZipCode) {
+              fullAddress += ` ${businessZipCode}`;
+            }
+          } else if (businessZipCode) {
+            // Fallback to ZIP code if no business address
+            fullAddress = businessZipCode;
+          }
           
           // Skip if no address information is available
-          if (!address && !zipCode) {
+          if (!fullAddress) {
+            console.warn(`No business address found for application ${app.id}`);
             return {
               ...app,
               location: null
             };
           }
           
-          // Format the address query
-          const query = `${address || ''} ${city || ''} ${state || ''} ${zipCode || ''}`.trim();
-          const encodedQuery = encodeURIComponent(query);
+          // Use full business address for geocoding
+          console.log(`Geocoding business address for ${app.id}: ${fullAddress}`);
+          const encodedQuery = encodeURIComponent(fullAddress);
           
           // Call the Nominatim API (OpenStreetMap)
-          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=1`, {
+          const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodedQuery}&limit=1&countrycodes=us`, {
             headers: {
-              'User-Agent': 'HempireEnterprise/1.0',
+              'User-Agent': 'EMPIRE-ENTREPRISE-Admin/1.0',
               'Accept-Language': 'en-US,en;q=0.9'
             }
           });
@@ -71,7 +90,7 @@ export async function POST(request: NextRequest) {
           const data = await response.json();
             // Check if we got results
           if (!data || data.length === 0) {
-            console.warn(`No geocoding results found for address: ${query}`);
+            console.warn(`No geocoding results found for business address: ${fullAddress}`);
             return {
               ...app,
               location: null

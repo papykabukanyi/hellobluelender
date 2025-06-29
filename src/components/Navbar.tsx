@@ -1,31 +1,20 @@
-'use client';
-
 import Link from 'next/link';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 
 interface NavbarProps {
   transparent?: boolean;
 }
 
 export default function Navbar({ transparent = false }: NavbarProps) {
-  // Use client-side state to control styling (eliminates hydration errors)
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  // Default styling for server-side rendering
-  const defaultClass = 'bg-white text-primary shadow-md';
-  
-  // Only apply transparent styling after component mounts
-  const finalNavClass = !mounted ? defaultClass : 
-    (transparent ? 'bg-transparent text-white' : 'bg-white text-primary shadow-md');
+  const navClass = transparent 
+    ? 'bg-transparent text-white' 
+    : 'bg-white text-primary shadow-md';
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-300 ${finalNavClass}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 px-4 transition-all duration-300 ${navClass}`}>
       <div className="container-custom flex items-center justify-between h-16">        <div className="flex items-center">          
           <Link href="/" className="text-xl tracking-wide font-permanentMarker text-primary hover:scale-105 transition-transform">
-            EMPIRE ENTREPRISE
+            HEMPIRE ENTERPRISE
           </Link>
         </div>
         

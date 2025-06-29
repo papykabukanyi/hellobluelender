@@ -3,9 +3,13 @@
 import { useState } from 'react';
 import { ApplicationDocuments, LoanApplication } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import EnhancedDocumentUpload from './EnhancedDocumentUpload';
-import { DocumentType, ExtractedDocumentData } from '@/lib/document-scanner/DocumentScanner';
+// import EnhancedDocumentUpload from './EnhancedDocumentUpload';
+// import { DocumentType, ExtractedDocumentData } from '@/lib/document-scanner/DocumentScanner';
 import { AnimatedButton, FadeIn } from './animations';
+
+type ExtractedDocumentData = {
+  [key: string]: any;
+};
 
 type DocumentUploadProps = {
   onNext: (data: { documents: ApplicationDocuments }) => void;
@@ -85,22 +89,13 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
       
       // Generate a temporary application ID if none exists yet
       const applicationId = formData.id || `temp-${uuidv4()}`;
-        // Upload each file to the server
+      
+      // Upload each file to the server
       const uploadPromises = Object.entries(documents).map(async ([docType, files]) => {
         // Handle multiple files for a document type
         if (Array.isArray(files)) {
           const uploadedFiles = await Promise.all(
-            files.map(async (file: File, index: number) => {
-              try {
-                // Create a unique file key for reference
-                const fileKey = `${docType}-${index}-${Date.now()}`;
-                
-                // Start the progress at 10%
-                setUploadProgress(prev => ({
-                  ...prev, 
-                  [fileKey]: 10
-                }));
-                
+            files.map(async (file: File, index: number) => {              try {
                 const data = new FormData();
                 data.append('file', file);
                 data.append('applicationId', applicationId);
@@ -120,46 +115,24 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                   data.append('extractedData', JSON.stringify(fallbackData));
                 }
                 
-                // Show progress at 40% before sending
-                setUploadProgress(prev => ({
-                  ...prev, 
-                  [fileKey]: 40
-                }));
-                
                 const response = await fetch('/api/uploads', {
                   method: 'POST',
                   body: data,
                 });
                 
-                // Update progress to 100% when complete
+                // Update progress
                 setUploadProgress(prev => ({
                   ...prev, 
-                  [fileKey]: 100
+                  [`${docType}-${index}`]: 100
                 }));
                 
                 if (!response.ok) {
                   console.warn(`Upload issue for ${docType}, continuing with application`);
-                  return { 
-                    docType, 
-                    status: 'warning',
-                    file: {
-                      id: `warning-${Date.now()}`,
-                      name: file.name,
-                      url: '',
-                      size: file.size,
-                      documentType: docType,
-                      type: file.type
-                    }
-                  };
+                  return { docType, status: 'warning' };
                 }
                 
-                // Parse the response
-                const responseData = await response.json();
-                
-                // Log the successful upload
-                console.log(`Successfully uploaded ${docType} document:`, responseData);
-                
-                return responseData;
+                // Return the JSON response here, inside the try block
+                return await response.json();
               } catch (uploadError) {
                 console.error(`Error uploading ${docType} document:`, uploadError);
                 // Return a default response object when an error occurs
@@ -222,12 +195,13 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                 Business License/Registration *
               </label>
             </FadeIn>
-            <EnhancedDocumentUpload
-              onDataExtracted={(data) => handleDataExtracted('businessLicense', data)}
-              onSave={(data) => handleDocumentSave('businessLicense', data)}
-              acceptedFileTypes={['.pdf', '.jpg', '.jpeg', '.png']}
-              maxFileSize={10}
-              maxFiles={1}
+            <input
+              type="file"
+              id="businessLicense"
+              className="form-input"
+              onChange={(e) => handleFileChange(e, 'businessLicense')}
+              accept=".pdf,.jpg,.jpeg,.png"
+              required
             />
             {errors.businessLicense && (
               <p className="mt-1 text-sm text-red-600">{errors.businessLicense}</p>
@@ -240,12 +214,13 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                 Government-issued ID (Driver's License or Passport) *
               </label>
             </FadeIn>
-            <EnhancedDocumentUpload
-              onDataExtracted={(data) => handleDataExtracted('identificationDocument', data)}
-              onSave={(data) => handleDocumentSave('identificationDocument', data)}
-              acceptedFileTypes={['.pdf', '.jpg', '.jpeg', '.png']}
-              maxFileSize={10}
-              maxFiles={1}
+            <input
+              type="file"
+              id="identificationDocument"
+              className="form-input"
+              onChange={(e) => handleFileChange(e, 'identificationDocument')}
+              accept=".pdf,.jpg,.jpeg,.png"
+              required
             />
             {errors.identificationDocument && (
               <p className="mt-1 text-sm text-red-600">{errors.identificationDocument}</p>

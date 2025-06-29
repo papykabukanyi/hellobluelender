@@ -32,16 +32,6 @@
 .env.production.local
 .vercel
 
-# Instruction documents
-*-INSTRUCTIONS.md
-*-INSTRUCTIONS-*.md
-*-FEATURES.md
-*-SECURITY.md
-*-ENHANCEMENT.md
-*-STATUS.md
-*-SUMMARY.md
-IMPLEMENTATION-GUIDE.md
-
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -72,3 +62,11 @@ next-env.d.ts
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Secret admin files (NEVER commit these)
+admin-secrets.txt
+test-status.txt
+*-status.txt
+*.secret
+credentials.txt
+admin-credentials.txt

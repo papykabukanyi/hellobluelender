@@ -6,9 +6,8 @@ import AdminLayout from '@/components/AdminLayout';
 import { LoanApplication } from '@/types';
 import { useRouter } from 'next/navigation';
 
-export default function ApplicationDetails({ params }: { params: { id: string } | Promise<{ id: string }> }) {
-  const resolvedParams = React.use(params);
-  const applicationId = resolvedParams.id;
+export default function ApplicationDetails({ params }: { params: { id: string } }) {
+  const applicationId = params.id;
   
   const [application, setApplication] = useState<LoanApplication | null>(null);
   const [loading, setLoading] = useState(true);
@@ -287,7 +286,82 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 </div>
               </div>
             </div>
-          )}          {/* Signatures Section */}
+          )}
+
+          {/* Uploaded Documents Section */}
+          {application.documents && Object.keys(application.documents).length > 0 && (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="text-lg font-semibold mb-4 border-b pb-2">Uploaded Documents</h3>
+              
+              <div className="space-y-4">
+                {Object.entries(application.documents).map(([docType, files]) => (
+                  <div key={docType} className="border rounded-lg p-4">
+                    <h4 className="font-medium text-gray-900 mb-3 capitalize">
+                      {docType.replace(/([A-Z])/g, ' $1').trim()}
+                    </h4>
+                    
+                    {Array.isArray(files) && files.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {files.map((file: any, index: number) => (
+                          <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900 truncate">
+                                  {file.originalName || file.name || `Document ${index + 1}`}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {file.type && file.type.includes('pdf') ? '📄 PDF' : '🖼️ Image'}
+                                  {file.size && ` • ${Math.round(file.size / 1024)} KB`}
+                                </p>
+                                {file.uploadedAt && (
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    Uploaded: {formatDate(file.uploadedAt)}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="mt-3 flex gap-2">
+                              {file.path && (
+                                <a
+                                  href={file.path}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                                >
+                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                  View
+                                </a>
+                              )}
+                              {file.path && (
+                                <a
+                                  href={file.path}
+                                  download={file.originalName || file.name}
+                                  className="inline-flex items-center px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+                                >
+                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                  Download
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">No documents uploaded for this category</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Signatures Section */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h3 className="text-lg font-semibold mb-4 border-b pb-2">Signatures</h3>
             

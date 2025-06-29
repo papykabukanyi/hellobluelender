@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node ./cleanup.js || echo 'Cleanup completed'",
+    "prebuild": "node ./cleanup.js || exit 0",
     "build": "next build",
     "start": "node server.js",
     "healthcheck": "node healthcheck.js",

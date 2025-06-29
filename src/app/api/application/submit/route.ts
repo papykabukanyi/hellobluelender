@@ -134,14 +134,15 @@ export async function POST(request: NextRequest) {
       Object.entries(completeApplication.documents).forEach(([docType, files]) => {
         if (Array.isArray(files) && files.length > 0) {
           files.forEach((file, index) => {
-            if (file && file.url) {
-              // Get file path from URL
-              const filePath = file.url.startsWith('/') 
-                ? `public${file.url}` 
-                : `public/${file.url}`;
+            if (file && (file.path || file.url)) {
+              // Get file path from URL or path
+              const fileUrl = file.path || file.url;
+              const filePath = fileUrl.startsWith('/') 
+                ? `public${fileUrl}` 
+                : `public/${fileUrl}`;
               
               // Add file info to log
-              console.log(`Attaching document: ${docType} - ${file.name} (${filePath})`);
+              console.log(`Attaching document: ${docType} - ${file.originalName || file.name} (${filePath})`);
                 // Include the file as an attachment
               try {
                 const fs = require('fs');
@@ -151,18 +152,18 @@ export async function POST(request: NextRequest) {
                   const base64Content = fileContent.toString('base64');
                   
                   fileAttachments.push({
-                    filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                    filename: `${docType}_${index + 1}_${file.originalName || file.name || 'document.pdf'}`,
                     content: base64Content,
                     encoding: 'base64',
-                    contentType: file.name?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream',
+                    contentType: file.type || (file.originalName?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream'),
                   });
                   
-                  console.log(`Successfully attached document: ${docType} - ${file.name}`);
+                  console.log(`Successfully attached document: ${docType} - ${file.originalName || file.name}`);
                 } else {
                   console.error(`File not found: ${filePath}`);
                   // Fallback to path-based attachment
                   fileAttachments.push({
-                    filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                    filename: `${docType}_${index + 1}_${file.originalName || file.name || 'document.pdf'}`,
                     path: filePath,
                   });
                 }
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
                 console.error(`Error attaching file ${filePath}:`, fileErr);
                 // Fallback to path-based attachment
                 fileAttachments.push({
-                  filename: `${docType}_${index + 1}_${file.name || 'document.pdf'}`,
+                  filename: `${docType}_${index + 1}_${file.originalName || file.name || 'document.pdf'}`,
                   path: filePath,
                 });
               }

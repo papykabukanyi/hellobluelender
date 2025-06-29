@@ -600,19 +600,25 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             {/* Background overlay */}
             <div 
-              className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+              className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
               onClick={closeDocumentModal}
             ></div>
 
             {/* Modal panel */}
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
-                  {documentModal.title}
-                </h3>
+            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full sm:p-6">
+              {/* Modal Header */}
+              <div className="flex justify-between items-center mb-6 border-b pb-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {documentModal.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {documentModal.document?.originalName || documentModal.document?.name}
+                  </p>
+                </div>
                 <button
                   onClick={closeDocumentModal}
-                  className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                  className="rounded-full p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none transition-colors"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -620,51 +626,79 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 </button>
               </div>
 
-              <div className="mt-4">
+              {/* Document Preview */}
+              <div className="mb-6">
                 {documentModal.document && documentModal.document.path && (
-                  <div className="w-full h-96 border rounded-lg overflow-hidden">
+                  <div className="w-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 overflow-hidden">
                     {documentModal.document.type && documentModal.document.type.includes('pdf') ? (
                       <iframe
                         src={documentModal.document.path}
-                        className="w-full h-full"
+                        className="w-full h-96 lg:h-[500px] border-0"
                         title={documentModal.title}
                       />
                     ) : (
-                      <img
-                        src={documentModal.document.path}
-                        alt={documentModal.title}
-                        className="w-full h-full object-contain"
-                      />
+                      <div className="flex items-center justify-center p-8">
+                        <img
+                          src={documentModal.document.path}
+                          alt={documentModal.title}
+                          className="max-w-full max-h-96 lg:max-h-[500px] object-contain rounded shadow-lg"
+                        />
+                      </div>
                     )}
                   </div>
                 )}
               </div>
 
-              <div className="mt-6 flex justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">
-                    File: {documentModal.document?.originalName || documentModal.document?.name}
-                  </p>
+              {/* Document Info */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">File Name:</span>
+                    <p className="text-gray-900 mt-1">{documentModal.document?.originalName || documentModal.document?.name || 'Unknown'}</p>
+                  </div>
                   {documentModal.document?.size && (
-                    <p className="text-sm text-gray-500">
-                      Size: {Math.round(documentModal.document.size / 1024)} KB
-                    </p>
+                    <div>
+                      <span className="font-medium text-gray-600">File Size:</span>
+                      <p className="text-gray-900 mt-1">{Math.round(documentModal.document.size / 1024)} KB</p>
+                    </div>
+                  )}
+                  {documentModal.document?.uploadedAt && (
+                    <div>
+                      <span className="font-medium text-gray-600">Uploaded:</span>
+                      <p className="text-gray-900 mt-1">{formatDate(documentModal.document.uploadedAt)}</p>
+                    </div>
                   )}
                 </div>
-                <div className="flex gap-2">
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-between items-center">
+                <button
+                  onClick={closeDocumentModal}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  Close
+                </button>
+                <div className="flex gap-3">
                   <a
                     href={documentModal.document?.path}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    className="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M8 8l8-8m0 0V8m0-8h8" />
+                    </svg>
                     Open in New Tab
                   </a>
                   <a
                     href={documentModal.document?.path}
                     download={documentModal.document?.originalName || documentModal.document?.name}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
                   >
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                     Download
                   </a>
                 </div>

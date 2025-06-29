@@ -1,6 +1,6 @@
-# Project
+# EMPIRE ENTREPRISE - Loan Application System
 
-Bluelender
+A professional loan application system built with Next.js.
 
 ## License
 

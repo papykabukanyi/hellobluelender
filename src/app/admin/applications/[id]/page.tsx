@@ -329,47 +329,73 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
           {/* Uploaded Documents Section */}
           {application.documents && Object.keys(application.documents).length > 0 && (
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold mb-4 border-b pb-2">Uploaded Documents</h3>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold border-b pb-2">Uploaded Documents</h3>
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>{Object.keys(application.documents).length} categories</span>
+                </div>
+              </div>
               
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {Object.entries(application.documents).map(([docType, files]) => (
-                  <div key={docType} className="border rounded-lg p-4">
-                    <h4 className="font-medium text-gray-900 mb-3 capitalize">
-                      {docType.replace(/([A-Z])/g, ' $1').trim()}
-                    </h4>
+                  <div key={docType} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-base font-semibold text-gray-800 flex items-center">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                        {docType.replace(/([A-Z])/g, ' $1').trim()}
+                      </h4>
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                        {Array.isArray(files) ? files.length : 0} files
+                      </span>
+                    </div>
                     
                     {Array.isArray(files) && files.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                         {files.map((file: any, index: number) => (
-                          <div key={index} className="border rounded-lg p-3 bg-gray-50">
-                            <div className="flex items-start justify-between">
+                          <div key={index} className="bg-white rounded-lg p-4 border border-gray-200 hover:shadow-md transition-all duration-200 group">
+                            <div className="flex items-start justify-between mb-3">
                               <div className="flex-1">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                  {file.originalName || file.name || `Document ${index + 1}`}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {file.type && file.type.includes('pdf') ? '📄 PDF' : '🖼️ Image'}
-                                  {file.size && ` • ${Math.round(file.size / 1024)} KB`}
-                                </p>
-                                {file.uploadedAt && (
-                                  <p className="text-xs text-gray-400 mt-1">
-                                    Uploaded: {formatDate(file.uploadedAt)}
-                                  </p>
-                                )}
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <div className="text-2xl">
+                                    {file.type && file.type.includes('pdf') ? '📄' : '🖼️'}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-semibold text-gray-900 truncate">
+                                      {file.originalName || file.name || `Document ${index + 1}`}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      {file.type && file.type.includes('pdf') ? 'PDF Document' : 'Image File'}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between text-xs text-gray-400 mb-3">
+                                  <span>
+                                    {file.size && `${Math.round(file.size / 1024)} KB`}
+                                  </span>
+                                  {file.uploadedAt && (
+                                    <span>
+                                      {formatDate(file.uploadedAt)}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                             
-                            <div className="mt-3 flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                               {file.path && (
                                 <button
                                   onClick={() => openDocumentModal(file, `${docType} - ${file.originalName || file.name || `Document ${index + 1}`}`)}
-                                  className="inline-flex items-center px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+                                  className="flex-1 inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors group-hover:scale-105 transform duration-200"
                                 >
                                   <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                   </svg>
-                                  View in Modal
+                                  Preview
                                 </button>
                               )}
                               {file.path && (
@@ -377,24 +403,24 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                                   href={file.path}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200 transition-colors"
+                                  className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                                  title="Open in new tab"
                                 >
-                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M8 8l8-8m0 0V8m0-8h8" />
                                   </svg>
-                                  Open in Tab
                                 </a>
                               )}
                               {file.path && (
                                 <a
                                   href={file.path}
                                   download={file.originalName || file.name}
-                                  className="inline-flex items-center px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors"
+                                  className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                  title="Download file"
                                 >
-                                  <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                   </svg>
-                                  Download
                                 </a>
                               )}
                             </div>
@@ -402,7 +428,12 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                         ))}
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-500">No documents uploaded for this category</p>
+                      <div className="text-center py-8">
+                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p className="mt-2 text-sm text-gray-500">No documents uploaded for this category</p>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -591,6 +622,237 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
               )}
             </div>
           </div>
+
+          {/* Application Metadata Section */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold mb-4 border-b pb-2 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Application Metadata
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h4 className="text-sm font-semibold text-gray-700">Submission Details</h4>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Application ID:</span>
+                    <span className="font-mono text-gray-900">{application.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Created:</span>
+                    <span className="text-gray-900">{formatDate(application.createdAt)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Last Updated:</span>
+                    <span className="text-gray-900">{formatDate(application.updatedAt)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Current Status:</span>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                      application.status === 'denied' ? 'bg-red-100 text-red-800' : 
+                      application.status === 'in-review' ? 'bg-yellow-100 text-yellow-800' : 
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {application.status === 'in-review' ? 'In Review' : 
+                       application.status === 'submitted' ? 'New' :
+                       application.status ? (application.status.charAt(0).toUpperCase() + application.status.slice(1)) : 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h4 className="text-sm font-semibold text-gray-700">Application Summary</h4>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Loan Type:</span>
+                    <span className="font-medium text-gray-900">{application.loanInfo?.loanType || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Amount:</span>
+                    <span className="font-medium text-gray-900">{formatCurrency(application.loanInfo?.loanAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Business:</span>
+                    <span className="font-medium text-gray-900 truncate" title={application.businessInfo?.businessName}>
+                      {application.businessInfo?.businessName || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Co-Applicant:</span>
+                    <span className="text-gray-900">
+                      {application.coApplicantInfo ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <svg className="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <h4 className="text-sm font-semibold text-gray-700">Documents & Data</h4>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Doc Categories:</span>
+                    <span className="text-gray-900">
+                      {application.documents ? Object.keys(application.documents).length : 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Total Files:</span>
+                    <span className="text-gray-900">
+                      {application.documents ? 
+                        Object.values(application.documents).reduce((total, files) => 
+                          total + (Array.isArray(files) ? files.length : 0), 0
+                        ) : 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Signatures:</span>
+                    <span className="text-gray-900">
+                      {[application.signature, application.coApplicantSignature].filter(Boolean).length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Location Data:</span>
+                    <span className="text-gray-900">
+                      {application.location ? 'Available' : 'Not Available'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Document Modal */}
+          {documentModal.isOpen && (
+            <div className="fixed inset-0 z-50 overflow-y-auto">
+              <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                {/* Background overlay */}
+                <div 
+                  className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                  onClick={closeDocumentModal}
+                ></div>
+
+                {/* Modal panel */}
+                <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full sm:p-6">
+                  {/* Modal Header */}
+                  <div className="flex justify-between items-center mb-6 border-b pb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {documentModal.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {documentModal.document?.originalName || documentModal.document?.name}
+                      </p>
+                    </div>
+                    <button
+                      onClick={closeDocumentModal}
+                      className="rounded-full p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none transition-colors"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Document Preview */}
+                  <div className="mb-6">
+                    {documentModal.document && documentModal.document.path && (
+                      <div className="w-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 overflow-hidden">
+                        {documentModal.document.type && documentModal.document.type.includes('pdf') ? (
+                          <iframe
+                            src={documentModal.document.path}
+                            className="w-full h-96 lg:h-[500px] border-0"
+                            title={documentModal.title}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center p-8">
+                            <img
+                              src={documentModal.document.path}
+                              alt={documentModal.title}
+                              className="max-w-full max-h-96 lg:max-h-[500px] object-contain rounded shadow-lg"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Document Info */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-600">File Name:</span>
+                        <p className="text-gray-900 mt-1">{documentModal.document?.originalName || documentModal.document?.name || 'Unknown'}</p>
+                      </div>
+                      {documentModal.document?.size && (
+                        <div>
+                          <span className="font-medium text-gray-600">File Size:</span>
+                          <p className="text-gray-900 mt-1">{Math.round(documentModal.document.size / 1024)} KB</p>
+                        </div>
+                      )}
+                      {documentModal.document?.uploadedAt && (
+                        <div>
+                          <span className="font-medium text-gray-600">Uploaded:</span>
+                          <p className="text-gray-900 mt-1">{formatDate(documentModal.document.uploadedAt)}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-between items-center">
+                    <button
+                      onClick={closeDocumentModal}
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    >
+                      Close
+                    </button>
+                    <div className="flex gap-3">
+                      <a
+                        href={documentModal.document?.path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M8 8l8-8m0 0V8m0-8h8" />
+                        </svg>
+                        Open in New Tab
+                      </a>
+                      <a
+                        href={documentModal.document?.path}
+                        download={documentModal.document?.originalName || documentModal.document?.name}
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

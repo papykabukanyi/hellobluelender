@@ -129,13 +129,104 @@ export const generatePDF = async (
     const metadataY = (applicationData.coApplicantInfo 
       ? (applicationData.loanInfo.loanType === 'Equipment' ? 290 : 280)
       : 265) + 25;
-    doc.setFontSize(9);
-    doc.text('Application Metadata (For Internal Use Only)', 20, metadataY);
-    doc.setFontSize(8);
-    doc.text(`IP Address: ${ipAddress}`, 20, metadataY + 8);
-    doc.text(`User Agent: ${userAgent}`, 20, metadataY + 14);
-    doc.text(`Submission Date: ${new Date().toLocaleString()}`, 20, metadataY + 20);
-    doc.text(`Application ID: ${applicationData.id || 'Not assigned yet'}`, 20, metadataY + 26);
+    
+    // Add a new page if we're running out of space
+    if (metadataY > 270) {
+      doc.addPage();
+      const newPageY = 20;
+      
+      // Header for metadata page
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('EMPIRE ENTREPRISE', 105, newPageY, { align: 'center' });
+      doc.setFontSize(12);
+      doc.text('Application Metadata & Technical Details', 105, newPageY + 10, { align: 'center' });
+      
+      // Metadata content
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Submission Information', 20, newPageY + 25);
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Application ID: ${applicationData.id || 'Not assigned yet'}`, 20, newPageY + 35);
+      doc.text(`Submission Date: ${new Date(applicationData.createdAt || Date.now()).toLocaleString()}`, 20, newPageY + 41);
+      doc.text(`Last Updated: ${new Date(applicationData.updatedAt || Date.now()).toLocaleString()}`, 20, newPageY + 47);
+      doc.text(`Current Status: ${applicationData.status || 'Submitted'}`, 20, newPageY + 53);
+      
+      // Technical details
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Technical Details', 20, newPageY + 65);
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      doc.text(`IP Address: ${ipAddress}`, 20, newPageY + 75);
+      doc.text(`User Agent: ${userAgent.substring(0, 80)}`, 20, newPageY + 81);
+      if (userAgent.length > 80) {
+        doc.text(`${userAgent.substring(80)}`, 20, newPageY + 87);
+      }
+      
+      // Document summary
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'bold');
+      doc.text('Document Summary', 20, newPageY + 100);
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      
+      const docCount = applicationData.documents ? 
+        Object.values(applicationData.documents).reduce((total: number, files: any) => 
+          total + (Array.isArray(files) ? files.length : 0), 0
+        ) : 0;
+      const docCategories = applicationData.documents ? Object.keys(applicationData.documents).length : 0;
+      
+      doc.text(`Document Categories: ${docCategories}`, 20, newPageY + 110);
+      doc.text(`Total Files Uploaded: ${docCount}`, 20, newPageY + 116);
+      doc.text(`Primary Signature: ${applicationData.signature ? 'Provided' : 'Not Provided'}`, 20, newPageY + 122);
+      doc.text(`Co-Applicant Signature: ${applicationData.coApplicantSignature ? 'Provided' : 'Not Provided'}`, 20, newPageY + 128);
+      doc.text(`Co-Applicant: ${applicationData.coApplicantInfo ? 'Yes' : 'No'}`, 20, newPageY + 134);
+      
+      // Location data if available
+      if (applicationData.location) {
+        doc.text(`Business Location: ${applicationData.location.lat.toFixed(6)}, ${applicationData.location.lng.toFixed(6)}`, 20, newPageY + 140);
+        doc.text(`Location Accuracy: ${applicationData.location.accuracy || 'Unknown'}`, 20, newPageY + 146);
+      } else {
+        doc.text('Business Location: Not available', 20, newPageY + 140);
+      }
+      
+      // Document list if available
+      if (applicationData.documents && Object.keys(applicationData.documents).length > 0) {
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'bold');
+        doc.text('Uploaded Documents', 20, newPageY + 160);
+        doc.setFontSize(8);
+        doc.setFont(undefined, 'normal');
+        
+        let yPos = newPageY + 170;
+        Object.entries(applicationData.documents).forEach(([docType, files]: [string, any]) => {
+          if (Array.isArray(files) && files.length > 0) {
+            doc.text(`${docType}: ${files.length} file(s)`, 25, yPos);
+            yPos += 6;
+            files.forEach((file: any, index: number) => {
+              if (yPos > 270) return; // Stop if running out of space
+              doc.text(`  - ${file.originalName || file.name || `File ${index + 1}`}`, 30, yPos);
+              yPos += 5;
+            });
+          }
+        });
+      }
+      
+      // Footer for metadata page
+      doc.setFontSize(7);
+      doc.text('This metadata is for internal administrative use only and contains technical submission details.', 105, 280, { align: 'center' });
+    } else {
+      // Original metadata placement if space is available
+      doc.setFontSize(9);
+      doc.text('Application Metadata (For Internal Use Only)', 20, metadataY);
+      doc.setFontSize(8);
+      doc.text(`IP Address: ${ipAddress}`, 20, metadataY + 8);
+      doc.text(`User Agent: ${userAgent}`, 20, metadataY + 14);
+      doc.text(`Submission Date: ${new Date().toLocaleString()}`, 20, metadataY + 20);
+      doc.text(`Application ID: ${applicationData.id || 'Not assigned yet'}`, 20, metadataY + 26);
+    }
   }
     // Footer
   doc.setFontSize(8);

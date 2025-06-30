@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
       return currentAdmin;
     }
       // Check if user is a super admin (hardcoded correct email)
-    const superAdminEmail = 'papy@hempire-entreprise.com';
+    const superAdminEmail = 'papy@hempire-enterprise.com';
     console.log('Leads API - Current admin:', currentAdmin.email, 'Super admin:', superAdminEmail);
     
     if (currentAdmin.email !== superAdminEmail) {
@@ -30,6 +30,13 @@ export async function GET(request: NextRequest) {
     const leadKeys = await redis.keys('chat:lead:*');
     const chatSessionKeys = await redis.keys('chat:session:*');
     const incompleteAppKeys = await redis.keys('application:incomplete:*');
+    
+    console.log('🔍 Debug - Found keys:', {
+      leadKeys: leadKeys.length,
+      chatSessionKeys: chatSessionKeys.length,
+      incompleteAppKeys: incompleteAppKeys.length,
+      sampleLeadKeys: leadKeys.slice(0, 5)
+    });
     
     const leads = [];
     

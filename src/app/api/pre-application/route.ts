@@ -73,6 +73,12 @@ export async function POST(request: NextRequest) {
     await redis.set(`chat:lead:pre_${preApplicationId}`, JSON.stringify(leadData));
     await redis.sadd('leads', leadData.id);
     
+    console.log('✅ Pre-application lead created:', {
+      id: preApplicationId,
+      leadKey: `chat:lead:pre_${preApplicationId}`,
+      leadData: leadData
+    });
+    
     // Get email recipients from Redis
     const recipientsJson = await redis.get('email:recipients');
     const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];

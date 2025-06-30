@@ -43,11 +43,11 @@ export async function GET(request: NextRequest) {
 
           leads.push({
             id: parsedLead.id || sessionId,
-            source: 'chat',
+            source: parsedLead.source === 'Chat Bot Pre-Application' ? 'pre-application' : 'chat',
             priority: parsedLead.priority || 'medium',
-            firstName: parsedLead.name ? parsedLead.name.split(' ')[0] : '',
-            lastName: parsedLead.name && parsedLead.name.split(' ').length > 1 ? 
-              parsedLead.name.split(' ').slice(1).join(' ') : '',
+            firstName: parsedLead.firstName || (parsedLead.name ? parsedLead.name.split(' ')[0] : ''),
+            lastName: parsedLead.lastName || (parsedLead.name && parsedLead.name.split(' ').length > 1 ? 
+              parsedLead.name.split(' ').slice(1).join(' ') : ''),
             email: parsedLead.email || '',
             phone: parsedLead.phone || '',
             businessName: parsedLead.businessName || '',

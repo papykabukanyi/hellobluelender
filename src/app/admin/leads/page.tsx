@@ -18,7 +18,7 @@ interface Lead {
   notes?: string;
   createdAt: string;
   priority?: 'high' | 'medium' | 'low';
-  source?: 'chat' | 'incomplete_application';
+  source?: 'chat' | 'pre-application' | 'incomplete_application';
   chatMessages?: Array<{
     role: 'user' | 'assistant';
     content: string;
@@ -171,6 +171,7 @@ export default function LeadsPage() {
             >
               <option value="all">All Sources</option>
               <option value="chat">Chat Conversations</option>
+              <option value="pre-application">Pre-Applications</option>
               <option value="incomplete_application">Incomplete Applications</option>
             </select>
           </div>
@@ -228,6 +229,7 @@ export default function LeadsPage() {
                     <td className="py-2 px-4 border-b">
                       <span className="text-sm">
                         {lead.source === 'chat' ? 'Chat Conversation' : 
+                         lead.source === 'pre-application' ? 'Pre-Application (Chatbot)' : 
                          lead.source === 'incomplete_application' ? 'Incomplete Application' : 
                          'Unknown'}
                       </span>
@@ -236,7 +238,27 @@ export default function LeadsPage() {
                       {lead.createdAt ? new Date(lead.createdAt).toLocaleString() : 'Unknown'}
                     </td>
                     <td className="py-2 px-4 border-b">
-                      {lead.source === 'chat' ? (
+                      {lead.source === 'pre-application' ? (
+                        <div className="text-sm">
+                          <div className="mb-1">
+                            <span className="font-medium bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                              COMPLETED PRE-APPLICATION
+                            </span>
+                          </div>
+                          {lead.qualificationScore && (
+                            <div className="mb-1">
+                              <span className="font-medium">Score:</span> {lead.qualificationScore}/10
+                            </div>
+                          )}
+                          {lead.notes ? (
+                            <div className="text-gray-600 max-w-xs">
+                              {lead.notes.length > 80 ? `${lead.notes.substring(0, 80)}...` : lead.notes}
+                            </div>
+                          ) : (
+                            <span className="text-gray-500">Pre-application submitted via chatbot</span>
+                          )}
+                        </div>
+                      ) : lead.source === 'chat' ? (
                         <div className="text-sm">
                           {lead.qualificationScore && (
                             <div className="mb-1">

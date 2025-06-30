@@ -33,6 +33,46 @@ export async function POST(request: NextRequest) {
     // Add to pre-applications list
     await redis.sadd('pre-applications', preApplicationId);
     
+    // Extract data for lead creation and email formatting
+    const firstName = applicationData.personalInfo?.firstName || 'Unknown';
+    const lastName = applicationData.personalInfo?.lastName || 'Unknown';
+    const email = applicationData.personalInfo?.email || 'Unknown';
+    const phone = applicationData.personalInfo?.phone || 'Unknown';
+    const businessName = applicationData.businessInfo?.businessName || 'Unknown Business';
+    const businessType = applicationData.businessInfo?.businessType || 'Unknown';
+    const loanAmount = applicationData.loanInfo?.loanAmount 
+      ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(applicationData.loanInfo.loanAmount)
+      : 'Unknown';
+    const loanPurpose = applicationData.loanInfo?.loanPurpose || 'Unknown';
+    
+    // Create a lead entry for the admin leads dashboard
+    const leadData = {
+      id: preApplicationId,
+      name: `${firstName} ${lastName}`,
+      firstName: firstName,
+      lastName: lastName,
+      email: email !== 'Unknown' ? email : '',
+      phone: phone !== 'Unknown' ? phone : '',
+      businessName: businessName !== 'Unknown Business' ? businessName : '',
+      businessType: businessType !== 'Unknown' ? businessType : '',
+      loanAmount: applicationData.loanInfo?.loanAmount || '',
+      monthlyRevenue: applicationData.businessInfo?.monthlyRevenue || '',
+      timeInBusiness: applicationData.businessInfo?.timeInBusiness || '',
+      creditScore: applicationData.personalInfo?.creditScore || '',
+      source: 'Chat Bot Pre-Application',
+      status: 'New',
+      priority: 'high', // Pre-applications are high priority since user completed the form
+      qualificationScore: 10, // Max score since they completed pre-application
+      interestLevel: 'high',
+      notes: `Pre-application submitted via chatbot. ID: ${preApplicationId}. Purpose: ${loanPurpose}`,
+      createdAt: new Date().toISOString(),
+      lastUpdated: new Date().toISOString()
+    };
+    
+    // Save lead for admin dashboard (using same format as chat leads)
+    await redis.set(`chat:lead:pre_${preApplicationId}`, JSON.stringify(leadData));
+    await redis.sadd('leads', leadData.id);
+    
     // Get email recipients from Redis
     const recipientsJson = await redis.get('email:recipients');
     const recipients = recipientsJson ? JSON.parse(recipientsJson) : [];
@@ -55,18 +95,6 @@ export async function POST(request: NextRequest) {
 
     // Import sendEmail function
     const { sendEmail } = await import('@/lib/email');
-    
-    // Format business name and loan details
-    const firstName = applicationData.personalInfo?.firstName || 'Unknown';
-    const lastName = applicationData.personalInfo?.lastName || 'Unknown';
-    const email = applicationData.personalInfo?.email || 'Unknown';
-    const phone = applicationData.personalInfo?.phone || 'Unknown';
-    const businessName = applicationData.businessInfo?.businessName || 'Unknown Business';
-    const businessType = applicationData.businessInfo?.businessType || 'Unknown';
-    const loanAmount = applicationData.loanInfo?.loanAmount 
-      ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(applicationData.loanInfo.loanAmount)
-      : 'Unknown';
-    const loanPurpose = applicationData.loanInfo?.loanPurpose || 'Unknown';
     
     // Send to admin recipients
     if (emailRecipients.length > 0) {

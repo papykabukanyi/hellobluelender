@@ -822,7 +822,7 @@ class EnhancedLeadBot {
     const hasBusinessInfo = session.businessInfo?.type || session.businessInfo?.revenue;
     
     if (hasMinimumInfo && hasContactInfo && hasBusinessInfo) {
-      return {
+      const leadData = {
         id: `lead_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         name: session.contactInfo.name || 'Unknown',
         email: session.contactInfo.email || '',
@@ -842,8 +842,11 @@ class EnhancedLeadBot {
         interestLevel: this.determineInterestLevel(session),
         notes: this.generateLeadNotes(session),
         createdAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        readyForApplication: session.informationScore >= 8 // Flag to indicate if ready for application redirect
       };
+      
+      return leadData;
     }
     return null;
   }
@@ -1011,7 +1014,8 @@ export async function POST(request: NextRequest) {
       sessionId: chatSessionId,
       leadGenerated: !!leadData,
       leadId: leadId,
-      conversationQuality: leadData ? leadData.qualificationScore : 0
+      conversationQuality: leadData ? leadData.qualificationScore : 0,
+      readyForApplication: leadData ? leadData.readyForApplication : false
     });
     
   } catch (error) {

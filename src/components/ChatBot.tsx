@@ -245,7 +245,24 @@ const ChatBot = () => {
       setMessages(prev => [...prev, botReply]);
       
       // Show lead generation success message if applicable
-      if (data.leadGenerated && data.conversationQuality > 6) {
+      if (data.leadGenerated && data.readyForApplication) {
+        setTimeout(() => {
+          const applicationRedirectMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            role: 'assistant',
+            content: "🎉 Perfect! Based on our conversation, you're an excellent candidate for our financing programs. I have everything I need to get you started.\n\n**Would you like to proceed with the full application now?** I can redirect you to our secure application form where you can complete the process and get approved within 24-48 hours.\n\n[**START APPLICATION →**](/application)",
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, applicationRedirectMessage]);
+          
+          // Auto-redirect after 5 seconds if no response
+          setTimeout(() => {
+            if (confirm("You seem qualified for our financing! Would you like to start your application now?")) {
+              window.location.href = '/application';
+            }
+          }, 5000);
+        }, 2000);
+      } else if (data.leadGenerated && data.conversationQuality > 6) {
         setTimeout(() => {
           const leadSuccessMessage: Message = {
             id: (Date.now() + 2).toString(),

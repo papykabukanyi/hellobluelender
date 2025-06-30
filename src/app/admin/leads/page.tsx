@@ -2,15 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { formatDate } from '@/lib/utils';
 
 interface Lead {
   id: string;
   email?: string;
   phone?: string;
   businessName?: string;
+  businessType?: string;
   firstName?: string;
   lastName?: string;
+  loanAmount?: string;
+  monthlyRevenue?: string;
+  creditScore?: string;
+  qualificationScore?: number;
+  notes?: string;
   createdAt: string;
   priority?: 'high' | 'medium' | 'low';
   source?: 'chat' | 'incomplete_application';
@@ -27,6 +32,15 @@ export default function LeadsPage() {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterSource, setFilterSource] = useState<string>('all');
+
+  // Helper function to format dates
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return dateString;
+    }
+  };
 
   // Check if current user is super admin
   useEffect(() => {
@@ -190,12 +204,15 @@ export default function LeadsPage() {
                     <td className="py-2 px-4 border-b">
                       {lead.email && <div><strong>Email:</strong> {lead.email}</div>}
                       {lead.phone && <div><strong>Phone:</strong> {lead.phone}</div>}
+                      {lead.businessType && <div className="text-sm text-gray-600">Industry: {lead.businessType}</div>}
                     </td>
                     <td className="py-2 px-4 border-b">
                       {(lead.firstName || lead.lastName) && (
-                        <div>{[lead.firstName, lead.lastName].filter(Boolean).join(' ')}</div>
+                        <div><strong>{[lead.firstName, lead.lastName].filter(Boolean).join(' ')}</strong></div>
                       )}
-                      {lead.businessName && <div className="text-sm">{lead.businessName}</div>}
+                      {lead.businessName && <div className="text-sm text-gray-600">{lead.businessName}</div>}
+                      {lead.loanAmount && <div className="text-sm text-green-600">Loan: ${parseInt(lead.loanAmount).toLocaleString()}</div>}
+                      {lead.monthlyRevenue && <div className="text-sm text-blue-600">Revenue: ${parseInt(lead.monthlyRevenue).toLocaleString()}/mo</div>}
                     </td>
                     <td className="py-2 px-4 border-b">
                       <span 
@@ -219,18 +236,19 @@ export default function LeadsPage() {
                       {lead.createdAt ? new Date(lead.createdAt).toLocaleString() : 'Unknown'}
                     </td>
                     <td className="py-2 px-4 border-b">
-                      {lead.chatMessages && lead.chatMessages.length > 0 ? (
-                        <div className="max-h-24 overflow-y-auto text-sm">
-                          {lead.chatMessages.slice(0, 2).map((message, idx) => (
-                            <div key={idx} className="mb-1">
-                              <strong>{message.role === 'user' ? 'User' : 'Bot'}:</strong> {message.content.substring(0, 50)}
-                              {message.content.length > 50 ? '...' : ''}
+                      {lead.source === 'chat' ? (
+                        <div className="text-sm">
+                          {lead.qualificationScore && (
+                            <div className="mb-1">
+                              <span className="font-medium">Score:</span> {lead.qualificationScore}/10
                             </div>
-                          ))}
-                          {lead.chatMessages.length > 2 && (
-                            <div className="text-xs text-gray-500 italic">
-                              ...and {lead.chatMessages.length - 2} more messages
+                          )}
+                          {lead.notes ? (
+                            <div className="text-gray-600 max-w-xs">
+                              {lead.notes.length > 80 ? `${lead.notes.substring(0, 80)}...` : lead.notes}
                             </div>
+                          ) : (
+                            <span className="text-gray-500">Chat conversation lead</span>
                           )}
                         </div>
                       ) : lead.source === 'incomplete_application' ? (

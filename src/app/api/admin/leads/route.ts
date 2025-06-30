@@ -40,24 +40,24 @@ export async function GET(request: NextRequest) {
         try {
           const parsedLead = JSON.parse(leadData);
           const sessionId = key.split(':')[2]; // Extract session ID from key
-          
-          // Get the chat session for this lead
-          const sessionKey = `chat:session:${sessionId}`;
-          const chatData = await redis.get(sessionKey);
-          const chatMessages = chatData ? JSON.parse(chatData) : [];
-          
+
           leads.push({
-            id: sessionId,
+            id: parsedLead.id || sessionId,
             source: 'chat',
-            priority: parsedLead.interestLevel === 'high' ? 'high' : 'medium',
-            firstName: parsedLead.name ? parsedLead.name.split(' ')[0] : null,
+            priority: parsedLead.priority || 'medium',
+            firstName: parsedLead.name ? parsedLead.name.split(' ')[0] : '',
             lastName: parsedLead.name && parsedLead.name.split(' ').length > 1 ? 
-              parsedLead.name.split(' ').slice(1).join(' ') : null,
-            email: parsedLead.email,
-            phone: parsedLead.phone,
-            businessName: parsedLead.businessName,
-            chatMessages: chatMessages.slice(0, 5), // Include first 5 messages
-            createdAt: new Date().toISOString() // Using current date as fallback
+              parsedLead.name.split(' ').slice(1).join(' ') : '',
+            email: parsedLead.email || '',
+            phone: parsedLead.phone || '',
+            businessName: parsedLead.businessName || '',
+            businessType: parsedLead.businessType || '',
+            loanAmount: parsedLead.loanAmount || '',
+            monthlyRevenue: parsedLead.monthlyRevenue || '',
+            creditScore: parsedLead.creditScore || '',
+            qualificationScore: parsedLead.qualificationScore || 0,
+            notes: parsedLead.notes || '',
+            createdAt: parsedLead.createdAt || new Date().toISOString()
           });
         } catch (err) {
           console.error('Error parsing lead data:', err);

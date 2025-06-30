@@ -337,13 +337,24 @@ export default function ApplicationsMap() {
                 <h3 className="font-medium mb-2">Financial Overview</h3>
                 <ul className="text-sm text-gray-600">
                   <li>
-                    Total Requested: ${applications.reduce((sum, app) => sum + app.loanInfo.loanAmount, 0).toLocaleString()}
+                    Total Requested: ${applications.reduce((sum, app) => {
+                      const amount = app.loanInfo?.loanAmount || 0;
+                      return sum + (typeof amount === 'number' ? amount : parseInt(amount) || 0);
+                    }, 0).toLocaleString()}
                   </li>
                   <li>
-                    Total Approved: ${applications.filter(app => app.status === 'approved').reduce((sum, app) => sum + app.loanInfo.loanAmount, 0).toLocaleString()}
+                    Total Approved: ${applications.filter(app => app.status === 'approved').reduce((sum, app) => {
+                      const amount = app.loanInfo?.loanAmount || 0;
+                      return sum + (typeof amount === 'number' ? amount : parseInt(amount) || 0);
+                    }, 0).toLocaleString()}
                   </li>
                   <li>
-                    Average Loan: ${Math.round(applications.reduce((sum, app) => sum + (app.loanInfo.loanAmount || 0), 0) / (applications.length || 1)).toLocaleString()}
+                    Average Loan: ${applications.length > 0 ? Math.round(
+                      applications.reduce((sum, app) => {
+                        const amount = app.loanInfo?.loanAmount || 0;
+                        return sum + (typeof amount === 'number' ? amount : parseInt(amount) || 0);
+                      }, 0) / applications.length
+                    ).toLocaleString() : '0'}
                   </li>
                 </ul>
               </div>

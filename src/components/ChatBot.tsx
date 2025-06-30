@@ -96,10 +96,10 @@ const ChatBot = () => {
     // Set initial greeting message
     if (messages.length === 0) {
       const greetings = [
-        'Hello! I\'m the EMPIRE ENTREPRISE assistant. I specialize in helping businesses find the right financing solutions. What brings you here today?',
-        'Hi there! Welcome to EMPIRE ENTREPRISE. I\'d love to help you discover financing options that could accelerate your business growth. What\'s your biggest business challenge right now?',
-        'Welcome! I\'m here to help you explore smart financing solutions for your business. What type of business are you running?',
-        'Good day! I\'m the EMPIRE financing specialist. Whether you need equipment, working capital, or expansion funding, I\'m here to help. What\'s your business focus?'
+        '🚀 Hello! I\'m the EMPIRE ENTREPRISE intelligent assistant. I use advanced learning to help businesses find perfect financing solutions. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
+        '💼 Hi there! Welcome to EMPIRE ENTREPRISE. I\'m your smart financing specialist with access to comprehensive business lending knowledge. I can help you explore options, check qualifications, and connect you with our team. What type of business do you operate?',
+        '⚡ Welcome! I\'m the EMPIRE financing AI assistant, trained on thousands of successful business financing cases. I can answer questions, help you qualify, and capture your info for our specialists. What\'s your biggest business challenge right now?',
+        '🎯 Good day! I\'m here to help you discover smart financing solutions using our advanced learning system. From same-day decisions to long-term SBA loans, I know it all. What type of business growth are you planning?'
       ];
       
       const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
@@ -245,16 +245,26 @@ const ChatBot = () => {
       setMessages(prev => [...prev, botReply]);
       
       // Show lead generation success message if applicable
-      if (data.leadGenerated && data.conversationQuality > 7) {
+      if (data.leadGenerated && data.conversationQuality > 6) {
         setTimeout(() => {
           const leadSuccessMessage: Message = {
             id: (Date.now() + 2).toString(),
             role: 'assistant',
-            content: "Perfect! I have enough information to have our team reach out to you. Someone will contact you within 24 hours to discuss your financing options. Is there anything else I can help you with in the meantime?",
+            content: "🎉 Excellent! I've captured your information and you appear to be a strong candidate for our financing programs. Our specialist team will reach out within 24 hours with personalized rates and terms. \n\nIn the meantime, I can answer any questions about our products, process, or requirements. What else would you like to know?",
             timestamp: new Date()
           };
           setMessages(prev => [...prev, leadSuccessMessage]);
         }, 2000);
+      } else if (data.leadGenerated && data.conversationQuality > 4) {
+        setTimeout(() => {
+          const leadSuccessMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            role: 'assistant',
+            content: "Great! I've saved your information. To get you the best financing options, could you share a bit more about your business? What industry are you in and what's your approximate monthly revenue?",
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, leadSuccessMessage]);
+        }, 1500);
       }
       
     } catch (error) {

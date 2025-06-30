@@ -87,6 +87,10 @@ export default function LoanInfoForm({ onNext, onBack, formData = {}, loanType =
   // Handle form submission
   const onSubmit = (data: any) => {
     if (validateForm(data)) {
+      // Ensure loanPurpose is always set for consistent display in ReviewForm
+      if (data.loanType === 'Business' && data.useOfFunds && !data.loanPurpose) {
+        data.loanPurpose = data.useOfFunds;
+      }
       onNext({ loanInfo: data });
     }
   };

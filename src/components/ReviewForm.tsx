@@ -160,7 +160,7 @@ export default function ReviewForm({
             </div>
             <div className="md:col-span-2">
               <h4 className="text-sm font-medium text-gray-700">Loan Purpose</h4>
-              <p>{loanInfo.loanPurpose}</p>
+              <p>{loanInfo.loanPurpose || (loanInfo as any).useOfFunds || 'Not specified'}</p>
             </div>
           </div>
         </div>

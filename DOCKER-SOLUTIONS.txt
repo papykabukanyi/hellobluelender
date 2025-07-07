@@ -1,53 +1,58 @@
-# Docker Build Solutions
+# Docker Build Solutions - UPDATED
 
-## Current Issue
-Docker Hub rate limiting (403 Forbidden) when pulling node:20-alpine
+## Issues Fixed ✅
+1. Docker Hub rate limiting (403 Forbidden) ✅
+2. npm ci dependency conflicts (package-lock.json sync) ✅
+3. Next.js standalone configuration ✅
 
-## Solutions (Try in order)
+## Current Status: READY TO BUILD ✅
 
-### 1. Use Build Script with Retry Logic
+### Quick Fix Applied:
+- Regenerated package-lock.json with npm install --legacy-peer-deps
+- Fixed Dockerfile to use npm install instead of npm ci
+- Updated to use Next.js standalone output correctly
+- Simplified multi-stage build process
+
+## Build Commands (Try in order)
+
+### 1. Standard Build (RECOMMENDED) ✅
 ```bash
-# On Windows
 docker-build.bat
-
-# On Linux/Mac
-chmod +x docker-build.sh
-./docker-build.sh
 ```
 
-### 2. Use Alternative Base Image
+### 2. Manual Build
 ```bash
-# Use GitHub Container Registry instead
-docker build -f Dockerfile.alternative -t empire-entreprise:latest .
-```
-
-### 3. Manual Docker Commands with Delay
-```bash
-# Wait and try again
-sleep 300  # Wait 5 minutes
 docker build -t empire-entreprise:latest .
 ```
 
-### 4. Use Different Registry Mirror
+### 3. Alternative Registry (if rate limited)
 ```bash
-# Configure Docker to use a mirror (add to daemon.json)
-{
-  "registry-mirrors": ["https://mirror.gcr.io"]
-}
+docker build -f Dockerfile.alternative -t empire-entreprise:latest .
 ```
 
-### 5. Sign up for Docker Hub Account
-- Free Docker Hub accounts get higher rate limits
-- Login: `docker login`
+### 4. Railway Deployment (No Docker needed)
+```bash
+deploy-railway.bat
+```
 
 ## Running the Container
-Once built successfully:
 ```bash
+# With environment file
 docker run -p 8080:8080 --env-file .env empire-entreprise:latest
+
+# With individual environment variables
+docker run -p 8080:8080 \
+  -e REDIS_URL="your-redis-url" \
+  -e SMTP_USER="your-email" \
+  -e SMTP_PASS="your-password" \
+  -e JWT_SECRET="your-secret" \
+  empire-entreprise:latest
 ```
 
-## Environment Variables Needed
+## Environment Variables Required
 - REDIS_URL
 - SMTP_USER  
 - SMTP_PASS
 - JWT_SECRET
+
+## Status: ✅ READY FOR DEPLOYMENT

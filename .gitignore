@@ -92,6 +92,10 @@ MAINTENANCE-GUIDE.txt
 admin-setup.txt
 development-notes.md
 
+# Development and fix documentation (private)
+DOCKER-BUILD-FIX.md
+QUICK-FIX-SUMMARY.md
+
 # Test and debug files
 test-*.js
 test-*.mjs

@@ -1,24 +1,38 @@
 // server.js - Production server with built-in health check endpoint
 const { createServer } = require('http');
 const { parse } = require('url');
-const next = require('next');
+const path = require('path');
 
-// Get port from environment or default to 3000
+// Get port from environment or default to 8080
 const PORT = process.env.PORT || 8080;
 
-console.log('Starting Blue Lender production server...');
+console.log('Starting Empire Entreprise production server...');
 console.log(`Environment: ${process.env.NODE_ENV}`);
 console.log(`Port: ${PORT}`);
 console.log(`Node version: ${process.version}`);
 
-// Initialize Next.js
-const app = next({
-  dev: false,
-  dir: __dirname,
-  quiet: false
-});
+// Check if we're in standalone mode (Docker)
+const isStandalone = process.env.NODE_ENV === 'production' && require('fs').existsSync('./.next/standalone');
 
-const handle = app.getRequestHandler();
+let app, handle;
+
+if (isStandalone) {
+  console.log('Running in standalone mode...');
+  // For standalone builds, use the generated server
+  app = require('./.next/standalone/server.js');
+} else {
+  console.log('Preparing Next.js...');
+  const next = require('next');
+  
+  // Initialize Next.js
+  app = next({
+    dev: false,
+    dir: __dirname,
+    quiet: false
+  });
+
+  handle = app.getRequestHandler();
+}
 
 // Log memory usage
 const logMemoryUsage = () => {

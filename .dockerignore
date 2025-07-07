@@ -42,10 +42,24 @@ yarn-error.log*
 .gitignore
 .github
 
-# Documentation
-README.md
+# Documentation and dev files (added for security)
 *.md
-docs
+!README.md
+docs/
+admin-credentials.txt
+development-notes.md
+
+# Test and debug files
+test-*
+debug-*
+check-*
+*.test.js
+*.test.ts
+
+# Docker files (prevent recursion)
+Dockerfile*
+docker-compose*
+docker-build.*
 
 # Editor directories and files
 .idea
@@ -75,7 +89,3 @@ scripts/
 
 # Don't include logs
 *.log
-
-# Don't include Docker files themselves in the build context
-Dockerfile.dev
-docker-compose*.yml

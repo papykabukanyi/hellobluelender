@@ -1,0 +1,53 @@
+# Docker Build Solutions
+
+## Current Issue
+Docker Hub rate limiting (403 Forbidden) when pulling node:20-alpine
+
+## Solutions (Try in order)
+
+### 1. Use Build Script with Retry Logic
+```bash
+# On Windows
+docker-build.bat
+
+# On Linux/Mac
+chmod +x docker-build.sh
+./docker-build.sh
+```
+
+### 2. Use Alternative Base Image
+```bash
+# Use GitHub Container Registry instead
+docker build -f Dockerfile.alternative -t empire-entreprise:latest .
+```
+
+### 3. Manual Docker Commands with Delay
+```bash
+# Wait and try again
+sleep 300  # Wait 5 minutes
+docker build -t empire-entreprise:latest .
+```
+
+### 4. Use Different Registry Mirror
+```bash
+# Configure Docker to use a mirror (add to daemon.json)
+{
+  "registry-mirrors": ["https://mirror.gcr.io"]
+}
+```
+
+### 5. Sign up for Docker Hub Account
+- Free Docker Hub accounts get higher rate limits
+- Login: `docker login`
+
+## Running the Container
+Once built successfully:
+```bash
+docker run -p 8080:8080 --env-file .env empire-entreprise:latest
+```
+
+## Environment Variables Needed
+- REDIS_URL
+- SMTP_USER  
+- SMTP_PASS
+- JWT_SECRET

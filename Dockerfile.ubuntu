@@ -1,21 +1,24 @@
-# Dockerfile optimized for Empire Entreprise
-FROM node:20-alpine AS base
+# Ubuntu-based Dockerfile to avoid Alpine/musl native dependency issues
+FROM node:20-slim AS base
 
-# Install dependencies only when needed
+# Install system dependencies for Ubuntu
 FROM base AS deps
-RUN apk add --no-cache libc6-compat python3 make g++ vips-dev
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    build-essential \
+    libvips-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies with error handling for conflicts
+# Install dependencies with legacy peer deps
 RUN npm ci --legacy-peer-deps --production=false || \
     (rm -f package-lock.json && npm install --legacy-peer-deps --production=false)
-
-# Install platform-specific dependencies for Alpine Linux (musl)
-RUN npm install --platform=linux --arch=x64 --libc=musl sharp || true
-RUN npm install --include=optional sharp || true
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -23,11 +26,12 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set environment variables for build
+# Set build environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_ENV=production
 
-# Clean up and build with error handling
+# Run cleanup and build with error handling
 RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."
 RUN npm run build
 
@@ -39,13 +43,14 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=8080
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Create non-root user for Ubuntu
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
 
-# Copy built application files
+# Copy necessary files for production
 COPY --from=builder /app/public ./public
 
-# Leverage output traces to reduce image size
+# Copy standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
@@ -62,7 +67,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node healthcheck.js || exit 1
 
 # Start the application
-CMD ["node", "server.js"]
-
-# The standalone build creates its own server.js
 CMD ["node", "server.js"]

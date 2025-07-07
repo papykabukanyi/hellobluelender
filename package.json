@@ -81,5 +81,8 @@
     "prisma": "^6.10.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.5"
   }
 }

@@ -21,37 +21,49 @@ export async function middleware(request: NextRequest) {
   // Get the pathname of the request
   const path = request.nextUrl.pathname;
   
-  // Only protect specific admin routes
-  const protectedAdminRoutes = [
-    '/admin/dashboard',
-    '/admin/email-settings',
-    '/admin/smtp-config',
-  ];
-  
-  // Check if the current path is a protected admin route
-  const isProtectedRoute = protectedAdminRoutes.some(route => 
-    path === route || path.startsWith(`${route}/`)
-  );
-  
-  if (isProtectedRoute) {
-    // Get the token from the cookies
-    const token = request.cookies.get('authToken')?.value;
+  // SEO Protection: Block admin routes from search engines
+  if (path.startsWith('/admin') || 
+      path.startsWith('/api/admin') || 
+      path.startsWith('/api/auth')) {
+    const response = NextResponse.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     
-    // If token is missing, redirect to login page
-    if (!token) {
-      return NextResponse.redirect(new URL('/admin', request.url));
+    // Continue with existing authentication logic for admin routes
+    // Only protect specific admin routes
+    const protectedAdminRoutes = [
+      '/admin/dashboard',
+      '/admin/email-settings',
+      '/admin/smtp-config',
+      '/admin/leads',
+      '/admin/applications',
+      '/admin/manage-admins',
+      '/admin/chat-analytics',
+      '/admin/maps'
+    ];
+    
+    // Check if the current path is a protected admin route
+    const isProtectedRoute = protectedAdminRoutes.some(route => 
+      path === route || path.startsWith(`${route}/`)
+    );
+    
+    if (isProtectedRoute) {
+      // Get the token from the cookies
+      const token = request.cookies.get('authToken')?.value;
+      
+      // If token is missing, redirect to login page
+      if (!token) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
+      
+      // Verify the token
+      const payload = await verifyToken(token);
+      if (!payload) {
+        return NextResponse.redirect(new URL('/admin', request.url));
+      }
     }
     
-    // Verify the token (now async)
-    const decodedToken = await verifyToken(token);
-    
-    // If token is invalid, redirect to login page
-    if (!decodedToken) {
-      return NextResponse.redirect(new URL('/admin', request.url));
-    }
-    
-    // Allow the request to continue
-    return NextResponse.next();
+    return response;
   }
   
   // Not a protected route, continue

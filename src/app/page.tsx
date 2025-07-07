@@ -1,10 +1,46 @@
 import Link from "next/link";
 import GradientBackground from "@/components/GradientBackground";
 import ApplyNowButton from "@/components/ApplyNowButton";
+import SEOMeta from "@/components/SEOMeta";
 
 export default function Home() {
+  const homePageSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Empire Entreprise",
+    "alternateName": "Hempire Enterprise",
+    "description": "Leading business financing company providing equipment loans, working capital, SBA loans, and business expansion funding with fast approval and competitive rates",
+    "url": "https://empire-entreprise.com",
+    "logo": "https://empire-entreprise.com/logo.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "(123) 456-7890",
+      "contactType": "Customer Service",
+      "email": "papy@hempire-enterprise.com",
+      "availableLanguage": ["English"],
+      "areaServed": "US"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "US"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/company/empire-entreprise",
+      "https://www.facebook.com/empireentreprise",
+      "https://twitter.com/empireentreprise"
+    ]
+  };
+
   return (
     <>
+      <SEOMeta
+        title="Business Loans & Equipment Financing - Fast Approval | Empire Entreprise"
+        description="Get business loans $5K-$10M with 24-48 hour approval. Equipment financing, working capital, SBA loans. Licensed in all 50 states. Apply online today!"
+        keywords="business loans, equipment financing, working capital loans, SBA loans, business financing, small business loans, commercial loans, business expansion loans"
+        canonicalUrl="https://empire-entreprise.com"
+        schema={homePageSchema}
+      />
+      
       {/* Hero Section */}
       <section 
         style={{ marginTop: '-4rem' }} // To compensate for the navbar

@@ -73,3 +73,29 @@ admin-credentials.txt
 
 # Private project documentation
 project-documentation.txt
+
+# All documentation files (keep private)
+*.md
+!README.md
+docs/
+TEST-*.md
+FINAL-*.md
+CURRENT-*.md
+CHATBOT-*.md
+API-*.md
+ENHANCEMENTS-*.md
+FIX-*.md
+NEXTJS-*.md
+PRE-APPLICATION-*.md
+SEO-*.md
+MAINTENANCE-GUIDE.txt
+admin-setup.txt
+development-notes.md
+
+# Test and debug files
+test-*.js
+test-*.mjs
+debug-*.js
+debug-*.mjs
+check-*.js
+check-*.mjs

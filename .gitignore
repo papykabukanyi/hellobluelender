@@ -95,6 +95,7 @@ development-notes.md
 # Development and fix documentation (private)
 DOCKER-BUILD-FIX.md
 QUICK-FIX-SUMMARY.md
+LIGHTNINGCSS-FIX.md
 
 # Test and debug files
 test-*.js

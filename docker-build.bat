@@ -17,18 +17,24 @@ echo Cleaning up previous builds...
 docker rmi %IMAGE_NAME%:%TAG% 2>nul
 
 echo.
-echo Starting build with Ubuntu-based Dockerfile (better compatibility)...
-docker build -f Dockerfile.ubuntu -t "%IMAGE_NAME%:%TAG%" .
+echo Starting build with stable Tailwind v3 Dockerfile...
+docker build -f Dockerfile.stable -t "%IMAGE_NAME%:%TAG%" .
 
 if %errorlevel% neq 0 (
     echo.
-    echo ⚠️ Ubuntu Dockerfile failed, trying Alpine with fixes...
-    docker build -f Dockerfile.fixed -t "%IMAGE_NAME%:%TAG%" .
+    echo ⚠️ Stable Dockerfile failed, trying Ubuntu...
+    docker build -f Dockerfile.ubuntu -t "%IMAGE_NAME%:%TAG%" .
     
     if %errorlevel% neq 0 (
         echo.
-        echo ⚠️ Fixed Dockerfile failed, trying original...
-        docker build -t "%IMAGE_NAME%:%TAG%" .
+        echo ⚠️ Ubuntu Dockerfile failed, trying Alpine with fixes...
+        docker build -f Dockerfile.fixed -t "%IMAGE_NAME%:%TAG%" .
+        
+        if %errorlevel% neq 0 (
+            echo.
+            echo ⚠️ All enhanced Dockerfiles failed, trying original...
+            docker build -t "%IMAGE_NAME%:%TAG%" .
+        )
     )
 )
 

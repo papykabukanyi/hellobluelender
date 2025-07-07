@@ -6,7 +6,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Disable sharp optimization in Docker builds
+    // Disable sharp optimization in Docker builds to avoid musl issues
     unoptimized: process.env.NODE_ENV === 'production',
   },
   eslint: {
@@ -17,28 +17,7 @@ const nextConfig = {
   },
   // Use standalone output format for deployment
   output: 'standalone',
-  experimental: {}, // Keep empty experimental to avoid warnings
-  
-  // Webpack configuration to handle problematic packages
-  webpack: (config, { isServer }) => {
-    // Handle leaflet and sharp issues in Docker
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'sharp': 'commonjs sharp',
-        'canvas': 'commonjs canvas'
-      });
-    }
-    
-    // Ignore canvas and sharp warnings
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      canvas: false,
-      encoding: false,
-    };
-    
-    return config;
-  },
+  experimental: {}, // Keep empty to avoid warnings
 };
 
 module.exports = nextConfig;

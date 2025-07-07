@@ -1,0 +1,69 @@
+# Multi-stage build avoiding Tailwind CSS v4 lightningcss issues
+FROM node:20-slim AS base
+
+# Install system dependencies
+FROM base AS deps
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    build-essential \
+    libvips-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Remove problematic Tailwind v4 dependencies and install v3
+RUN npm install --legacy-peer-deps --production=false
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Set build environment variables
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV NODE_ENV=production
+
+# Run cleanup and build with error handling
+RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."
+RUN npm run build
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=8080
+
+# Create non-root user for Ubuntu
+RUN groupadd --system --gid 1001 nodejs
+RUN useradd --system --uid 1001 nextjs
+
+# Copy necessary files for production
+COPY --from=builder /app/public ./public
+
+# Copy standalone output
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copy custom server and health check
+COPY --from=builder --chown=nextjs:nodejs /app/server.js* ./
+COPY --from=builder --chown=nextjs:nodejs /app/healthcheck.js* ./
+
+USER nextjs
+
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node healthcheck.js || exit 1
+
+# Start the application
+CMD ["node", "server.js"]

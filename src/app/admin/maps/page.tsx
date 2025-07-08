@@ -4,8 +4,13 @@ import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import dynamic from 'next/dynamic';
 
-// Import the LeafletMap component that handles all the Leaflet-specific functionality
-import LeafletMap from '@/components/LeafletMap';
+// Dynamically import LeafletMap to avoid SSR and build issues
+const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
+  ssr: false,
+  loading: () => <div className="flex justify-center items-center h-96">
+    <div className="text-lg">Loading map...</div>
+  </div>
+});
 
 interface Application {
   id: string;

@@ -3,9 +3,7 @@
 import { useEffect } from 'react';
 import L from 'leaflet';
 import { MapContainer as LeafletMapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
-import '../styles/cluster-stub.css'; // Using local stub CSS instead of react-leaflet-cluster CSS
 
 // Define the props for the map component
 interface MapProps {
@@ -66,29 +64,28 @@ export function MapContainer({ locations }: MapProps) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         
-        <MarkerClusterGroup chunkedLoading>
-          {locations.map(loc => {
-            const markerPosition: [number, number] = [loc.lat, loc.lng];
-            return (
-              <Marker 
-                key={loc.id} 
-                position={markerPosition}
-              >
-                <Popup>
-                  <div className="text-sm">
-                    <p className="font-bold">{loc.businessName || 'Business'}</p>
-                    <p>ID: {loc.id}</p>
-                    {loc.loanAmount && <p>Amount: ${loc.loanAmount.toLocaleString()}</p>}
-                    {loc.status && <p>Status: {loc.status}</p>}
-                    {loc.createdAt && (
-                      <p>Date: {new Date(loc.createdAt).toLocaleDateString()}</p>
-                    )}
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-        </MarkerClusterGroup>
+        {/* Regular markers without clustering */}
+        {locations.map(loc => {
+          const markerPosition: [number, number] = [loc.lat, loc.lng];
+          return (
+            <Marker 
+              key={loc.id} 
+              position={markerPosition}
+            >
+              <Popup>
+                <div className="text-sm">
+                  <p className="font-bold">{loc.businessName || 'Business'}</p>
+                  <p>ID: {loc.id}</p>
+                  {loc.loanAmount && <p>Amount: ${loc.loanAmount.toLocaleString()}</p>}
+                  {loc.status && <p>Status: {loc.status}</p>}
+                  {loc.createdAt && (
+                    <p>Date: {new Date(loc.createdAt).toLocaleDateString()}</p>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </LeafletMapContainer>
     </div>
   );

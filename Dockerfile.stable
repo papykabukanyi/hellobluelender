@@ -29,6 +29,12 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_ENV=production
+ENV DOCKER_BUILD=true
+
+# Install sharp for the correct platform or skip if not available
+RUN npm install --platform=linux --arch=x64 --libc=glibc sharp || \
+    npm install sharp || \
+    echo "Sharp installation failed, continuing without it..."
 
 # Run cleanup and build with error handling
 RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."

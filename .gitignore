@@ -96,6 +96,9 @@ development-notes.md
 DOCKER-BUILD-FIX.md
 QUICK-FIX-SUMMARY.md
 LIGHTNINGCSS-FIX.md
+SHARP-CLUSTER-FIX.md
+BUILD-SUCCESS-SUMMARY.md
+ENOTEMPTY-FIX.md
 
 # Test and debug files
 test-*.js

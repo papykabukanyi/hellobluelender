@@ -157,10 +157,10 @@ export default function AdminApplications() {
                     <td className="py-3 px-4">{formatCurrency(app.loanInfo?.loanAmount)}</td>
                     <td className="py-3 px-4">
                       <span className={`text-xs px-2 py-1 rounded ${
-                        app.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                        app.status === 'approved' ? 'bg-success-light text-success' : 
                         app.status === 'denied' ? 'bg-red-100 text-red-800' : 
                         app.status === 'in-review' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-blue-100 text-blue-800'
+                        'bg-primary-light text-primary'
                       }`}>
                         {app.status === 'in-review' ? 'In Review' : 
                          app.status === 'submitted' ? 'New' :

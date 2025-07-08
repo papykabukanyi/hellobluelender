@@ -13,7 +13,7 @@ interface GrowingLeafProps {
 
 export default function GrowingLeaf({
   className = '',
-  fillColor = '#1F7832',
+  fillColor = 'var(--color-primary)',
   size = 100,
   delay = 0,
   duration = 1,

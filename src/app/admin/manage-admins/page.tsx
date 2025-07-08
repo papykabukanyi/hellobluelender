@@ -169,9 +169,9 @@ export default function ManageAdmins() {
         <p className="text-gray-600">
           Add and manage administrators for Hempire Enterprise application
         </p>
-        <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-md">
-          <h3 className="font-medium text-blue-700">Access Levels</h3>
-          <p className="text-blue-600">
+        <div className="mt-2 p-4 bg-primary-light border border-primary-lighter rounded-md">
+          <h3 className="font-medium text-primary">Access Levels</h3>
+          <p className="text-primary-dark">
             Sub-admins can be given different permission levels. By default, they will only have access
             to view applications, but you can grant additional permissions as needed.
           </p>
@@ -181,7 +181,7 @@ export default function ManageAdmins() {
       {/* Notification message */}
       {message && (
         <div className={`mb-4 p-3 rounded-md ${
-          message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          message.type === 'success' ? 'bg-success-light text-success' : 'bg-red-100 text-red-700'
         }`}>
           {message.text}
         </div>
@@ -372,7 +372,7 @@ export default function ManageAdmins() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        admin.role === 'admin' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                        admin.role === 'admin' ? 'bg-success-light text-success' : 'bg-primary-light text-primary'
                       }`}>
                         {admin.role === 'admin' ? 'Main Admin' : 'Sub Admin'}
                       </span>

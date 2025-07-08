@@ -14,15 +14,15 @@ export default function SMTPConfig() {
       </div>
       
       <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+        <div className="bg-primary-light border-l-4 border-primary p-4">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <svg className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-primary-dark">
                 <strong>Important:</strong> SMTP settings are now managed exclusively via the server's environment variables (.env.local) for enhanced security.
               </p>
             </div>

@@ -114,7 +114,7 @@ export default function ChatAnalyticsPage() {
     return (
       <AdminLayout>
         <div className="flex justify-center items-center min-h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       </AdminLayout>
     );
@@ -156,12 +156,12 @@ export default function ChatAnalyticsPage() {
             
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-sm font-medium text-gray-500">Leads Generated</h3>
-              <p className="text-2xl font-bold text-green-600">{analytics.overview.potential_leads_detected}</p>
+              <p className="text-2xl font-bold text-success">{analytics.overview.potential_leads_detected}</p>
             </div>
             
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-sm font-medium text-gray-500">Conversion Rate</h3>
-              <p className="text-2xl font-bold text-blue-600">{analytics.overview.conversion_rate}%</p>
+              <p className="text-2xl font-bold text-primary">{analytics.overview.conversion_rate}%</p>
             </div>
           </div>
         )}
@@ -180,7 +180,7 @@ export default function ChatAnalyticsPage() {
                 <div className="text-sm text-gray-500">Medium Priority</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{analytics.overview.low_priority_leads}</div>
+                <div className="text-2xl font-bold text-success">{analytics.overview.low_priority_leads}</div>
                 <div className="text-sm text-gray-500">Low Priority</div>
               </div>
             </div>
@@ -233,11 +233,11 @@ export default function ChatAnalyticsPage() {
                 {analytics.daily_stats.slice(-7).map((day, index) => (
                   <div key={day.date} className="text-center">
                     <div className="text-gray-500">{new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                    <div className="bg-blue-100 p-2 rounded mt-1">
+                    <div className="bg-primary-light p-2 rounded mt-1">
                       <div className="font-semibold">{day.sessions}</div>
                       <div className="text-gray-500">sessions</div>
                     </div>
-                    <div className="bg-green-100 p-2 rounded mt-1">
+                    <div className="bg-success-light p-2 rounded mt-1">
                       <div className="font-semibold">{day.leads_detected}</div>
                       <div className="text-gray-500">leads</div>
                     </div>
@@ -276,9 +276,9 @@ export default function ChatAnalyticsPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    {insight.status === 'good' && <span className="text-green-600">✅</span>}
+                    {insight.status === 'good' && <span className="text-success">✅</span>}
                     {insight.status === 'needs_improvement' && <span className="text-yellow-600">⚠️</span>}
-                    {insight.direction === 'increasing' && <span className="text-blue-600">📈</span>}
+                    {insight.direction === 'increasing' && <span className="text-primary">📈</span>}
                     {insight.direction === 'decreasing' && <span className="text-red-600">📉</span>}
                   </div>
                 </div>
@@ -288,23 +288,23 @@ export default function ChatAnalyticsPage() {
         )}
 
         {/* Bot Learning Status */}
-        <div className="bg-blue-50 p-6 rounded-lg">
-          <h2 className="text-lg font-semibold mb-2 text-blue-800">🤖 Bot Learning Status</h2>
-          <p className="text-blue-700 mb-4">
+        <div className="bg-primary-light p-6 rounded-lg">
+          <h2 className="text-lg font-semibold mb-2 text-primary">🤖 Bot Learning Status</h2>
+          <p className="text-primary-dark mb-4">
             The chatbot is continuously learning from conversations to improve lead generation and response quality.
           </p>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Information Extraction:</span>
-              <span className="font-semibold text-green-600">Active</span>
+              <span className="font-semibold text-success">Active</span>
             </div>
             <div className="flex justify-between">
               <span>Response Optimization:</span>
-              <span className="font-semibold text-green-600">Learning</span>
+              <span className="font-semibold text-success">Learning</span>
             </div>
             <div className="flex justify-between">
               <span>Lead Qualification:</span>
-              <span className="font-semibold text-green-600">Improving</span>
+              <span className="font-semibold text-success">Improving</span>
             </div>
           </div>
         </div>

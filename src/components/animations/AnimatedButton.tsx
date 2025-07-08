@@ -25,11 +25,11 @@ export default function AnimatedButton({
   
   // Apply variant-specific styling
   if (variant === 'primary') {
-    baseClasses += ' bg-[#1F7832] text-white hover:bg-[#0B3C17] focus:ring-green-300';
+    baseClasses += ' bg-primary text-white hover:bg-primary-dark focus:ring-primary-light';
   } else if (variant === 'secondary') {
-    baseClasses += ' bg-green-100 text-green-800 hover:bg-green-200 focus:ring-green-200';
+    baseClasses += ' bg-primary-light text-primary hover:bg-primary-lighter focus:ring-primary-light';
   } else if (variant === 'outline') {
-    baseClasses += ' bg-transparent border-2 border-[#1F7832] text-[#1F7832] hover:bg-green-50 focus:ring-green-200';
+    baseClasses += ' bg-transparent border-2 border-primary text-primary hover:bg-primary-light focus:ring-primary-light';
   }
   
   if (disabled) {

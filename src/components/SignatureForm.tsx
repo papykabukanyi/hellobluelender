@@ -303,7 +303,7 @@ export default function SignatureForm({
                 <button
                   type="button"
                   onClick={generateSignature}
-                  className="w-full py-3 bg-blue-600 text-white text-lg font-bold rounded-md hover:bg-blue-700 transition shadow-lg flex items-center justify-center space-x-2"
+                  className="w-full py-3 bg-primary text-white text-lg font-bold rounded-md hover:bg-primary-dark transition shadow-lg flex items-center justify-center space-x-2"
                   disabled={!firstName || !lastName}
                 >
                   <span>✍️</span>

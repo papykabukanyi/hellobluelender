@@ -781,7 +781,7 @@ const ChatBot = () => {
     <>
       {/* Chat button fixed at bottom right */}
       <button 
-        className={`fixed bottom-5 right-5 z-50 rounded-full p-4 shadow-lg transition-all duration-300 ${isOpen ? 'bg-red-500 text-white rotate-45' : 'bg-green-600 text-white'}`}
+        className={`fixed bottom-5 right-5 z-50 rounded-full p-4 shadow-lg transition-all duration-300 ${isOpen ? 'bg-red-500 text-white rotate-45' : 'bg-primary text-white'}`}
         onClick={() => setIsOpen(prev => !prev)}
       >
         {isOpen ? (
@@ -801,7 +801,7 @@ const ChatBot = () => {
         style={{ height: "500px" }}
       >
         {/* Chat header */}
-        <div className="bg-green-600 text-white p-4 flex items-center justify-between">
+        <div className="bg-primary text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -824,7 +824,7 @@ const ChatBot = () => {
             >
               <div 
                 className={`inline-block rounded-lg px-4 py-2 max-w-xs sm:max-w-md
-                  ${message.role === 'user' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-800'}
+                  ${message.role === 'user' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-800'}
                 `}
               >
                 <p className="text-sm">{message.content}</p>
@@ -851,7 +851,7 @@ const ChatBot = () => {
           <div className="flex items-center">
             <input
               type="text"
-              className="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Type your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -859,7 +859,7 @@ const ChatBot = () => {
             />
             <button
               type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded-r-lg hover:bg-green-700 transition disabled:opacity-50"
+              className="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-primary-dark transition disabled:opacity-50"
               disabled={!input.trim() || isTyping}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -237,7 +237,7 @@ export default function EnhancedDocumentUpload({
       <FadeIn>
         <div 
           className={`border-2 border-dashed rounded-lg p-6 transition-all ${
-            dragActive ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'
+            dragActive ? 'border-primary bg-primary-muted' : 'border-gray-300 bg-white'
           }`}
           onDragEnter={handleDrag}
           onDragOver={handleDrag}
@@ -260,7 +260,7 @@ export default function EnhancedDocumentUpload({
               Drop files here or
               <button 
                 type="button" 
-                className="text-green-600 font-medium mx-1 hover:text-green-700 focus:outline-none focus:underline"
+                className="text-primary font-medium mx-1 hover:text-primary-dark focus:outline-none focus:underline"
                 onClick={onButtonClick}
               >
                 browse
@@ -294,7 +294,7 @@ export default function EnhancedDocumentUpload({
           <p className="text-sm font-medium text-gray-700 mb-1">Analyzing document... (will upload normally if analysis fails)</p>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <motion.div 
-              className="bg-green-600 h-2.5 rounded-full"
+              className="bg-primary h-2.5 rounded-full"
               initial={{ width: '0%' }}
               animate={{ width: `${processingProgress}%` }}
               transition={{ duration: 0.5 }}
@@ -310,9 +310,9 @@ export default function EnhancedDocumentUpload({
       )}
       
       {isProcessing && processingProgress === 100 && !errorMessage && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-700">Document processed successfully!</p>
-          <p className="text-xs text-green-600 mt-1">Your document has been analyzed and uploaded.</p>
+        <div className="mt-4 p-3 bg-primary-muted border border-primary rounded-md">
+          <p className="text-sm text-primary">Document processed successfully!</p>
+          <p className="text-xs text-primary-dark mt-1">Your document has been analyzed and uploaded.</p>
         </div>
       )}
       

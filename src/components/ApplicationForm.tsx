@@ -224,7 +224,7 @@ export default function ApplicationForm({ initialLoanType = 'Business' }: Applic
       <div className="mb-4 relative pt-1">
         <div className="flex mb-2 items-center justify-between">
           <div>
-            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-primary bg-blue-100">
+            <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-white bg-primary">
               {formSteps[currentStep].label}
             </span>
           </div>
@@ -234,7 +234,7 @@ export default function ApplicationForm({ initialLoanType = 'Business' }: Applic
             </span>
           </div>
         </div>
-        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-50">
+        <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-neutral-200">
           <div 
             style={{ width: `${progressPercentage}%` }}
             className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary transition-all duration-500 ease-in-out"
@@ -253,7 +253,7 @@ export default function ApplicationForm({ initialLoanType = 'Business' }: Applic
                     index === currentStep 
                       ? 'bg-primary text-white animate-pulse' 
                       : index < currentStep 
-                      ? 'bg-green-500 text-white' 
+                      ? 'bg-primary text-white' 
                       : 'bg-gray-200 text-gray-600'
                   } transition-all duration-300`}
                 >
@@ -270,7 +270,7 @@ export default function ApplicationForm({ initialLoanType = 'Business' }: Applic
               {index < formSteps.length - 1 && (
                 <div 
                   className={`h-0.5 w-12 ${
-                    index < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                    index < currentStep ? 'bg-primary' : 'bg-gray-200'
                   } transition-all duration-300`}
                 />
               )}

@@ -106,8 +106,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </div>
                   
                   {/* User avatar */}
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full">
-                    <span className="text-sm font-medium text-blue-600">
+                  <div className="flex items-center justify-center w-8 h-8 bg-primary-muted rounded-full">
+                    <span className="text-sm font-medium text-primary">
                       {userData.email.charAt(0).toUpperCase()}
                     </span>
                   </div>
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <button
                     onClick={handleLogout}
                     disabled={isLoading}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
                     title="Logout"
                   >
                     <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -148,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       href="/admin/dashboard"
                       className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                         pathname === '/admin/dashboard' 
-                          ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                          ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
@@ -167,7 +167,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       href="/admin/email-settings"
                       className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                         pathname === '/admin/email-settings' 
-                          ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                          ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
@@ -186,7 +186,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       href="/admin/smtp-config"
                       className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                         pathname === '/admin/smtp-config' 
-                          ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                          ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
@@ -206,7 +206,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       href="/admin/manage-admins"
                       className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                         pathname === '/admin/manage-admins' 
-                          ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                          ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                           : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                       }`}
                     >
@@ -225,7 +225,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         href="/admin/maps"
                         className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                           pathname === '/admin/maps' 
-                            ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                            ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                         }`}
                       >
@@ -240,7 +240,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         href="/admin/leads"
                         className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                           pathname === '/admin/leads' 
-                            ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                            ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                         }`}
                       >
@@ -255,7 +255,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         href="/admin/chat-analytics"
                         className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                           pathname === '/admin/chat-analytics' 
-                            ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500' 
+                            ? 'bg-primary-muted text-primary border-l-4 border-primary' 
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
                         }`}
                       >

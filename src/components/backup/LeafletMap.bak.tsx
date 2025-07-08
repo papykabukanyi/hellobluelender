@@ -21,7 +21,7 @@ const LeafletMapInner = dynamic(() => import('./LeafletMapInner'), {
   ssr: false,
   loading: () => (
     <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
     </div>
   )
 });
@@ -46,7 +46,7 @@ const LeafletMap = ({ locations }: MapProps) => {
   if (!mapReady) {
     return (
       <div className="h-full w-full bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }

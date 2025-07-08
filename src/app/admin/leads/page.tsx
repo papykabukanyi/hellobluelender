@@ -183,7 +183,7 @@ export default function LeadsPage() {
 
         {loading ? (
           <div className="flex justify-center my-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : filteredLeads.length > 0 ? (
           <div className="overflow-x-auto">
@@ -212,15 +212,15 @@ export default function LeadsPage() {
                         <div><strong>{[lead.firstName, lead.lastName].filter(Boolean).join(' ')}</strong></div>
                       )}
                       {lead.businessName && <div className="text-sm text-gray-600">{lead.businessName}</div>}
-                      {lead.loanAmount && <div className="text-sm text-green-600">Loan: ${parseInt(lead.loanAmount).toLocaleString()}</div>}
-                      {lead.monthlyRevenue && <div className="text-sm text-blue-600">Revenue: ${parseInt(lead.monthlyRevenue).toLocaleString()}/mo</div>}
+                      {lead.loanAmount && <div className="text-sm text-success">Loan: ${parseInt(lead.loanAmount).toLocaleString()}</div>}
+                      {lead.monthlyRevenue && <div className="text-sm text-primary">Revenue: ${parseInt(lead.monthlyRevenue).toLocaleString()}/mo</div>}
                     </td>
                     <td className="py-2 px-4 border-b">
                       <span 
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
                           lead.priority === 'high' ? 'bg-red-100 text-red-800' : 
                           lead.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-green-100 text-green-800'
+                          'bg-success-light text-success'
                         }`}
                       >
                         {lead.priority || 'low'}
@@ -241,7 +241,7 @@ export default function LeadsPage() {
                       {lead.source === 'pre-application' ? (
                         <div className="text-sm">
                           <div className="mb-1">
-                            <span className="font-medium bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                            <span className="font-medium bg-success-light text-success px-2 py-1 rounded text-xs">
                               COMPLETED PRE-APPLICATION
                             </span>
                           </div>
@@ -281,7 +281,7 @@ export default function LeadsPage() {
                     </td>
                     <td className="py-2 px-4 border-b">
                       <button 
-                        className="text-blue-600 hover:text-blue-800 mr-2 text-sm"
+                        className="text-primary hover:text-primary-dark mr-2 text-sm"
                         onClick={() => {
                           // View details functionality could be added here
                           alert(`Lead details for ${lead.id}`);
@@ -290,7 +290,7 @@ export default function LeadsPage() {
                         View Details
                       </button>
                       <button 
-                        className="text-green-600 hover:text-green-800 text-sm"
+                        className="text-success hover:text-success-dark text-sm"
                         onClick={() => handleMarkContacted(lead.id)}
                       >
                         Mark Contacted

@@ -77,7 +77,7 @@ const CookieConsent = () => {
         animation: animation === 'animate-slideUp' ? 'slideUp 0.5s forwards' : animation === 'animate-slideDown' ? 'slideDown 0.5s forwards' : 'none'
       }}
     >
-      <div className="bg-white border-t-4 border-green-600 p-6 md:p-8 max-w-7xl mx-auto">
+      <div className="bg-white border-t-4 border-primary p-6 md:p-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-1">
             <h2 className="text-xl font-bold mb-2 text-gray-800">We Value Your Privacy</h2>
@@ -112,7 +112,7 @@ const CookieConsent = () => {
                       type="checkbox" 
                       checked={cookieSettings.necessary} 
                       disabled
-                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                     <span className="ml-2 text-gray-700">Necessary Cookies</span>
                   </label>
@@ -125,7 +125,7 @@ const CookieConsent = () => {
                       type="checkbox" 
                       checked={cookieSettings.functional} 
                       onChange={() => handleToggle('functional')}
-                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                     <span className="ml-2 text-gray-700">Functional Cookies</span>
                   </label>
@@ -138,7 +138,7 @@ const CookieConsent = () => {
                       type="checkbox" 
                       checked={cookieSettings.analytics} 
                       onChange={() => handleToggle('analytics')}
-                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                     <span className="ml-2 text-gray-700">Analytics Cookies</span>
                   </label>
@@ -151,7 +151,7 @@ const CookieConsent = () => {
                       type="checkbox" 
                       checked={cookieSettings.marketing} 
                       onChange={() => handleToggle('marketing')}
-                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
                     />
                     <span className="ml-2 text-gray-700">Marketing Cookies</span>
                   </label>
@@ -162,7 +162,7 @@ const CookieConsent = () => {
             
             <button 
               onClick={() => setMoreInfo(!moreInfo)} 
-              className="text-green-600 hover:text-green-800 font-medium underline text-sm"
+              className="text-primary hover:text-primary-dark font-medium underline text-sm"
             >
               {moreInfo ? 'Show Less' : 'Customize Settings'}
             </button>
@@ -171,7 +171,7 @@ const CookieConsent = () => {
           <div className="flex flex-col md:flex-row gap-3 md:items-center flex-shrink-0">
             <button
               onClick={() => saveConsent(true)}
-              className="btn bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-md"
+              className="btn bg-primary hover:bg-primary-dark text-white font-medium py-3 px-6 rounded-md"
             >
               Accept All
             </button>

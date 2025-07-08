@@ -96,8 +96,8 @@ export default function EmailSettings() {
     <AdminLayout>      <div className="mb-8">
         <h2 className="text-2xl font-bold">Email Recipients</h2>        <p className="text-gray-600">
           Manage email recipients who will receive application notifications and PDF copies
-        </p>        <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-md">          <h3 className="font-medium text-blue-700">Important:</h3>
-          <p className="text-blue-600">
+        </p>        <div className="mt-2 p-4 bg-primary-light border border-primary-lighter rounded-md">          <h3 className="font-medium text-primary">Important:</h3>
+          <p className="text-primary-dark">
             All recipients added here will receive notifications when new applications are submitted.
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function EmailSettings() {
       {/* Notification message */}
       {message && (
         <div className={`mb-4 p-3 rounded-md ${
-          message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          message.type === 'success' ? 'bg-success-light text-success' : 'bg-red-100 text-red-700'
         }`}>
           {message.text}
         </div>
@@ -200,7 +200,7 @@ export default function EmailSettings() {
                     <td className="py-3 px-4">{recipient.email}</td>
                     <td className="py-3 px-4">
                       {recipient.isMainAdmin ? (
-                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                        <span className="px-2 py-1 bg-success-light text-success text-xs rounded-full">
                           Main Admin
                         </span>
                       ) : (

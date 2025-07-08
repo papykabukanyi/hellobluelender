@@ -145,10 +145,10 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                 <p className="text-sm text-gray-500">Status</p>
                 <p>
                   <span className={`text-xs px-2 py-1 rounded ${
-                    application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                    application.status === 'approved' ? 'bg-success-light text-success' : 
                     application.status === 'denied' ? 'bg-red-100 text-red-800' : 
                     application.status === 'in-review' ? 'bg-yellow-100 text-yellow-800' : 
-                    'bg-blue-100 text-blue-800'
+                    'bg-primary-light text-primary'
                   }`}>
                     {application.status === 'in-review' ? 'In Review' : 
                      application.status === 'submitted' ? 'New' :
@@ -344,10 +344,10 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                   <div key={docType} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-base font-semibold text-gray-800 flex items-center">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                        <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
                         {docType.replace(/([A-Z])/g, ' $1').trim()}
                       </h4>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-primary-light text-primary px-2 py-1 rounded-full">
                         {Array.isArray(files) ? files.length : 0} files
                       </span>
                     </div>
@@ -389,7 +389,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                               {file.path && (
                                 <button
                                   onClick={() => openDocumentModal(file, `${docType} - ${file.originalName || file.name || `Document ${index + 1}`}`)}
-                                  className="flex-1 inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors group-hover:scale-105 transform duration-200"
+                                  className="flex-1 inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-primary text-white rounded-md hover:bg-primary-dark transition-colors group-hover:scale-105 transform duration-200"
                                 >
                                   <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -415,7 +415,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                                 <a
                                   href={file.path}
                                   download={file.originalName || file.name}
-                                  className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                  className="inline-flex items-center justify-center px-3 py-2 text-xs font-medium bg-success text-white rounded-md hover:bg-success-dark transition-colors"
                                   title="Download file"
                                 >
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,7 +498,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
             
             <div className="flex flex-wrap gap-4">
               <button 
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className="px-4 py-2 bg-success text-white rounded-md hover:bg-success-dark"
                 onClick={async () => {                  try {
                     const response = await fetch(`/api/admin/applications`, {
                       method: 'PUT',
@@ -635,7 +635,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center mb-2">
-                  <svg className="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <h4 className="text-sm font-semibold text-gray-700">Submission Details</h4>
@@ -656,10 +656,10 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                   <div className="flex justify-between">
                     <span className="text-gray-500">Current Status:</span>
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                      application.status === 'approved' ? 'bg-success-light text-success' : 
                       application.status === 'denied' ? 'bg-red-100 text-red-800' : 
                       application.status === 'in-review' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-blue-100 text-blue-800'
+                      'bg-primary-light text-primary'
                     }`}>
                       {application.status === 'in-review' ? 'In Review' : 
                        application.status === 'submitted' ? 'New' :
@@ -671,7 +671,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
               
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center mb-2">
-                  <svg className="w-4 h-4 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 mr-2 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <h4 className="text-sm font-semibold text-gray-700">Application Summary</h4>
@@ -821,7 +821,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                   <div className="flex justify-between items-center">
                     <button
                       onClick={closeDocumentModal}
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                     >
                       Close
                     </button>
@@ -830,7 +830,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                         href={documentModal.document?.path}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        className="inline-flex items-center px-4 py-2 border border-primary-lighter text-sm font-medium rounded-md text-primary bg-primary-light hover:bg-primary-lighter focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M8 8l8-8m0 0V8m0-8h8" />
@@ -840,7 +840,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                       <a
                         href={documentModal.document?.path}
                         download={documentModal.document?.originalName || documentModal.document?.name}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-success hover:bg-success-dark focus:outline-none focus:ring-2 focus:ring-success transition-colors"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -937,7 +937,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
               <div className="flex justify-between items-center">
                 <button
                   onClick={closeDocumentModal}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                 >
                   Close
                 </button>
@@ -946,7 +946,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                     href={documentModal.document?.path}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-4 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    className="inline-flex items-center px-4 py-2 border border-primary-lighter text-sm font-medium rounded-md text-primary bg-primary-light hover:bg-primary-lighter focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M8 8l8-8m0 0V8m0-8h8" />
@@ -956,7 +956,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                   <a
                     href={documentModal.document?.path}
                     download={documentModal.document?.originalName || documentModal.document?.name}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-success hover:bg-success-dark focus:outline-none focus:ring-2 focus:ring-success transition-colors"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

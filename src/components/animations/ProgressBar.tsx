@@ -13,7 +13,7 @@ interface ProgressBarProps {
 export function ProgressBar({
   progress,
   className = '',
-  barColor = '#1F7832',
+  barColor = 'var(--color-primary)',
   height = 8,
   animated = true,
 }: ProgressBarProps) {

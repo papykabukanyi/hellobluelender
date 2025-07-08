@@ -45,24 +45,26 @@ export default function Home() {
       <section 
         style={{ marginTop: '-4rem' }} // To compensate for the navbar
       >
-        <div className="relative h-screen flex items-center justify-center">
+        <div className="relative min-h-screen flex items-center justify-center">
           <GradientBackground className="absolute inset-0" />
-          <div className="container-custom z-10 text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white">
-              Growing Your Business <br /> Starts Here
+          <div className="container-custom z-10 text-center animate-fade-in">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight">
+              Growing Your Business <br className="hidden sm:block" /> 
+              <span className="text-white">Starts Here</span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white">
-              <span className="font-permanentMarker text-2xl md:text-3xl">Hempire Enterprise</span> offers flexible financing solutions for businesses of all sizes.
+            <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 max-w-4xl mx-auto text-white px-4">
+              <span className="font-permanentMarker text-xl sm:text-2xl md:text-3xl text-primary-light block mb-2">Hempire Enterprise</span> 
+              offers flexible financing solutions for businesses of all sizes.
               Get the funds you need to expand, upgrade equipment, or manage cash flow.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center px-4 animate-slide-up">
               <ApplyNowButton 
                 href="/application" 
-                className="btn-primary text-lg px-8 py-3 hover:scale-105 transition-transform"
+                className="btn-primary text-base sm:text-lg px-6 sm:px-8 py-3 hover:scale-105 transition-transform"
               >
                 Apply Now
               </ApplyNowButton>
-              <Link href="/info" className="btn-outline text-lg px-8 py-3 text-white border-white hover:bg-white hover:bg-opacity-10 transition-colors">
+              <Link href="/info" className="btn-outline text-base sm:text-lg px-6 sm:px-8 py-3 text-white border-white hover:bg-white hover:text-primary hover:bg-opacity-90 transition-colors">
                 Learn More
               </Link>
             </div>
@@ -71,48 +73,88 @@ export default function Home() {
       </section>
 
       {/* Loan Types Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="section-spacing bg-neutral-50">
         <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Our Financing Solutions</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center animate-slide-up">Our Financing Solutions</h2>
           
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             {/* Business Loan Card */}
-            <div className="card hover:shadow-lg transition-shadow">
-              <h3 className="text-2xl font-bold mb-4">Business Financing</h3>
-              <p className="mb-4 text-gray-600">
+            <div className="card hover:shadow-lg transition-all duration-300 animate-slide-up">
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Business Financing</h3>
+              <p className="mb-4 text-neutral-700 leading-relaxed">
                 Get the working capital your business needs to grow, expand, or manage seasonal cash flow fluctuations.
                 Our business financing options are designed to be flexible and accessible.
               </p>
-              <ul className="mb-6 space-y-2 text-gray-600">
-                <li>• Quick approval process</li>
-                <li>• Flexible repayment terms</li>
-                <li>• Competitive rates</li>
-                <li>• No hidden fees</li>
+              <ul className="mb-6 space-y-2 text-neutral-700">
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Quick approval process
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Flexible repayment terms
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Competitive rates
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  No hidden fees
+                </li>
               </ul>
               <ApplyNowButton 
                 href="/application?type=business" 
-                className="btn-primary inline-block hover:scale-105 transition-transform"
+                className="btn-primary w-full sm:w-auto hover:scale-105 transition-transform"
               >
                 Apply for Business Financing
               </ApplyNowButton>
             </div>
             
             {/* Equipment Loan Card */}
-            <div className="card hover:shadow-lg transition-shadow">
-              <h3 className="text-2xl font-bold mb-4">Equipment Financing</h3>
-              <p className="mb-4 text-gray-600">
+            <div className="card hover:shadow-lg transition-all duration-300 animate-slide-up">
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Equipment Financing</h3>
+              <p className="mb-4 text-neutral-700 leading-relaxed">
                 Upgrade your equipment without depleting your cash reserves. Our equipment financing solutions
                 help you acquire the tools you need to stay competitive and efficient.
               </p>
-              <ul className="mb-6 space-y-2 text-gray-600">
-                <li>• Finance new or used equipment</li>
-                <li>• Fixed monthly payments</li>
-                <li>• Tax advantages</li>
-                <li>• Preserve your capital</li>
+              <ul className="mb-6 space-y-2 text-neutral-700">
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Finance new or used equipment
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Fixed monthly payments
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Tax advantages
+                </li>
+                <li className="flex items-center">
+                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  Preserve your capital
+                </li>
               </ul>
               <ApplyNowButton 
                 href="/application?type=equipment" 
-                className="btn-primary inline-block hover:scale-105 transition-transform"
+                className="btn-primary w-full sm:w-auto hover:scale-105 transition-transform"
               >
                 Apply for Equipment Financing
               </ApplyNowButton>
@@ -122,54 +164,56 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20">
+      <section className="section-spacing bg-white">
         <div className="container-custom">
-          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">Why Choose <span className="font-permanentMarker">Hempire Enterprise</span></h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center animate-slide-up">
+            Why Choose <span className="font-permanentMarker text-primary">Hempire Enterprise</span>
+          </h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <div className="text-center p-4 animate-slide-up">
+              <div className="bg-gradient-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-soft">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Fast Approvals</h3>
-              <p className="text-gray-600">Quick application process with decisions often made within 24-48 hours.</p>
+              <h3 className="text-lg md:text-xl font-bold mb-3 text-neutral-900">Fast Approvals</h3>
+              <p className="text-neutral-700 leading-relaxed">Quick application process with decisions often made within 24-48 hours.</p>
             </div>
             
-            <div className="text-center">
-              <div className="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-4 animate-slide-up">
+              <div className="bg-gradient-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-soft">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Competitive Rates</h3>
-              <p className="text-gray-600">We offer some of the most competitive rates in the industry for qualified businesses.</p>
+              <h3 className="text-lg md:text-xl font-bold mb-3 text-neutral-900">Competitive Rates</h3>
+              <p className="text-neutral-700 leading-relaxed">We offer some of the most competitive rates in the industry for qualified businesses.</p>
             </div>
             
-            <div className="text-center">
-              <div className="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-4 animate-slide-up sm:col-span-2 lg:col-span-1">
+              <div className="bg-gradient-primary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-soft">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">Dedicated Support</h3>
-              <p className="text-gray-600">Our team of financial experts is here to guide you through every step of the process.</p>
+              <h3 className="text-lg md:text-xl font-bold mb-3 text-neutral-900">Dedicated Support</h3>
+              <p className="text-neutral-700 leading-relaxed">Our team of financial experts is here to guide you through every step of the process.</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary text-white">
+      <section className="section-spacing bg-gradient-primary text-white">
         <div className="container-custom text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Ready to Take the Next Step?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6 text-white animate-slide-up">Ready to Take the Next Step?</h2>
+          <p className="text-lg sm:text-xl mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed animate-slide-up">
             Apply today and get the financing your business needs to succeed.
           </p>
           <ApplyNowButton 
             href="/application" 
-            className="btn-outline text-white border-white text-lg px-8 py-3 hover:bg-white hover:text-primary hover:bg-opacity-90 transition-colors"
+            className="btn-outline text-white border-white text-base sm:text-lg px-6 sm:px-8 py-3 hover:bg-white hover:text-primary hover:bg-opacity-90 transition-colors animate-bounce-gentle"
           >
             Start Your Application
           </ApplyNowButton>

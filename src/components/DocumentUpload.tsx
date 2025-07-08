@@ -202,7 +202,7 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                 multiple
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={(e) => handleFileChange(e, docCategory.key as keyof ApplicationDocuments)}
-                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               
               {/* Show selected files */}
@@ -222,7 +222,7 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
                       {uploadProgress[`${docCategory.key}-${fileIndex}`] && (
                         <div className="w-20 bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            className="bg-primary h-2 rounded-full transition-all duration-300"
                             style={{ width: `${uploadProgress[`${docCategory.key}-${fileIndex}`]}%` }}
                           ></div>
                         </div>
@@ -262,7 +262,7 @@ export default function DocumentUpload({ onNext, onBack, formData }: DocumentUpl
         <AnimatedButton
           type="submit"
           disabled={uploading || Object.keys(documents).length === 0}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+          className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary-dark disabled:opacity-50"
         >
           {uploading ? 'Uploading...' : 'Continue'}
         </AnimatedButton>

@@ -215,7 +215,7 @@ export default function ApplicationsMap() {
           </div>
         ) : loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -242,11 +242,11 @@ export default function ApplicationsMap() {
                 <h3 className="text-lg font-semibold mb-3">Map Legend</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center">
-                    <span className="w-4 h-4 bg-blue-500 rounded-full mr-2"></span>
+                    <span className="w-4 h-4 bg-primary rounded-full mr-2"></span>
                     <span>Pending</span>
                   </li>
                   <li className="flex items-center">
-                    <span className="w-4 h-4 bg-green-500 rounded-full mr-2"></span>
+                    <span className="w-4 h-4 bg-success rounded-full mr-2"></span>
                     <span>Approved</span>
                   </li>
                   <li className="flex items-center">

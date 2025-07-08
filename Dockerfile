@@ -9,10 +9,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json ./
-COPY package-lock.json* ./
-RUN npm ci --legacy-peer-deps --production=false || \
-    (rm -f package-lock.json && npm install --legacy-peer-deps --production=false)
+COPY package.json package-lock.json* ./
+RUN npm ci --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -26,9 +24,19 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV NODE_ENV=production
 ENV DOCKER_BUILD=true
 
-# Run cleanup and build
-RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."
-RUN npm run build
+# Build the application with proper error handling
+RUN echo "Starting build process..." && \
+    npm run build:docker && \
+    echo "Build completed successfully" && \
+    ls -la .next/ && \
+    echo "=== Build artifacts created ===" && \
+    find .next -name "*.js" -o -name "*.json" | head -10
+
+# Debug: Check what was created after build
+RUN echo "=== Build completed, checking output ===" && \
+    ls -la && \
+    echo "=== Contents of .next directory ===" && \
+    ls -la .next/ 2>/dev/null || echo "No .next directory found"
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -41,13 +49,17 @@ ENV PORT=8080
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files
+# Copy necessary files first
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/server.js ./
 
-# Copy the entire .next directory and dependencies instead of standalone
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+# Install only production dependencies
+RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
+
+# Set ownership
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 

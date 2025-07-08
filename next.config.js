@@ -16,8 +16,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // Always use standalone output for Docker builds, or when in production
-  output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : 
-           process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
+  // Force standalone to avoid Docker build issues
+  output: 'standalone',
   experimental: {}, // Keep empty to avoid warnings
   
   // Environment variables for client-side

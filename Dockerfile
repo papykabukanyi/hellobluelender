@@ -30,6 +30,14 @@ ENV DOCKER_BUILD=true
 RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."
 RUN npm run build
 
+# Debug: List what was actually created
+RUN echo "=== Debugging build output ===" && \
+    ls -la .next/ && \
+    echo "=== Checking for standalone ===" && \
+    ls -la .next/standalone/ 2>/dev/null || echo "No standalone directory found" && \
+    echo "=== Checking for static ===" && \
+    ls -la .next/static/ 2>/dev/null || echo "No static directory found"
+
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app

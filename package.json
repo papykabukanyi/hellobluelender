@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "node ./cleanup.js || exit 0",
-    "build": "next build || echo 'Build completed with warnings'",
-    "postbuild": "echo 'Build process finished successfully'",
+    "build": "next build",
+    "postbuild": "node ./cleanup.js && echo 'Build process finished successfully'",
     "start": "node server.js",
     "healthcheck": "node healthcheck.js",
     "lint": "next lint --fix",

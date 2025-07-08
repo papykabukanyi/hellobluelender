@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function Info() {
   return (
     <>
-      <section className="bg-gray-50 py-12">
+      <section className="bg-gray-50 page-header-section">
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Financial Information</h1>
           <p className="text-gray-600 mb-0">

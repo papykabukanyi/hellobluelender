@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import { NextSeo } from "next-seo";
 import InitializeApp from "@/components/InitializeApp";
 import SchemaScript from "@/components/SchemaScript";
@@ -104,7 +105,7 @@ export default function RootLayout({
         <main className="flex-grow">
           {children}
         </main>
-        <Footer />
+        <ConditionalFooter />
         <CookieConsent />
         <ConditionalChatBot />
       </body>

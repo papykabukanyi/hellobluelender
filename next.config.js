@@ -15,8 +15,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Use standalone output format for deployment
-  output: 'standalone',
+  // Use standalone output format for deployment only in production
+  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined,
   experimental: {}, // Keep empty to avoid warnings
   
   // Environment variables for client-side

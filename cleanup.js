@@ -30,9 +30,30 @@ function forceDeleteDirectory(dir) {
   console.log(`💥 Force deleting directory: ${dir}`);
 
   try {
-    // On Windows, use RD /S /Q which is more aggressive than fs.rmSync
+    // On Windows, use multiple methods for maximum destruction
     if (process.platform === 'win32') {
-      execSync(`rd /s /q "${dir}"`, { stdio: 'inherit' });
+      try {
+        // Method 1: Standard rd command
+        execSync(`rd /s /q "${dir}"`, { stdio: 'pipe' });
+      } catch (rdError) {
+        console.log('Standard rd failed, trying alternative methods...');
+        
+        // Method 2: Use robocopy to delete (Windows-specific trick)
+        try {
+          const tempEmpty = path.join(currentDir, 'temp_empty_folder');
+          fs.mkdirSync(tempEmpty, { recursive: true });
+          execSync(`robocopy "${tempEmpty}" "${dir}" /purge`, { stdio: 'pipe' });
+          execSync(`rd /s /q "${tempEmpty}"`, { stdio: 'pipe' });
+          execSync(`rd /s /q "${dir}"`, { stdio: 'pipe' });
+        } catch (robocopyError) {
+          // Method 3: PowerShell removal
+          try {
+            execSync(`powershell -Command "Remove-Item -Path '${dir}' -Recurse -Force"`, { stdio: 'pipe' });
+          } catch (psError) {
+            throw new Error('All Windows deletion methods failed');
+          }
+        }
+      }
     } else {
       // On Unix systems, use rm -rf
       execSync(`rm -rf "${dir}"`, { stdio: 'inherit' });
@@ -59,9 +80,9 @@ function forceDeleteDirectory(dir) {
             try {
               if (fs.statSync(filePath).isDirectory()) {
                 if (process.platform === 'win32') {
-                  execSync(`rd /s /q "${filePath}"`, { stdio: 'inherit' });
+                  execSync(`rd /s /q "${filePath}"`, { stdio: 'pipe' });
                 } else {
-                  execSync(`rm -rf "${filePath}"`, { stdio: 'inherit' });
+                  execSync(`rm -rf "${filePath}"`, { stdio: 'pipe' });
                 }
               } else {
                 fs.unlinkSync(filePath);

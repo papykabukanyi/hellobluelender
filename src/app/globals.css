@@ -211,6 +211,16 @@ a.font-permanentMarker:hover, button.font-permanentMarker:hover {
   }
 }
 
+/* Page Header Utility - Account for Fixed Navbar */
+.page-header {
+  padding-top: 5rem; /* 80px - slightly more than navbar height for breathing room */
+}
+
+.page-header-section {
+  padding-top: 5rem;
+  padding-bottom: 3rem;
+}
+
 /* Enhanced Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;

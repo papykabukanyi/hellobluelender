@@ -15,9 +15,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Always use standalone output for Docker builds, or when in production
-  // Force standalone to avoid Docker build issues
-  output: 'standalone',
+  // Disable standalone output to simplify Docker builds
+  // output: 'standalone',
   experimental: {}, // Keep empty to avoid warnings
   
   // Environment variables for client-side

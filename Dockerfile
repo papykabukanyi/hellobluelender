@@ -30,14 +30,6 @@ ENV DOCKER_BUILD=true
 RUN node cleanup.js 2>/dev/null || echo "Cleanup script not found, continuing..."
 RUN npm run build
 
-# Debug: List what was actually created
-RUN echo "=== Debugging build output ===" && \
-    ls -la .next/ && \
-    echo "=== Checking for standalone ===" && \
-    ls -la .next/standalone/ 2>/dev/null || echo "No standalone directory found" && \
-    echo "=== Checking for static ===" && \
-    ls -la .next/static/ 2>/dev/null || echo "No static directory found"
-
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
@@ -52,10 +44,10 @@ RUN adduser --system --uid 1001 nextjs
 # Copy necessary files
 COPY --from=builder /app/public ./public
 
-# Automatically leverage output traces to reduce image size  
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy the entire .next directory and dependencies instead of standalone
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
 USER nextjs
 
@@ -63,6 +55,5 @@ EXPOSE 8080
 
 ENV PORT=8080
 
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD ["node", "server.js"]
+# Use npm start instead of standalone server
+CMD ["npm", "start"]

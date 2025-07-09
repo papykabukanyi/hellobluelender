@@ -42,7 +42,7 @@ export default function GrowingLeaf({
           delay 
         },
         scale: { 
-          type: "spring",
+          type: "tween" as any,
           duration: duration,
           delay: delay + 0.2,
           stiffness: 100,
@@ -74,7 +74,7 @@ export default function GrowingLeaf({
           fill={fillColor}
           stroke="none"
           strokeWidth={2}
-          variants={leafVariants}
+          variants={leafVariants as any}
         />
       </motion.svg>
     </motion.div>

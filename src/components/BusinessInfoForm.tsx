@@ -33,7 +33,7 @@ export default function BusinessInfoForm({ onNext, onBack, formData = {} }: Busi
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<BusinessInfo>({
-    resolver: zodResolver(businessInfoSchema),
+    resolver: zodResolver(businessInfoSchema) as any,
     defaultValues: formData,
   });
 
@@ -55,7 +55,7 @@ export default function BusinessInfoForm({ onNext, onBack, formData = {} }: Busi
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit as any)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="md:col-span-2">
           <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-1">

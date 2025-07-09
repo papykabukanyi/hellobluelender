@@ -156,7 +156,7 @@ class SmartChatBot {
 
     Object.entries(businessTypes).forEach(([type, keywords]) => {
       if (keywords.some(keyword => msg.includes(keyword))) {
-        info.type = type;
+        (info as any).type = type;
       }
     });
 
@@ -171,7 +171,7 @@ class SmartChatBot {
     revenuePatterns.forEach(pattern => {
       const match = message.match(pattern);
       if (match) {
-        info.revenue = match[1];
+        (info as any).revenue = match[1];
       }
     });
 
@@ -185,7 +185,7 @@ class SmartChatBot {
     timePatterns.forEach(pattern => {
       const match = message.match(pattern);
       if (match) {
-        info.timeInBusiness = match[1] || match[0];
+        (info as any).timeInBusiness = match[1] || match[0];
       }
     });
 
@@ -373,7 +373,7 @@ export async function POST(request: NextRequest) {
     // Extract and update session information
     const businessInfo = SmartChatBot.extractBusinessInfo(message);
     if (businessInfo) {
-      sessionData.businessInfo = { ...sessionData.businessInfo, ...businessInfo };
+      (sessionData as any).businessInfo = { ...(sessionData as any).businessInfo, ...businessInfo };
     }
     
     // Extract contact information
@@ -381,10 +381,10 @@ export async function POST(request: NextRequest) {
     const phoneMatch = message.match(/(\(?[\d\s\-\.\(\)]{10,}\)?)/);
     
     if (emailMatch) {
-      sessionData.contactInfo = { ...sessionData.contactInfo, email: emailMatch[0] };
+      (sessionData as any).contactInfo = { ...(sessionData as any).contactInfo, email: emailMatch[0] };
     }
     if (phoneMatch) {
-      sessionData.contactInfo = { ...sessionData.contactInfo, phone: phoneMatch[0] };
+      (sessionData as any).contactInfo = { ...(sessionData as any).contactInfo, phone: phoneMatch[0] };
     }
     
     // Update session data

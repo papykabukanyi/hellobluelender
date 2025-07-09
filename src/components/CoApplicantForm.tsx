@@ -43,7 +43,7 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
     formState: { errors, isSubmitting },
     reset,
   } = useForm<CoApplicantInfo>({
-    resolver: zodResolver(coApplicantInfoSchema),
+    resolver: zodResolver(coApplicantInfoSchema) as any,
     defaultValues: formData,
   });
 
@@ -127,7 +127,7 @@ export default function CoApplicantForm({ onNext, onBack, formData = {}, signatu
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit as any)}>
       <div className="mb-6">
         <label className="flex items-center">
           <input

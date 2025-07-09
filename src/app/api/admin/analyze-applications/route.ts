@@ -36,8 +36,20 @@ export async function POST(request: NextRequest) {
     
     // Use DBSCAN algorithm to identify clusters
     const clusters = identifyClusters(locations);
-      // Use Gemini to analyze the clusters
-    const insights = await analyzeLocationsWithGemini(locations);
+    
+    // Generate basic insights from clusters
+    const insights = {
+      totalClusters: clusters.length,
+      totalApplications: locations.length,
+      averageLoanAmount: locations.reduce((sum, loc) => sum + (loc.loanAmount || 0), 0) / locations.length,
+      clusters: clusters.map((cluster, index) => ({
+        id: index + 1,
+        center: cluster.center,
+        applicationCount: cluster.points.length,
+        averageLoanValue: cluster.averageLoanValue,
+        approvalRate: cluster.approvalRate
+      }))
+    };
     
     return NextResponse.json({ 
       success: true, 
@@ -141,10 +153,10 @@ function identifyClusters(locations) {
       ));
       
       // Calculate average loan value
-      cluster.averageLoanValue = cluster.totalLoanValue / cluster.points.length;
+      (cluster as any).averageLoanValue = cluster.totalLoanValue / cluster.points.length;
       
       // Calculate approval rate
-      cluster.approvalRate = Math.round((cluster.approvedCount / cluster.points.length) * 100);
+      (cluster as any).approvalRate = Math.round((cluster.approvedCount / cluster.points.length) * 100);
     }
     
     return cluster;

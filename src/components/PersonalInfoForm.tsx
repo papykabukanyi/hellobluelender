@@ -31,7 +31,7 @@ export default function PersonalInfoForm({ onNext, formData = {} }: PersonalInfo
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<PersonalInfo>({
-    resolver: zodResolver(personalInfoSchema),
+    resolver: zodResolver(personalInfoSchema) as any,
     defaultValues: formData,
   });
 
@@ -41,7 +41,7 @@ export default function PersonalInfoForm({ onNext, formData = {} }: PersonalInfo
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit as any)}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">

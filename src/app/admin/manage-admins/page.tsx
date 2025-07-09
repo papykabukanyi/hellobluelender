@@ -396,7 +396,7 @@ export default function ManageAdmins() {
                                 checked={admin.permissions?.viewApplications ?? false}
                                 onChange={() => handleUpdatePermission(admin, 'viewApplications')}
                                 className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                                disabled={admin.role === 'admin'}
+                                disabled={false}
                               />
                               <label className="ml-2 block text-sm text-gray-700">
                                 View Applications
@@ -409,7 +409,7 @@ export default function ManageAdmins() {
                                 checked={admin.permissions?.manageRecipients ?? false}
                                 onChange={() => handleUpdatePermission(admin, 'manageRecipients')}
                                 className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                                disabled={admin.role === 'admin'}
+                                disabled={false}
                               />
                               <label className="ml-2 block text-sm text-gray-700">
                                 Manage Recipients
@@ -422,7 +422,7 @@ export default function ManageAdmins() {
                                 checked={admin.permissions?.manageSmtp ?? false}
                                 onChange={() => handleUpdatePermission(admin, 'manageSmtp')}
                                 className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                                disabled={admin.role === 'admin'}
+                                disabled={false}
                               />
                               <label className="ml-2 block text-sm text-gray-700">
                                 Manage SMTP
@@ -435,7 +435,7 @@ export default function ManageAdmins() {
                                 checked={admin.permissions?.manageAdmins ?? false}
                                 onChange={() => handleUpdatePermission(admin, 'manageAdmins')}
                                 className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-                                disabled={admin.role === 'admin'}
+                                disabled={false}
                               />
                               <label className="ml-2 block text-sm text-gray-700">
                                 Manage Admins

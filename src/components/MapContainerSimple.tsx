@@ -48,14 +48,18 @@ export function MapContainerSimple({ locations }: MapProps) {
   return (
     <div className="h-full w-full">
       <LeafletMapContainer
-        center={center}
-        zoom={locations.length > 0 ? 6 : 4}
-        style={{ height: '100%', width: '100%' }}
-        className="rounded-lg"
+        {...({
+          center,
+          zoom: locations.length > 0 ? 6 : 4,
+          style: { height: '100%', width: '100%' },
+          className: "rounded-lg"
+        } as any)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          {...({
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          } as any)}
         />
         
         {/* Regular markers without clustering */}

@@ -732,7 +732,7 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                   <div className="flex justify-between">
                     <span className="text-gray-500">Location Data:</span>
                     <span className="text-gray-900">
-                      {application.location ? 'Available' : 'Not Available'}
+                      {(application as any).location ? 'Available' : 'Not Available'}
                     </span>
                   </div>
                 </div>

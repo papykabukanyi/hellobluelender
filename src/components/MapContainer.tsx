@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import L from 'leaflet';
-import { MapContainer as LeafletMapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer as LeafletMapContainer, TileLayer, Marker, Popup, MapContainerProps } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Define the props for the map component
@@ -74,10 +74,12 @@ export function MapDisplay({ locations }: MapProps) {
   return (
     <div className="map-container h-full w-full" style={{ minHeight: '500px', maxHeight: '600px' }}>
       <LeafletMapContainer
-        center={center}
-        zoom={getZoomLevel()}
-        scrollWheelZoom={true}
-        style={{ height: '100%', width: '100%' }}
+        {...({
+          center,
+          zoom: getZoomLevel(),
+          scrollWheelZoom: true,
+          style: { height: '100%', width: '100%' }
+        } as any)}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

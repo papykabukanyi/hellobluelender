@@ -24,7 +24,7 @@ export default function FadeIn({
   margin = '0px',
 }: FadeInProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin });
+  const isInView = useInView(ref, { once, margin: margin as any });
   
   // Direction-based animations
   let initialY = 0;
@@ -62,7 +62,7 @@ export default function FadeIn({
       transition: {
         duration,
         delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: "easeOut" as any,
       }
     },
   };

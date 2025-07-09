@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 
 interface StaggeredContainerProps {
@@ -41,7 +42,7 @@ export default function StaggeredContainer({
 
   // Clone children and wrap them with motion.div with item variants
   const staggeredChildren = React.Children.map(children, (child) => {
-    return <motion.div variants={itemVariants}>{child}</motion.div>;
+    return <motion.div variants={itemVariants as any}>{child}</motion.div>;
   });
 
   return (

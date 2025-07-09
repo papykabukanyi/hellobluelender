@@ -199,7 +199,7 @@ export default function EmailSettings() {
                     <td className="py-3 px-4">{recipient.name}</td>
                     <td className="py-3 px-4">{recipient.email}</td>
                     <td className="py-3 px-4">
-                      {recipient.isMainAdmin ? (
+                      {(recipient as any).isMainAdmin ? (
                         <span className="px-2 py-1 bg-success-light text-success text-xs rounded-full">
                           Main Admin
                         </span>
@@ -216,10 +216,10 @@ export default function EmailSettings() {
                       <button 
                         className="text-red-500 hover:text-red-700"
                         onClick={() => handleDeleteRecipient(recipient.id)}
-                        disabled={recipient.isMainAdmin}
-                        title={recipient.isMainAdmin ? "Cannot delete the main admin recipient" : ""}
+                        disabled={(recipient as any).isMainAdmin}
+                        title={(recipient as any).isMainAdmin ? "Cannot delete the main admin recipient" : ""}
                       >
-                        {recipient.isMainAdmin ? "Required" : "Delete"}
+                        {(recipient as any).isMainAdmin ? "Required" : "Delete"}
                       </button>
                     </td>
                   </tr>

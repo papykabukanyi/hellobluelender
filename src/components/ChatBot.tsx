@@ -113,7 +113,9 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
         }]);
       }, 1000);
     }, 4000); // Close after 4 seconds
-  };  const messagesEndRef = useRef<HTMLDivElement>(null);
+  };
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
   // Generate or retrieve a session ID for this conversation
@@ -149,7 +151,9 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
     } catch (error) {
       console.error('Error saving chat conversation:', error);
     }
-  };  // Check if current page is admin page to disable chatbot
+  };
+
+  // Check if current page is admin page to disable chatbot
   const [isAdminPage, setIsAdminPage] = useState(false);
   
   useEffect(() => {
@@ -853,11 +857,12 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
       minute: '2-digit',
     }).format(date);
   };
+  
   // Don't render anything if on admin page
   if (isAdminPage) {
     return null;
   }
-  
+
   return (
     <>
       {/* Chat button fixed at bottom right - Modern design */}
@@ -946,11 +951,6 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
               </div>
             </div>
           )}
-                  <div className="dot-typing"></div>
-                </div>
-              </div>
-            </div>
-          )}
           
           <div ref={messagesEndRef} />
         </div>
@@ -980,5 +980,6 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
       </div>
     </>
   );
+};
 
 export default ChatBot;

@@ -145,7 +145,8 @@ export class DocumentScanner {
     return file;
   }
 
-  // Extract text from an uploaded document  public async extractText(file: File): Promise<string> {
+  // Extract text from an uploaded document
+  public async extractText(file: File): Promise<string> {
     if (!this.isInitialized || !this.worker) {
       await this.initializeOCR();
     }

@@ -21,16 +21,16 @@ interface MapProps {
 // Fix the icon issues in Leaflet when used with webpack
 const fixLeafletIcons = () => {
   // Ensure L is defined (it should be since this is client-side only)
-  if (typeof L !== 'undefined') {
+  if (typeof L !== 'undefined' && typeof window !== 'undefined') {
     delete (L.Icon.Default.prototype as any)._getIconUrl;
     L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 
-      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      iconRetinaUrl: '/marker-icon-2x.png',
+      iconUrl: '/marker-icon.png', 
+      shadowUrl: '/marker-shadow.png',
     });
     console.log('Leaflet icons fixed');
   } else {
-    console.error('Leaflet is not defined');
+    console.error('Leaflet is not defined or not in browser');
   }
 };
 

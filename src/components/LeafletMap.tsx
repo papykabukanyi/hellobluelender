@@ -18,16 +18,7 @@ interface MapProps {
 
 // Create a client-side-only version of the map component
 const ClientSideMap = dynamic(
-  () => {
-    // Use simple map without clustering for Docker builds or when clustering fails
-    if (process.env.NODE_ENV === 'production' && process.env.DOCKER_BUILD) {
-      return import('./MapContainerSimple').then(mod => mod.MapContainer);
-    }
-    // Try full-featured map first, fallback to simple if it fails
-    return import('./MapContainer').then(mod => mod.MapContainer).catch(() => 
-      import('./MapContainerSimple').then(mod => mod.MapContainer)
-    );
-  },
+  () => import('./MapContainer').then(mod => ({ default: mod.MapContainer })),
   { 
     ssr: false,
     loading: () => (

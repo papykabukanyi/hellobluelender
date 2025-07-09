@@ -7,22 +7,48 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const filePath = searchParams.get('path');
 
+    console.log('Document serve request:', { filePath, url: request.url });
+
     if (!filePath) {
+      console.log('No file path provided');
       return NextResponse.json({ error: 'File path is required' }, { status: 400 });
     }
 
     // Security: ensure the path is within the uploads directory
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    const absolutePath = path.resolve(uploadsDir, filePath.replace(/^\/uploads\//, ''));
+    console.log('Uploads directory:', uploadsDir);
+    
+    // Handle both absolute and relative paths
+    let cleanPath = filePath;
+    if (cleanPath.startsWith('/uploads/')) {
+      cleanPath = cleanPath.replace(/^\/uploads\//, '');
+    }
+    if (cleanPath.startsWith('uploads/')) {
+      cleanPath = cleanPath.replace(/^uploads\//, '');
+    }
+    
+    const absolutePath = path.resolve(uploadsDir, cleanPath);
+    console.log('Resolved path:', absolutePath);
     
     if (!absolutePath.startsWith(uploadsDir)) {
+      console.log('Path outside uploads directory');
       return NextResponse.json({ error: 'Invalid file path' }, { status: 403 });
     }
 
     // Check if file exists
     if (!fs.existsSync(absolutePath)) {
+      console.log('File not found:', absolutePath);
+      // List available files for debugging
+      try {
+        const files = fs.readdirSync(uploadsDir);
+        console.log('Available files:', files);
+      } catch (e) {
+        console.log('Could not list files in uploads directory');
+      }
       return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
+
+    console.log('File found, serving:', absolutePath);
 
     // Read the file
     const fileBuffer = fs.readFileSync(absolutePath);

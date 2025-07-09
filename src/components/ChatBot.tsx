@@ -32,6 +32,15 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [collectedInfo, setCollectedInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    businessName: '',
+    loanAmount: '',
+    purpose: ''
+  });
   const [applicationData, setApplicationData] = useState<ApplicationData>({
     step: 0,
     formData: {
@@ -40,7 +49,71 @@ const ChatBot = () => {
       loanInfo: {},
       bankInfo: {},
     }
-  });  const messagesEndRef = useRef<HTMLDivElement>(null);
+  });
+
+  // Check if we have enough information to consider the conversation complete
+  const checkIfConversationComplete = (messages: Message[]) => {
+    const conversation = messages.map(m => m.content).join(' ').toLowerCase();
+    const userMessages = messages.filter(m => m.role === 'user').map(m => m.content).join(' ');
+    
+    // Check if we have collected sufficient information
+    const hasName = /name.{0,20}(is|:|am|i'm).{0,50}[a-z]{2,}/i.test(conversation) || 
+                   /my name.{0,20}[a-z]{2,}/i.test(conversation) ||
+                   /i'm\s+[a-z]{2,}/i.test(conversation);
+    
+    const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(conversation);
+    
+    const hasPhone = /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b|\(\d{3}\)\s*\d{3}[-.]?\d{4}/.test(conversation);
+    
+    const hasBusinessInfo = /business|company|store|shop|restaurant|construction|retail/i.test(conversation);
+    
+    const hasLoanInfo = /\$\d+|\d+k|\d+ thousand|\d+ million|loan|financing|capital/i.test(conversation);
+    
+    // If we have at least 3 pieces of key information, consider it complete
+    const infoCount = [hasName, hasEmail, hasPhone, hasBusinessInfo, hasLoanInfo].filter(Boolean).length;
+    
+    return infoCount >= 3 && userMessages.length >= 3; // At least 3 exchanges and 3 pieces of info
+  };
+
+  // Auto-close function
+  const autoCloseChat = () => {
+    const thankYouMessage: Message = {
+      id: (Date.now() + 999).toString(),
+      role: 'assistant',
+      content: `🎉 Thank you so much for providing that information! I have everything I need to connect you with one of our financing specialists. 
+
+📞 **Next Steps:**
+• Our team will review your information within 24 hours
+• You'll receive a call or email with pre-qualified options
+• We'll help you find the perfect financing solution
+
+✨ **What to expect:**
+• Competitive rates starting at 5%
+• Fast approval process
+• Dedicated support throughout
+
+Have a wonderful day! This chat will close automatically in a few seconds. 🚀`,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, thankYouMessage]);
+    setIsCompleted(true);
+
+    // Auto-close after showing thank you message
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsCompleted(false);
+      // Reset messages for next conversation
+      setTimeout(() => {
+        setMessages([{
+          id: '1',
+          role: 'assistant',
+          content: '🚀 Hello! I\'m the EMPIRE ENTREPRISE intelligent assistant. I use advanced learning to help businesses find perfect financing solutions. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
+          timestamp: new Date()
+        }]);
+      }, 1000);
+    }, 4000); // Close after 4 seconds
+  };  const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   
   // Generate or retrieve a session ID for this conversation
@@ -183,9 +256,17 @@ const ChatBot = () => {
       content: userMessage,
       timestamp: new Date()
     };
-    setMessages(prev => [...prev, newUserMessage]);
+    const updatedMessages = [...messages, newUserMessage];
+    setMessages(updatedMessages);
     setInput('');
     setIsTyping(true);
+
+    // Check if conversation is complete after adding the new message
+    if (checkIfConversationComplete(updatedMessages)) {
+      setIsTyping(false);
+      autoCloseChat();
+      return;
+    }
 
     // Check if it's a FAQ first
     const faqAnswer = findFaqMatch(userMessage.toLowerCase());
@@ -779,64 +860,92 @@ const ChatBot = () => {
   
   return (
     <>
-      {/* Chat button fixed at bottom right */}
+      {/* Chat button fixed at bottom right - Modern design */}
       <button 
-        className={`fixed bottom-5 right-5 z-50 rounded-full p-4 shadow-lg transition-all duration-300 ${isOpen ? 'bg-red-500 text-white rotate-45' : 'bg-primary text-white'}`}
+        className={`fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 ${
+          isOpen ? 'bg-gradient-to-r from-red-500 to-red-600 text-white rotate-45' : 'bg-gradient-to-r from-primary to-primary-dark text-white'
+        }`}
         onClick={() => setIsOpen(prev => !prev)}
       >
         {isOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         )}
+        {/* Notification pulse */}
+        {!isOpen && (
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse">
+            <div className="absolute inset-0 w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
+          </div>
+        )}
       </button>
 
-      {/* Chat window */}
+      {/* Chat window - Modern design */}
       <div 
-        className={`fixed bottom-20 right-5 z-40 w-full max-w-sm bg-white rounded-lg shadow-xl overflow-hidden transition-all duration-300 transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}
-        style={{ height: "500px" }}
+        className={`fixed bottom-24 right-6 z-40 w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 transform border border-gray-100 ${
+          isOpen ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'
+        }`}
+        style={{ height: "550px" }}
       >
-        {/* Chat header */}
-        <div className="bg-primary text-white p-4 flex items-center justify-between">
+        {/* Chat header - Modern gradient */}
+        <div className="bg-gradient-to-r from-primary to-primary-dark text-white p-4 flex items-center justify-between">
           <div className="flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-            </svg>
-            <h2 className="font-semibold">Hempire Assistant</h2>
+            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">EMPIRE Assistant</h2>
+              <p className="text-xs text-white text-opacity-80">Your Smart Financing Guide</p>
+            </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className="text-white focus:outline-none">
+          <button 
+            onClick={() => setIsOpen(false)} 
+            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-colors"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
           </button>
         </div>
         
-        {/* Chat messages */}
-        <div className="p-4 h-96 overflow-y-auto">
+        {/* Chat messages - Modern styling */}
+        <div className="p-4 h-96 overflow-y-auto bg-gray-50 bg-opacity-50">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`mb-3 ${message.role === 'user' ? 'text-right' : ''}`}
+              className={`mb-4 ${message.role === 'user' ? 'text-right' : ''}`}
             >
               <div 
-                className={`inline-block rounded-lg px-4 py-2 max-w-xs sm:max-w-md
-                  ${message.role === 'user' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-800'}
+                className={`inline-block rounded-2xl px-4 py-3 max-w-xs sm:max-w-md shadow-sm
+                  ${message.role === 'user' 
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-white rounded-br-md' 
+                    : 'bg-white text-gray-800 border border-gray-100 rounded-bl-md'
+                  }
                 `}
               >
-                <p className="text-sm">{message.content}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
               </div>
-              <p className="text-xs text-gray-500 mt-1">{formatTime(message.timestamp)}</p>
+              <p className="text-xs text-gray-400 mt-1 px-2">{formatTime(message.timestamp)}</p>
             </div>
           ))}
           
           {isTyping && (
-            <div className="mb-3">
-              <div className="inline-block rounded-lg px-4 py-2 bg-gray-200 text-gray-800">
-                <div className="flex items-center">
+            <div className="mb-4">
+              <div className="inline-block rounded-2xl rounded-bl-md px-4 py-3 bg-white border border-gray-100 shadow-sm">
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
                   <div className="dot-typing"></div>
                 </div>
               </div>
@@ -846,70 +955,30 @@ const ChatBot = () => {
           <div ref={messagesEndRef} />
         </div>
         
-        {/* Chat input */}
-        <form onSubmit={handleSend} className="p-4 border-t border-gray-200">
-          <div className="flex items-center">
+        {/* Chat input - Modern styling */}
+        <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100">
+          <div className="flex items-center space-x-2">
             <input
               type="text"
-              className="flex-grow px-4 py-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-grow px-4 py-3 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-gray-50 transition-all"
               placeholder="Type your message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              disabled={isTyping}
+              disabled={isTyping || isCompleted}
             />
             <button
               type="submit"
-              className="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-primary-dark transition disabled:opacity-50"
-              disabled={!input.trim() || isTyping}
+              className="w-12 h-12 bg-gradient-to-r from-primary to-primary-dark text-white rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              disabled={!input.trim() || isTyping || isCompleted}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
               </svg>
             </button>
           </div>
         </form>
       </div>
-
-      {/* CSS for typing animation */}
-      <style jsx>{`
-        .dot-typing {
-          position: relative;
-          left: -9999px;
-          width: 6px;
-          height: 6px;
-          border-radius: 3px;
-          background-color: #666;
-          color: #666;
-          box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          animation: dotTyping 1s infinite linear;
-        }
-
-        @keyframes dotTyping {
-          0% {
-            box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          }
-          16.667% {
-            box-shadow: 9984px -5px 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          }
-          33.333% {
-            box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          }
-          50% {
-            box-shadow: 9984px 0 0 0 #666, 9999px -5px 0 0 #666, 10014px 0 0 0 #666;
-          }
-          66.667% {
-            box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          }
-          83.333% {
-            box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px -5px 0 0 #666;
-          }
-          100% {
-            box-shadow: 9984px 0 0 0 #666, 9999px 0 0 0 #666, 10014px 0 0 0 #666;
-          }
-        }
-      `}</style>
     </>
   );
-};
 
 export default ChatBot;

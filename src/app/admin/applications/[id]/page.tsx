@@ -778,16 +778,56 @@ export default function ApplicationDetails({ params }: { params: { id: string } 
                       <div className="w-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 overflow-hidden">
                         {documentModal.document.type && documentModal.document.type.includes('pdf') ? (
                           <iframe
-                            src={documentModal.document.path}
+                            src={`/api/documents/serve?path=${encodeURIComponent(documentModal.document.path)}`}
                             className="w-full h-96 lg:h-[500px] border-0"
                             title={documentModal.title}
+                            onError={(e) => {
+                              console.error('Failed to load PDF:', e);
+                              const iframe = e.target as HTMLIFrameElement;
+                              iframe.style.display = 'none';
+                              const errorDiv = iframe.nextElementSibling || document.createElement('div');
+                              errorDiv.innerHTML = `
+                                <div class="flex items-center justify-center p-8 text-gray-500">
+                                  <div class="text-center">
+                                    <p class="mb-2">Unable to preview PDF document</p>
+                                    <a href="/api/documents/serve?path=${encodeURIComponent(documentModal.document.path)}" 
+                                       target="_blank" 
+                                       class="text-primary hover:text-primary-dark underline">
+                                      Open in new tab
+                                    </a>
+                                  </div>
+                                </div>
+                              `;
+                              if (!iframe.nextElementSibling) {
+                                iframe.parentNode?.insertBefore(errorDiv, iframe.nextSibling);
+                              }
+                            }}
                           />
                         ) : (
                           <div className="flex items-center justify-center p-8">
                             <img
-                              src={documentModal.document.path}
+                              src={`/api/documents/serve?path=${encodeURIComponent(documentModal.document.path)}`}
                               alt={documentModal.title}
                               className="max-w-full max-h-96 lg:max-h-[500px] object-contain rounded shadow-lg"
+                              onError={(e) => {
+                                console.error('Failed to load image:', e);
+                                const img = e.target as HTMLImageElement;
+                                img.style.display = 'none';
+                                const errorDiv = img.nextElementSibling || document.createElement('div');
+                                errorDiv.innerHTML = `
+                                  <div class="text-center text-gray-500">
+                                    <p class="mb-2">Unable to preview document</p>
+                                    <a href="/api/documents/serve?path=${encodeURIComponent(documentModal.document.path)}" 
+                                       target="_blank" 
+                                       class="text-primary hover:text-primary-dark underline">
+                                      Download document
+                                    </a>
+                                  </div>
+                                `;
+                                if (!img.nextElementSibling) {
+                                  img.parentNode?.insertBefore(errorDiv, img.nextSibling);
+                                }
+                              }}
                             />
                           </div>
                         )}

@@ -34,7 +34,7 @@ const fixLeafletIcons = () => {
   }
 };
 
-export function MapContainer({ locations }: MapProps) {
+export function MapDisplay({ locations }: MapProps) {
   useEffect(() => {
     fixLeafletIcons();
     console.log('MapContainer mounted with', locations.length, 'locations');
@@ -72,7 +72,7 @@ export function MapContainer({ locations }: MapProps) {
   };
 
   return (
-    <div className="h-full w-full" style={{ minHeight: '500px' }}>
+    <div className="map-container h-full w-full" style={{ minHeight: '500px', maxHeight: '600px' }}>
       <LeafletMapContainer
         center={center}
         zoom={getZoomLevel()}
@@ -106,3 +106,6 @@ export function MapContainer({ locations }: MapProps) {
     </div>
   );
 }
+
+// Backward compatibility export
+export { MapDisplay as MapContainer };

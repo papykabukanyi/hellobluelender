@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
 // Add a new admin
 export async function POST(request: NextRequest) {
   try {
-    const { username, email, password, permissions } = await request.json();
+    const { username, email, password, permissions, isHashedPassword } = await request.json();
     
     // Verify current admin has permissions
     const currentAdmin = await requirePermission(request, 'manageAdmins');
@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Hash password
-    const hashedPassword = await hashPassword(password);
+    // Hash password only if it's not already hashed
+    const hashedPassword = isHashedPassword ? password : await hashPassword(password);
       // Create new admin (using email as display name if username is not provided)
     const newAdmin: AdminUser = {
       id: uuidv4(),

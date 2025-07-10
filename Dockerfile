@@ -3,7 +3,6 @@ FROM node:20-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
@@ -26,17 +25,10 @@ ENV DOCKER_BUILD=true
 
 # Build the application with proper error handling
 RUN echo "Starting build process..." && \
-    npm run build:docker && \
+    npm run build && \
     echo "Build completed successfully" && \
     ls -la .next/ && \
-    echo "=== Build artifacts created ===" && \
-    find .next -name "*.js" -o -name "*.json" | head -10
-
-# Debug: Check what was created after build
-RUN echo "=== Build completed, checking output ===" && \
-    ls -la && \
-    echo "=== Contents of .next directory ===" && \
-    ls -la .next/ 2>/dev/null || echo "No .next directory found"
+    echo "=== Build artifacts created ==="
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -49,11 +41,12 @@ ENV PORT=8080
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files first
+# Copy necessary files
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/server.js ./
+COPY --from=builder /app/next.config.js ./
 
 # Install only production dependencies
 RUN npm ci --only=production --legacy-peer-deps && npm cache clean --force
@@ -67,5 +60,9 @@ EXPOSE 8080
 
 ENV PORT=8080
 
-# Use npm start instead of standalone server
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD node -e "const http=require('http');const options={hostname:'localhost',port:process.env.PORT||8080,path:'/healthcheck',timeout:2000};const req=http.request(options,res=>{process.exit(res.statusCode===200?0:1)});req.on('error',()=>process.exit(1));req.end();"
+
+# Start the application
 CMD ["npm", "start"]

@@ -108,7 +108,7 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
         setMessages([{
           id: '1',
           role: 'assistant',
-          content: '🚀 Hello! I\'m the EMPIRE ENTREPRISE intelligent assistant. I use advanced learning to help businesses find perfect financing solutions. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
+          content: '🚀 Hello! I\'m the HELLO BLUE LENDERS intelligent assistant. I use advanced learning to help businesses find perfect financing solutions with the power of blue. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
           timestamp: new Date()
         }]);
       }, 1000);
@@ -173,9 +173,9 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
     // Set initial greeting message
     if (messages.length === 0) {
       const greetings = [
-        '🚀 Hello! I\'m the EMPIRE ENTREPRISE intelligent assistant. I use advanced learning to help businesses find perfect financing solutions. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
-        '💼 Hi there! Welcome to EMPIRE ENTREPRISE. I\'m your smart financing specialist with access to comprehensive business lending knowledge. I can help you explore options, check qualifications, and connect you with our team. What type of business do you operate?',
-        '⚡ Welcome! I\'m the EMPIRE financing AI assistant, trained on thousands of successful business financing cases. I can answer questions, help you qualify, and capture your info for our specialists. What\'s your biggest business challenge right now?',
+        '🚀 Hello! I\'m the HELLO BLUE LENDERS intelligent assistant. I use advanced learning to help businesses find perfect financing solutions with the power of blue. I can answer any questions about our products, rates, requirements, and get you pre-qualified instantly. What brings you here today?',
+        '💼 Hi there! Welcome to HELLO BLUE LENDERS. I\'m your smart financing specialist with access to comprehensive blue-class lending knowledge. I can help you explore options, check qualifications, and connect you with our team. What type of business do you operate?',
+        '⚡ Welcome! I\'m the Blue Lenders AI assistant, trained on thousands of successful business financing cases. I can answer questions, help you qualify, and capture your info for our specialists. What\'s your biggest business challenge right now?',
         '🎯 Good day! I\'m here to help you discover smart financing solutions using our advanced learning system. From same-day decisions to long-term SBA loans, I know it all. What type of business growth are you planning?'
       ];
       
@@ -905,7 +905,7 @@ Have a wonderful day! This chat will close automatically in a few seconds. 🚀`
               </svg>
             </div>
             <div>
-              <h2 className="font-bold text-lg">EMPIRE Assistant</h2>
+              <h2 className="font-bold text-lg">Blue Lenders Assistant</h2>
               <p className="text-xs text-white text-opacity-80">Your Smart Financing Guide</p>
             </div>
           </div>

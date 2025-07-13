@@ -2,11 +2,11 @@ export default function createGradientBg() {
   return `
     <svg width="1200" height="600" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#1F7832" />
-          <stop offset="30%" stop-color="#2C5530" />
-          <stop offset="70%" stop-color="#1A3A1F" />
-          <stop offset="100%" stop-color="#155A26" />
+        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2563eb" />
+          <stop offset="30%" stop-color="#1e40af" />
+          <stop offset="70%" stop-color="#1e3a8a" />
+          <stop offset="100%" stop-color="#1d4ed8" />
         </linearGradient>
         
         <!-- Enhanced patterns for visual interest -->
@@ -37,14 +37,14 @@ export default function createGradientBg() {
         
         <!-- Bottom accent -->
         <linearGradient id="bottomAccent" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#2B9B47" stop-opacity="0.3" />
-          <stop offset="50%" stop-color="#1F7832" stop-opacity="0.1" />
-          <stop offset="100%" stop-color="#155A26" stop-opacity="0.2" />
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3" />
+          <stop offset="50%" stop-color="#2563eb" stop-opacity="0.1" />
+          <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.2" />
         </linearGradient>
       </defs>
       
       <!-- Base gradient background -->
-      <rect width="100%" height="100%" fill="url(#bgGradient)" />
+      <rect width="100%" height="100%" fill="url(#blueGradient)" />
       
       <!-- Pattern overlays for texture -->
       <rect width="100%" height="100%" fill="url(#dots)" opacity="1.0" />

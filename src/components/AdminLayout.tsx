@@ -40,8 +40,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         
         if (response.ok && data.authenticated) {
           setUserData(data.user);
-            // Check if user is super admin (directly checking for papy@hempire-enterprise.com)
-          const superAdminEmail = 'papy@hempire-enterprise.com';
+          // Check if user is super admin (WEBTECHSYSTEMS admin)
+          const superAdminEmail = 'admin@hellobluelenders.com';
           const isSuper = data.user.email === superAdminEmail;
           console.log('Checking super admin status:', data.user.email, 'Is super admin:', isSuper);
           
@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Left side - Brand/Title */}
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <h1 className="text-xl font-bold text-gray-900">EMPIRE ENTREPRISE</h1>
+                  <h1 className="text-xl font-bold text-primary">WEBTECHSYSTEMS</h1>
                   <p className="text-xs text-gray-500">Admin Dashboard</p>
                 </div>
               </div>

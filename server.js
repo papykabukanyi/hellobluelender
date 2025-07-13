@@ -6,7 +6,7 @@ const fs = require('fs');
 // Get port from environment or default to 8080
 const PORT = process.env.PORT || 8080;
 
-console.log('=== Starting Empire Entreprise Production Server ===');
+console.log('=== Starting Hello Blue Lenders Production Server ===');
 console.log(`Environment: ${process.env.NODE_ENV}`);
 console.log(`Port: ${PORT}`);
 console.log(`Node version: ${process.version}`);

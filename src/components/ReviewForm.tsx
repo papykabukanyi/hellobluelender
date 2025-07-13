@@ -207,7 +207,7 @@ export default function ReviewForm({
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-4">Terms and Conditions</h3>
         <div className="bg-gray-50 p-4 rounded-md">          <p className="text-sm">
-            By submitting this application, you certify that all information provided is true and correct to the best of your knowledge. You authorize <span className="font-permanentMarker">Hempire Enterprise</span> to verify all information provided, including obtaining credit reports and contacting references. You understand that submitting this application does not guarantee loan approval. <span className="font-permanentMarker">Hempire Enterprise</span> will review your application and contact you regarding the decision.
+            By submitting this application, you certify that all information provided is true and correct to the best of your knowledge. You authorize <span className="font-permanentMarker">Hello Blue Lenders</span> to verify all information provided, including obtaining credit reports and contacting references. You understand that submitting this application does not guarantee loan approval. <span className="font-permanentMarker">Hello Blue Lenders</span> will review your application and contact you regarding the decision.
           </p>
         </div>
       </div>

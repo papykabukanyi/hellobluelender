@@ -7,16 +7,16 @@ export default function Home() {
   const homePageSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Empire Entreprise",
-    "alternateName": "Hempire Enterprise",
-    "description": "Leading business financing company providing equipment loans, working capital, SBA loans, and business expansion funding with fast approval and competitive rates",
-    "url": "https://empire-entreprise.com",
-    "logo": "https://empire-entreprise.com/logo.png",
+    "name": "Hello Blue Lenders",
+    "alternateName": "Hello Blue Lenders",
+    "description": "Premium lending solutions with the power of blue. Exceptional financing services, equipment loans, working capital, and business expansion funding with fast approval and competitive rates",
+    "url": "https://hellobluelenders.com",
+    "logo": "https://hellobluelenders.com/logo.png",
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "(123) 456-7890",
+      "telephone": "(555) 123-BLUE",
       "contactType": "Customer Service",
-      "email": "papy@hempire-enterprise.com",
+      "email": "info@hellobluelenders.com",
       "availableLanguage": ["English"],
       "areaServed": "US"
     },
@@ -25,19 +25,19 @@ export default function Home() {
       "addressCountry": "US"
     },
     "sameAs": [
-      "https://www.linkedin.com/company/empire-entreprise",
-      "https://www.facebook.com/empireentreprise",
-      "https://twitter.com/empireentreprise"
+      "https://www.linkedin.com/company/hello-blue-lenders",
+      "https://www.facebook.com/hellobluelenders",
+      "https://twitter.com/hellobluelenders"
     ]
   };
 
   return (
     <>
       <SEOMeta
-        title="Business Loans & Equipment Financing - Fast Approval | Empire Entreprise"
-        description="Get business loans $5K-$10M with 24-48 hour approval. Equipment financing, working capital, SBA loans. Licensed in all 50 states. Apply online today!"
-        keywords="business loans, equipment financing, working capital loans, SBA loans, business financing, small business loans, commercial loans, business expansion loans"
-        canonicalUrl="https://empire-entreprise.com"
+        title="Premium Lending Solutions - Hello Blue Lenders | Fast Approval"
+        description="Experience premium lending with the power of blue. Get business loans $5K-$10M with 24-48 hour approval. Equipment financing, working capital, exceptional service. Apply online today!"
+        keywords="hello blue lenders, premium lending, business loans, equipment financing, working capital loans, blue lending solutions, commercial loans, business financing"
+        canonicalUrl="https://hellobluelenders.com"
         schema={homePageSchema}
       />
       
@@ -49,13 +49,13 @@ export default function Home() {
           <GradientBackground className="absolute inset-0" />
           <div className="container-custom z-10 text-center animate-fade-in">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white leading-tight">
-              Growing Your Business <br className="hidden sm:block" /> 
-              <span className="text-white">Starts Here</span>
+              Experience Premium Lending <br className="hidden sm:block" /> 
+              <span className="text-blue-200">with the Power of Blue</span>
             </h1>
             <p className="text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 max-w-4xl mx-auto text-white px-4">
-              <span className="font-permanentMarker text-xl sm:text-2xl md:text-3xl text-primary-light block mb-2">Hempire Enterprise</span> 
-              offers flexible financing solutions for businesses of all sizes.
-              Get the funds you need to expand, upgrade equipment, or manage cash flow.
+              <span className="font-permanentMarker text-xl sm:text-2xl md:text-3xl text-blue-300 block mb-2">Hello Blue Lenders</span> 
+              delivers exceptional financing solutions that flow as smoothly as the deepest blue waters.
+              Experience lending excellence with our premium blue-class service.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center px-4 animate-slide-up">
               <ApplyNowButton 
@@ -75,40 +75,34 @@ export default function Home() {
       {/* Loan Types Section */}
       <section className="section-spacing bg-neutral-50">
         <div className="container-custom">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center animate-slide-up">Our Financing Solutions</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center animate-slide-up">Our Blue-Class Financing Solutions</h2>
           
           <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             {/* Business Loan Card */}
             <div className="card hover:shadow-lg transition-all duration-300 animate-slide-up">
-              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Business Financing</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Premium Business Financing</h3>
               <p className="mb-4 text-neutral-700 leading-relaxed">
-                Get the working capital your business needs to grow, expand, or manage seasonal cash flow fluctuations.
-                Our business financing options are designed to be flexible and accessible.
+                Experience the depth and reliability of blue-ocean financing. Our premium business solutions 
+                provide the capital flow your business needs to reach new horizons.
               </p>
               <ul className="mb-6 space-y-2 text-neutral-700">
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Quick approval process
+                  Lightning-fast approval
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Flexible repayment terms
+                  Blue-ribbon service
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
-                  Competitive rates
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  No hidden fees
+                  Crystal-clear terms
                 </li>
               </ul>
               <ApplyNowButton 
@@ -121,10 +115,10 @@ export default function Home() {
             
             {/* Equipment Loan Card */}
             <div className="card hover:shadow-lg transition-all duration-300 animate-slide-up">
-              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Equipment Financing</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4 text-primary">Blue-Chip Equipment Financing</h3>
               <p className="mb-4 text-neutral-700 leading-relaxed">
-                Upgrade your equipment without depleting your cash reserves. Our equipment financing solutions
-                help you acquire the tools you need to stay competitive and efficient.
+                Dive deep into equipment financing that's as reliable as the ocean blue. 
+                Acquire the tools you need to navigate your business to success.
               </p>
               <ul className="mb-6 space-y-2 text-neutral-700">
                 <li className="flex items-center">
@@ -167,7 +161,7 @@ export default function Home() {
       <section className="section-spacing bg-white">
         <div className="container-custom">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center animate-slide-up">
-            Why Choose <span className="font-permanentMarker text-primary">Hempire Enterprise</span>
+            Why Choose <span className="font-permanentMarker text-primary">Hello Blue Lenders</span>
           </h2>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

@@ -51,7 +51,7 @@ export default function AdminLogin() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary">Blue Lender Admin</h1>
+          <h1 className="text-2xl font-bold text-primary">WEBTECHSYSTEMS Admin</h1>
           <p className="text-gray-600">Sign in to access the admin dashboard</p>
         </div>
         
@@ -108,7 +108,7 @@ export default function AdminLogin() {
         </form>
         
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Default credentials: admin@bluelender.com / admin123</p>
+          <p>Default credentials: admin@hellobluelenders.com / admin123</p>
         </div>
       </div>
     </div>

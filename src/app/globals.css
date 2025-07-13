@@ -4,20 +4,22 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1C2A1F; /* Updated to neutral-900 for better readability */
-  --primary: #1F7832;
-  --primary-light: #2B9B47;
-  --primary-dark: #155A26;
-  --primary-muted: #E8F4EA;
-  --secondary: #2C5530;
-  --neutral-50: #F8FBF9;
-  --neutral-100: #F1F7F3;
-  --neutral-200: #E3EFDE;
-  --neutral-300: #C6D9C1;
-  --neutral-500: #7A9773;
-  --neutral-700: #456142;
-  --neutral-800: #2F4332;
-  --neutral-900: #1C2A1F;
+  --foreground: #1a202c; /* Dark blue-gray for text */
+  --primary: #2563eb; /* Beautiful blue */
+  --primary-light: #3b82f6; /* Lighter blue */
+  --primary-dark: #1d4ed8; /* Darker blue */
+  --primary-muted: #dbeafe; /* Light blue background */
+  --secondary: #1e40af; /* Secondary blue */
+  --accent: #0ea5e9; /* Sky blue accent */
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-500: #64748b;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --blue-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
 }
 
 body {
@@ -47,7 +49,7 @@ a.font-permanentMarker:hover, button.font-permanentMarker:hover {
 
 /* Enhanced Button Styles */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  background: var(--blue-gradient);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
@@ -57,7 +59,7 @@ a.font-permanentMarker:hover, button.font-permanentMarker:hover {
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(31, 120, 50, 0.2);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -66,14 +68,14 @@ a.font-permanentMarker:hover, button.font-permanentMarker:hover {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%);
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(31, 120, 50, 0.3);
+  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.4);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(31, 120, 50, 0.2);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .btn-outline {
@@ -95,10 +97,10 @@ a.font-permanentMarker:hover, button.font-permanentMarker:hover {
 }
 
 .btn-outline:hover {
-  background: var(--primary);
+  background: var(--blue-gradient);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(31, 120, 50, 0.2);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .btn-secondary {

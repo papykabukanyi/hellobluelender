@@ -171,7 +171,7 @@ export default function ManageAdmins() {
       <div className="mb-8">
         <h2 className="text-2xl font-bold">Manage Admins</h2>
         <p className="text-gray-600">
-          Add and manage administrators for Hempire Enterprise application
+          Add and manage administrators for Hello Blue Lenders application
         </p>
         <div className="mt-2 p-4 bg-primary-light border border-primary-lighter rounded-md">
           <h3 className="font-medium text-primary">Access Levels</h3>

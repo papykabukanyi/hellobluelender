@@ -5,10 +5,10 @@ export default function Footer() {
     <footer className="bg-primary text-white pt-10 pb-6">
       <div className="container-custom">
         <div className="flex flex-wrap">
-          <div className="w-full md:w-1/3 mb-6">            <h3 className="text-xl mb-4 text-white tracking-wide font-permanentMarker" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.3)'}}>HEMPIRE ENTERPRISE</h3>
+          <div className="w-full md:w-1/3 mb-6">            <h3 className="text-xl mb-4 text-white tracking-wide font-permanentMarker" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.3)'}}>HELLO BLUE LENDERS</h3>
             <p className="mb-4 text-white">
-              Helping businesses grow with flexible financing solutions.
-              We provide equipment and business financing that fits your needs.
+              Premium lending solutions with the power of blue. We provide exceptional 
+              financing services that help your business thrive and grow.
             </p>
           </div>
           
@@ -41,16 +41,17 @@ export default function Footer() {
           <div className="w-full md:w-1/3 mb-6">
             <h4 className="text-lg font-bold mb-4 text-white">Contact Us</h4>
             <address className="not-italic">
-              <p className="mb-2 text-white">123 Finance Street</p>
+              <p className="mb-2 text-white">123 Blue Avenue</p>
               <p className="mb-2 text-white">New York, NY 10001</p>
-              <p className="mb-2 text-white">Phone: (555) 123-4567</p>
-              <p className="mb-2 text-white">Email: papykabukanyi@gmail.com</p>
+              <p className="mb-2 text-white">Phone: (555) 123-BLUE</p>
+              <p className="mb-2 text-white">Email: info@hellobluelenders.com</p>
             </address>
           </div>
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-6 text-center">
-          <p className="text-white">&copy; {new Date().getFullYear()} <span className="font-permanentMarker">Hempire Enterprise</span>. All rights reserved.</p>
+          <p className="text-white">&copy; {new Date().getFullYear()} <span className="font-permanentMarker">Hello Blue Lenders</span>. All rights reserved.</p>
+          <p className="text-xs text-gray-400 mt-2">Powered By Web Tech Systems</p>
         </div>
       </div>
     </footer>

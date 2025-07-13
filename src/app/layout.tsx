@@ -3,7 +3,6 @@ import { Inter, Permanent_Marker } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import ConditionalFooter from "@/components/ConditionalFooter";
-import { NextSeo } from "next-seo";
 import InitializeApp from "@/components/InitializeApp";
 import SchemaScript from "@/components/SchemaScript";
 import CookieConsent from "@/components/CookieConsent";
@@ -26,25 +25,25 @@ const permanentMarker = Permanent_Marker({
 
 export const metadata: Metadata = {
   title: {
-    default: 'EMPIRE ENTREPRISE | Business & Equipment Financing Solutions',
-    template: '%s | EMPIRE ENTREPRISE'
+    default: 'HELLO BLUE LENDERS | Premium Lending Solutions',
+    template: '%s | HELLO BLUE LENDERS'
   },
-  description: "Specialized business and equipment financing solutions with fast approval, competitive rates, and industry expertise.",
-  keywords: "business loans, equipment financing, business funding, commercial loans, small business loans, equipment leasing, working capital, enterprise financing",
+  description: "Premium lending solutions with the power of blue. Fast approval, competitive rates, and exceptional service for your business financing needs.",
+  keywords: "blue lenders, premium lending, business loans, equipment financing, business funding, commercial loans, small business loans, lending solutions",
   category: "finance",
-  applicationName: "EMPIRE ENTREPRISE",
-  authors: [{ name: "EMPIRE ENTREPRISE", url: "https://www.hempireenterprise.com" }],
+  applicationName: "HELLO BLUE LENDERS",
+  authors: [{ name: "HELLO BLUE LENDERS", url: "https://www.hellobluelenders.com" }],
   alternates: {
-    canonical: "https://www.hempireenterprise.com",
+    canonical: "https://www.hellobluelenders.com",
   },
-  metadataBase: new URL('https://www.hempireenterprise.com'),
+  metadataBase: new URL('https://www.hellobluelenders.com'),
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-blue.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico' }
     ],
     apple: [
-      { url: '/favicon.svg', type: 'image/svg+xml' }
+      { url: '/favicon-blue.svg', type: 'image/svg+xml' }
     ]
   },
   robots: {
@@ -60,25 +59,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.hempireenterprise.com",
-    title: "EMPIRE ENTREPRISE | Business & Equipment Financing Solutions",
-    description: "Specialized business and equipment financing solutions with fast approval, competitive rates, and industry expertise.",
-    siteName: "EMPIRE ENTREPRISE",
+    url: "https://www.hellobluelenders.com",
+    title: "HELLO BLUE LENDERS | Premium Lending Solutions",
+    description: "Premium lending solutions with the power of blue. Fast approval, competitive rates, and exceptional service for your business financing needs.",
+    siteName: "HELLO BLUE LENDERS",
     images: [
       {
-        url: "https://www.hempireenterprise.com/hero-background.jpg",
+        url: "https://www.hellobluelenders.com/hero-background.jpg",
         width: 1200,
         height: 630,
-        alt: "EMPIRE ENTREPRISE",
+        alt: "HELLO BLUE LENDERS",
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "EMPIRE ENTREPRISE | Business & Equipment Financing Solutions",
-    description: "Specialized business and equipment financing solutions with fast approval, competitive rates, and industry expertise.",
-    creator: "@hempireenterprise",
-    images: ["https://www.hempireenterprise.com/hero-background.jpg"],
+    title: "HELLO BLUE LENDERS | Premium Lending Solutions",
+    description: "Premium lending solutions with the power of blue. Fast approval, competitive rates, and exceptional service for your business financing needs.",
+    creator: "@hellobluelenders",
+    images: ["https://www.hellobluelenders.com/hero-background.jpg"],
   },
   verification: {
     google: "google-site-verification-code",

@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Financial Information | Blue Lender',
-  description: 'Learn about business financing options and equipment loans offered by Blue Lender. Compare our loan options and find the right solution for your business needs.',
+  title: 'Financial Information | Hello Blue Lenders',
+  description: 'Discover premium lending solutions with the power of blue. Learn about our blue-class business financing and equipment loans designed for your success.',
 };
 
 export default function Info() {
@@ -11,9 +11,9 @@ export default function Info() {
     <>
       <section className="bg-gray-50 page-header-section">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Financial Information</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Blue-Class Financial Information</h1>
           <p className="text-gray-600 mb-0">
-            Learn about our financing options and how we can help your business grow
+            Discover how our premium blue lending solutions can elevate your business to new heights
           </p>
         </div>
       </section>
@@ -22,31 +22,31 @@ export default function Info() {
       <section className="py-12">
         <div className="container-custom">
           <div className="mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Business Financing</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">Premium Blue Business Financing</h2>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="card">
-                <h3 className="text-xl font-bold mb-4">Working Capital</h3>
+                <h3 className="text-xl font-bold mb-4">Blue-Ocean Working Capital</h3>
                 <p className="text-gray-600 mb-4">
-                  Access funds to manage day-to-day operations, cover payroll, purchase inventory,
-                  and manage other short-term financial needs.
+                  Like the endless flow of blue waters, our working capital solutions provide continuous access 
+                  to funds for your day-to-day operations and growth initiatives.
                 </p>
                 <ul className="mb-6 space-y-2 text-gray-600">
-                  <li>• Quick access to funds</li>
-                  <li>• Flexible use of capital</li>
-                  <li>• Simple repayment structure</li>
+                  <li>• Lightning-fast fund access</li>
+                  <li>• Unlimited flexibility</li>
+                  <li>• Crystal-clear terms</li>
                 </ul>
               </div>
 
               <div className="card">
-                <h3 className="text-xl font-bold mb-4">Business Expansion</h3>
+                <h3 className="text-xl font-bold mb-4">Blue-Sky Business Expansion</h3>
                 <p className="text-gray-600 mb-4">
-                  Financing for opening new locations, hiring additional staff, increasing product lines,
-                  or entering new markets.
+                  Reach for the blue sky with expansion financing that soars above traditional limits. 
+                  Open new horizons for your business growth.
                 </p>
                 <ul className="mb-6 space-y-2 text-gray-600">
-                  <li>• Fund growth initiatives</li>
-                  <li>• Structured repayment terms</li>
-                  <li>• Larger funding amounts</li>
+                  <li>• Sky-high funding potential</li>
+                  <li>• Blue-ribbon service</li>
+                  <li>• Premium funding amounts</li>
                 </ul>
               </div>
 

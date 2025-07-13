@@ -25,9 +25,9 @@ export default function Navbar({ transparent = false }: NavbarProps) {
         <div className="flex items-center">          
           <Link 
             href="/" 
-            className={`text-lg sm:text-xl tracking-wide font-permanentMarker hover:scale-105 transition-transform ${transparent ? 'text-primary-light' : 'text-primary'}`}
+            className={`text-lg sm:text-xl tracking-wide font-permanentMarker hover:scale-105 transition-transform ${transparent ? 'text-blue-300' : 'text-primary'}`}
           >
-            HEMPIRE ENTERPRISE
+            HELLO BLUE LENDERS
           </Link>
         </div>
         

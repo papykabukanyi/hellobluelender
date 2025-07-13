@@ -29,7 +29,8 @@ type CoApplicantFormProps = {
   signature?: string | null;
 };
 
-export default function CoApplicantForm({ onNext, onBack, formData = {}, signature = null }: CoApplicantFormProps) {  const [includeCoApplicant, setIncludeCoApplicant] = useState(!!Object.keys(formData).length);
+export default function CoApplicantForm({ onNext, onBack, formData = {}, signature = null }: CoApplicantFormProps) {
+  const [includeCoApplicant, setIncludeCoApplicant] = useState(!!Object.keys(formData).length);
   const [sigPad, setSigPad] = useState<SignatureCanvas | null>(null);
   const [sigDataURL, setSigDataURL] = useState<string | null>(signature);
   const [showTextSignature, setShowTextSignature] = useState<boolean>(true);

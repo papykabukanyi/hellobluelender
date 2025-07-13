@@ -4,8 +4,8 @@ import { Suspense } from 'react';
 import ApplicationSuccessClient from '@/components/ApplicationSuccessClient';
 
 export const metadata: Metadata = {
-  title: 'Application Submitted | Hempire Enterprise',
-  description: 'Your financing application has been submitted successfully to Hempire Enterprise. Our team will review your application and contact you shortly.',
+  title: 'Application Submitted | Hello Blue Lenders',
+  description: 'Your financing application has been submitted successfully to Hello Blue Lenders. Our blue-class team will review your application and contact you shortly.',
 };
 
 // For Next.js 15.3+, we wrap the client component in a Suspense boundary

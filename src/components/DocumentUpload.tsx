@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { ApplicationDocuments, LoanApplication } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { AnimatedButton, FadeIn } from './animations';
+import AnimatedButton from './animations/AnimatedButton';
+import FadeIn from './animations/FadeIn';
 
 type DocumentUploadProps = {
   onNext: (data: { documents: ApplicationDocuments }) => void;

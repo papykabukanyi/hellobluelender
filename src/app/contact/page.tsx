@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Blue Lender',
-  description: 'Contact Blue Lender for business financing and equipment loans. Our team is ready to help you find the right funding solution for your business needs.',
+  title: 'Contact Us | Hello Blue Lenders',
+  description: 'Connect with Hello Blue Lenders for premium business financing solutions. Our blue-class team is ready to help you navigate your funding journey.',
 };
 
 export default function Contact() {
@@ -10,9 +10,9 @@ export default function Contact() {
     <>
       <section className="bg-gray-50 page-header-section">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Us</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">Contact Hello Blue Lenders</h1>
           <p className="text-gray-600 mb-0">
-            We're here to help with all your financing needs
+            We're here to provide blue-class service for all your premium financing needs
           </p>
         </div>
       </section>
@@ -102,18 +102,18 @@ export default function Contact() {
               <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold mb-2">Address</h3>
-                  <p className="text-gray-600">123 Finance Street</p>
+                  <p className="text-gray-600">123 Blue Avenue</p>
                   <p className="text-gray-600">New York, NY 10001</p>
                 </div>
 
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold mb-2">Phone</h3>
-                  <p className="text-gray-600">(555) 123-4567</p>
+                  <p className="text-gray-600">(555) 123-BLUE</p>
                 </div>
 
                 <div className="mb-4">
                   <h3 className="text-lg font-semibold mb-2">Email</h3>
-                  <p className="text-gray-600">info@bluelender.com</p>
+                  <p className="text-gray-600">info@hellobluelenders.com</p>
                 </div>
 
                 <div>
@@ -124,12 +124,12 @@ export default function Contact() {
               </div>
 
               <div className="bg-primary text-white p-6 rounded-lg">
-                <h3 className="text-xl font-bold mb-4 text-white">How We Can Help</h3>
+                <h3 className="text-xl font-bold mb-4 text-white">How Our Blue Team Can Help</h3>
                 <ul className="space-y-2">
-                  <li>• Apply for business financing</li>
-                  <li>• Equipment loan inquiries</li>
-                  <li>• Existing customer support</li>
-                  <li>• Partnership opportunities</li>
+                  <li>• Premium business financing applications</li>
+                  <li>• Blue-chip equipment loan inquiries</li>
+                  <li>• Blue-ribbon customer support</li>
+                  <li>• Strategic partnership opportunities</li>
                 </ul>
               </div>
             </div>

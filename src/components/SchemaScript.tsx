@@ -7,9 +7,9 @@ export default function SchemaScript() {
   const organizationSchema = {
     '@context': 'https://schema.org',
     '@type': 'FinancialService',
-    name: 'Hempire Enterprise',
-    url: 'https://www.hempireenterprise.com',
-    logo: 'https://www.hempireenterprise.com/favicon.svg',
+    name: 'Hello Blue Lenders',
+    url: 'https://www.hellobluelenders.com',
+    logo: 'https://www.hellobluelenders.com/favicon-blue.svg',
     description: 'Specialized business and equipment financing solutions. Fast approval, competitive rates, and industry expertise.',
     slogan: 'Growing the Future of Business Finance',
     address: {
@@ -37,10 +37,10 @@ export default function SchemaScript() {
       }
     ],
     sameAs: [
-      'https://www.facebook.com/hempireenterprise',
-      'https://twitter.com/hempireenterprise',
-      'https://www.linkedin.com/company/hempireenterprise',
-      'https://www.instagram.com/hempireenterprise'
+      'https://www.facebook.com/hellobluelenders',
+      'https://twitter.com/hellobluelenders',
+      'https://www.linkedin.com/company/hello-blue-lenders',
+      'https://www.instagram.com/hellobluelenders'
     ],
     areaServed: {
       '@type': 'GeoCircle',
@@ -67,8 +67,8 @@ export default function SchemaScript() {
     category: 'Business Loan',
     provider: {
       '@type': 'FinancialService',
-      name: 'Hempire Enterprise',
-      url: 'https://www.hempireenterprise.com'
+      name: 'Hello Blue Lenders',
+      url: 'https://www.hellobluelenders.com'
     },
     description: 'Tailored financing solutions for businesses with competitive rates and quick approvals.',
     feesAndCommissionsSpecification: 'No hidden fees. Origination fee ranges from 1.5-3% depending on loan amount and term.',

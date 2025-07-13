@@ -3,8 +3,8 @@ import { Suspense } from 'react';
 import ApplicationClient from '@/components/ApplicationClient';
 
 export const metadata: Metadata = {
-  title: 'Apply for Financing | Hempire Enterprise',
-  description: 'Apply online for business financing or equipment loans with Hempire Enterprise. Our simple application process makes it easy to get the funding your business needs.',
+  title: 'Apply for Financing | Hello Blue Lenders',
+  description: 'Apply online for premium business financing with Hello Blue Lenders. Our simple blue-class application process makes it easy to get the funding your business needs.',
 };
 
 // For Next.js 15.3+, we wrap the client component in a Suspense boundary

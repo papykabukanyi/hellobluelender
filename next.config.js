@@ -16,7 +16,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   // Enable standalone output for Docker deployment
-  output: 'standalone',
+  // output: 'standalone', // Disabled to use custom server.js
   experimental: {}, // Keep empty to avoid warnings
   
   // Environment variables for client-side

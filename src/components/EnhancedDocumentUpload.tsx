@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useCallback } from 'react';
-import { AnimatedButton, FadeIn } from '@/components/animations';
+import AnimatedButton from '@/components/animations/AnimatedButton';
+import FadeIn from '@/components/animations/FadeIn';
 import DocumentScanner, { DocumentType, ExtractedDocumentData } from '@/lib/document-scanner/DocumentScannerFixed';
 import { motion } from 'framer-motion';
 

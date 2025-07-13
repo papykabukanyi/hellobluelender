@@ -4,7 +4,6 @@ import React, { useState, useRef, useCallback } from 'react';
 import AnimatedButton from '@/components/animations/AnimatedButton';
 import FadeIn from '@/components/animations/FadeIn';
 import DocumentScanner, { DocumentType, ExtractedDocumentData } from '@/lib/document-scanner/DocumentScannerFixed';
-import { motion } from 'framer-motion';
 
 interface EnhancedDocumentUploadProps {
   onDataExtracted?: (data: ExtractedDocumentData) => void;
@@ -294,11 +293,12 @@ export default function EnhancedDocumentUpload({
         <div className="mt-4">
           <p className="text-sm font-medium text-gray-700 mb-1">Analyzing document... (will upload normally if analysis fails)</p>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <motion.div 
+            <div 
               className="bg-primary h-2.5 rounded-full"
-              initial={{ width: '0%' }}
-              animate={{ width: `${processingProgress}%` }}
-              transition={{ duration: 0.5 }}
+              style={{ 
+                width: `${processingProgress}%`,
+                transition: 'width 0.5s ease-in-out'
+              }}
             />
           </div>
         </div>
@@ -322,12 +322,14 @@ export default function EnhancedDocumentUpload({
           <h4 className="font-medium text-gray-700">Uploaded Files:</h4>
           <ul className="mt-2 divide-y divide-gray-200">
             {files.map((file, index) => (
-              <motion.li 
+              <li 
                 key={`${file.name}-${index}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
                 className="py-2 flex justify-between items-center"
+                style={{
+                  opacity: 1,
+                  transform: 'translateY(0)',
+                  transition: 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out'
+                }}
               >
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -357,7 +359,7 @@ export default function EnhancedDocumentUpload({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                   </svg>
                 </button>
-              </motion.li>
+              </li>
             ))}
           </ul>
         </div>

@@ -6,14 +6,15 @@ export default function NotFound() {
       alignItems: 'center', 
       justifyContent: 'center', 
       backgroundColor: '#f8fafc',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'system-ui, sans-serif',
+      padding: '1rem'
     }}>
       <div style={{ textAlign: 'center' }}>
         <h1 style={{ 
           fontSize: '4rem', 
           fontWeight: 'bold', 
           color: '#2563eb', 
-          marginBottom: '1rem' 
+          margin: '0 0 1rem 0'
         }}>
           404
         </h1>
@@ -21,15 +22,15 @@ export default function NotFound() {
           fontSize: '1.5rem', 
           fontWeight: '600', 
           color: '#374151', 
-          marginBottom: '1rem' 
+          margin: '0 0 1rem 0'
         }}>
           Page Not Found
         </h2>
         <p style={{ 
           color: '#6b7280', 
-          marginBottom: '2rem' 
+          margin: '0 0 2rem 0'
         }}>
-          The page you're looking for doesn't exist with Hello Blue Lenders.
+          The page you are looking for does not exist.
         </p>
         <a
           href="/"
@@ -40,14 +41,7 @@ export default function NotFound() {
             color: 'white',
             textDecoration: 'none',
             borderRadius: '0.5rem',
-            fontWeight: '600',
-            transition: 'transform 0.2s',
-          }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.transform = 'scale(1.05)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
+            fontWeight: '600'
           }}
         >
           Return to Home

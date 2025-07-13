@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import React from 'react';
 
 interface AnimatedButtonProps {
@@ -40,16 +39,37 @@ export default function AnimatedButton({
   const combinedClasses = `${baseClasses} ${className}`;
 
   return (
-    <motion.button
-      whileHover={disabled ? {} : { scale: 1.05 }}
-      whileTap={disabled ? {} : { scale: 0.98 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+    <button
       onClick={onClick}
       className={combinedClasses}
       type={type}
       disabled={disabled}
+      style={{
+        transform: 'scale(1)',
+        transition: 'transform 0.2s ease-in-out'
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = 'scale(1)';
+        }
+      }}
+      onMouseDown={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = 'scale(0.98)';
+        }
+      }}
+      onMouseUp={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.transform = 'scale(1.05)';
+        }
+      }}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }

@@ -109,5 +109,5 @@ export function MapDisplay({ locations }: MapProps) {
   );
 }
 
-// Backward compatibility export
-export { MapDisplay as MapContainer };
+// Default export for easier imports
+export default MapDisplay;

@@ -93,4 +93,5 @@ export function MapContainerSimple({ locations }: MapProps) {
   );
 }
 
-export { MapContainerSimple as MapContainer };
+// Default export for easier imports
+export default MapContainerSimple;

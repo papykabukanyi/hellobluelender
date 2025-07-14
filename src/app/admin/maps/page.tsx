@@ -4,13 +4,19 @@ import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import dynamic from 'next/dynamic';
 
-// Dynamically import LeafletMap to avoid SSR and build issues
-const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
-  ssr: false,
-  loading: () => <div className="flex justify-center items-center h-96">
-    <div className="text-lg">Loading map...</div>
+// TEMPORARILY DISABLED FOR BUILD FIX
+// const LeafletMap = dynamic(() => import('@/components/LeafletMap'), {
+//   ssr: false,
+//   loading: () => <div className="flex justify-center items-center h-96">
+//     <div className="text-lg">Loading map...</div>
+//   </div>
+// });
+
+const LeafletMap = () => (
+  <div className="flex justify-center items-center h-96">
+    <div className="text-lg">Map temporarily disabled for build</div>
   </div>
-});
+);
 
 interface Application {
   id: string;
